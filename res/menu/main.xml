@@ -1,0 +1,24 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="net.nature.mobile.MainActivity" >
+    
+    <item
+        android:id="@+id/action_camera"
+        android:icon="@drawable/ic_camera"
+        android:title="@string/action_camera"
+        android:showAsAction="ifRoom"/>
+    
+    <item
+        android:id="@+id/action_gallery"
+        android:icon="@drawable/ic_gallery"
+        android:title="@string/action_gallery"
+        android:showAsAction="ifRoom"/>    
+    
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="never"/>
+
+</menu>
