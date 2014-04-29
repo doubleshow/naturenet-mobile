@@ -1,10 +1,9 @@
 package net.nature.mobile.exp;
 
 
+import net.nature.mobile.CreateAccountActivity;
 import net.nature.mobile.R;
-import net.nature.mobile.R.id;
-import net.nature.mobile.R.layout;
-import net.nature.mobile.R.menu;
+import net.nature.mobile.SelectAccountActivity;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
@@ -51,6 +50,13 @@ public class MainActivity extends Activity {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;
+        }else if (id == R.id.action_camera){
+        	Intent intent = new Intent(this, SelectAccountActivity.class);
+//        	EditText editText = (EditText) findViewById(R.id.edit_message);
+//        	String message = editText.getText().toString();
+//        	intent.putExtra(EXTRA_MESSAGE,  message);
+        	startActivity(intent);
+        	
         }
         return super.onOptionsItemSelected(item);
     }
