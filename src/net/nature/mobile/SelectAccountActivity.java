@@ -3,7 +3,7 @@ package net.nature.mobile;
 import java.util.List;
 
 import net.nature.mobile.SelectAccountActivity.UserArrayAdapter.ViewHolder;
-import net.nature.mobile.model.User;
+import net.nature.mobile.model.Account;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -30,8 +30,8 @@ public class SelectAccountActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		final ListView listview = new ListView(this);
-		List<User> users = new Select().from(User.class).execute();
-		User[] values = users.toArray(new User[]{});
+		List<Account> users = new Select().from(Account.class).execute();
+		Account[] values = users.toArray(new Account[]{});
 		UserArrayAdapter adapter = new UserArrayAdapter(this, values);
 		listview.setLayoutParams(new LayoutParams(200,200));
 		listview.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
@@ -44,7 +44,7 @@ public class SelectAccountActivity extends Activity {
 			public void onItemClick(AdapterView<?> arg0, View v, int arg2,
 					long arg3) {
 				ViewHolder holder = (UserArrayAdapter.ViewHolder) v.getTag();
-				User user = holder.user;
+				Account user = holder.user;
 
 				Intent result = new Intent();
 				result.putExtra("username", user.username);
@@ -54,17 +54,17 @@ public class SelectAccountActivity extends Activity {
 		});
 	}
 
-	static public class UserArrayAdapter extends ArrayAdapter<User> {
+	static public class UserArrayAdapter extends ArrayAdapter<Account> {
 		private final Context context;
-		private final User[] users;
+		private final Account[] users;
 
 		static public class ViewHolder {
 			public TextView text;
 			public ImageView image;
-			public User user;
+			public Account user;
 		}
 
-		public UserArrayAdapter(Context context, User[] users) {
+		public UserArrayAdapter(Context context, Account[] users) {
 			super(context, R.layout.item_user, users);
 			this.context = context;
 			this.users = users;

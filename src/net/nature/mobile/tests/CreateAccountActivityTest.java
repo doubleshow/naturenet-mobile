@@ -5,7 +5,7 @@ import com.activeandroid.query.Select;
 
 import net.nature.mobile.CreateAccountActivity;
 import net.nature.mobile.R;
-import net.nature.mobile.model.User;
+import net.nature.mobile.model.Account;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.suitebuilder.annotation.MediumTest;
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.*;
@@ -25,13 +25,13 @@ public class CreateAccountActivityTest extends ActivityInstrumentationTestCase2<
 	protected void setUp() throws Exception {
 		super.setUp();
 		getActivity();
-		new Delete().from(User.class).where("name = ?", newUsername).execute();
+		new Delete().from(Account.class).where("name = ?", newUsername).execute();
 	}
 
 	@MediumTest
 	public void test_create_account(){
 		
-		int n = new Select().from(User.class).execute().size();
+		int n = new Select().from(Account.class).execute().size();
 		
 		onView(withId(R.id.username))
 			.perform(typeText(newUsername));
@@ -49,10 +49,10 @@ public class CreateAccountActivityTest extends ActivityInstrumentationTestCase2<
 		onView(withId(R.id.sign_in_button))
 			.perform(click());
 
-		int m = new Select().from(User.class).execute().size();
+		int m = new Select().from(Account.class).execute().size();
 		assertEquals(n+1, m);
 		
-		User newUser = new Select().from(User.class).where("username = ?", newUsername).executeSingle();
+		Account newUser = new Select().from(Account.class).where("username = ?", newUsername).executeSingle();
 		assertNotNull(newUser);
 		assertEquals(newUsername, newUser.username);
 

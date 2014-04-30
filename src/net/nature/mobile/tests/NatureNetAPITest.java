@@ -7,9 +7,11 @@ import com.activeandroid.Model;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.Log;
 
-import net.nature.mobile.model.Activity;
-import net.nature.mobile.model.User;
+import net.nature.mobile.model.Context;
+import net.nature.mobile.model.Account;
+import net.nature.mobile.model.Note;
 import net.nature.mobile.rest.NatureNetAPI;
+import net.nature.mobile.rest.NoteJson;
 import net.nature.mobile.rest.Sync;
 import net.nature.mobile.rest.NatureNetAPI.Result;
 import retrofit.RestAdapter;
@@ -32,23 +34,31 @@ public class NatureNetAPITest extends AndroidTestCase {
 	}
 
 	public void testGetAccounts(){		
-		Result<List<User>> res = api.listAccounts();
+		Result<List<Account>> res = api.listAccounts();
 		assertThat(res.data.size(), greaterThan(3));
-		for (User user : res.data){
+		for (Account user : res.data){
 			Log.d("user", ""+user);
 			System.out.println(user);
 		}
 	}
 	
 	public void testGetAccountTomYeh(){
-		Result<User> res = api.getAccount("tomyeh");
+		Result<Account> res = api.getAccount("tomyeh");
 		assertThat(res.data.username, equalTo("tomyeh"));	
 	}
 	
+	public void testListNotesForTomYeh(){
+		Result<List<Note>> res = api.listNotes("tomyeh");
+		for (Note x : res.data){			
+			System.out.println(x);
+			assertThat(x.account.username, equalTo("tomyeh"));
+		}	
+	}
+	
 	public void testGetActivities(){		
-		Result<List<Activity>> res = api.listActivities();
+		Result<List<Context>> res = api.listActivities();
 		assertThat(res.data.size(), greaterThan(3));
-		for (Activity activity : res.data){			
+		for (Context activity : res.data){			
 			System.out.println(activity);
 		}
 	}

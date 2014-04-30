@@ -1,10 +1,13 @@
 package net.nature.mobile.model;
 
+import java.util.List;
+
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
+import com.activeandroid.query.Select;
 import com.google.common.base.Objects;
 
-public class User extends Model {
+public class Account extends Model {
 
 	@Column(name="Name")
 	public String name;
@@ -16,7 +19,7 @@ public class User extends Model {
 	public String email;
 	
 	@Column(name="UID")
-	public Integer id;
+	public Long id;
 	
 	public String toString(){
 		return Objects.toStringHelper(this).
@@ -24,6 +27,14 @@ public class User extends Model {
 				add("name", name).
 				add("email", email).
 				add("id", id).toString();
+	}
+	
+	public int countNotes(){		
+		 return new Select().from(Note.class).where("account_id = ?", id).count();
+	}
+
+	public List<Note> notes() {
+		return new Select().from(Note.class).where("account_id = ?", id).execute();		
 	}
 	
 }

@@ -9,7 +9,7 @@ import org.hamcrest.Matcher;
 import com.google.android.apps.common.testing.ui.espresso.matcher.BoundedMatcher;
 
 import net.nature.mobile.SelectAccountActivity;
-import net.nature.mobile.model.User;
+import net.nature.mobile.model.Account;
 import android.app.Activity;
 import android.content.Intent;
 import android.test.ActivityInstrumentationTestCase2;
@@ -22,7 +22,7 @@ import static org.hamcrest.Matchers.*;
 
 public class SelectAccountActivityTest extends ActivityInstrumentationTestCase2<SelectAccountActivity> {
 
-	private User mockUser;
+	private Account mockUser;
 
 	public SelectAccountActivityTest() {
 		super(SelectAccountActivity.class);
@@ -31,7 +31,7 @@ public class SelectAccountActivityTest extends ActivityInstrumentationTestCase2<
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		mockUser = new User();
+		mockUser = new Account();
 		mockUser.username = ""+(new Date()).getTime();
 		mockUser.save();
 		
@@ -46,9 +46,9 @@ public class SelectAccountActivityTest extends ActivityInstrumentationTestCase2<
 	
 	public static Matcher<Object> withUsername(final Matcher<String> itemTextMatcher){
 //		  checkNotNull(itemTextMatcher);
-		  return new BoundedMatcher<Object, User>(User.class) {
+		  return new BoundedMatcher<Object, Account>(Account.class) {
 		    @Override
-		    public boolean matchesSafely(User user) {
+		    public boolean matchesSafely(Account user) {
 		      return itemTextMatcher.matches(user.username);
 		    }
 

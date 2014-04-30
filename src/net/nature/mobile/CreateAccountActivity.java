@@ -1,6 +1,6 @@
 package net.nature.mobile;
 
-import net.nature.mobile.model.User;
+import net.nature.mobile.model.Account;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
@@ -246,7 +246,7 @@ public class CreateAccountActivity extends Activity {
 			}
 
 			// register the new account here.
-			User user = new User();
+			Account user = new Account();
 			user.username = mUsername;
 			user.name = mName;			
 			user.save();			
