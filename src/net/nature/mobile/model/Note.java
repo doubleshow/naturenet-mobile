@@ -56,6 +56,10 @@ public class Note extends Model {
 		public Long id;
 	}
 
+	public static Note find(Long id){
+		return new Select().from(Note.class).where("uid = ?", id).executeSingle();
+	}
+	
 	public boolean exists() {
 		return new Select().from(Note.class)
 			.where("uid = ?", id).exists();

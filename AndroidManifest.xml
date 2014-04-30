@@ -28,11 +28,7 @@
         <activity
             android:name="net.nature.mobile.exp.MainActivity"
             android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            
         </activity>
         <activity
             android:name="net.nature.mobile.exp.DisplayMessageActivityvity"
@@ -54,6 +50,14 @@
         <activity
             android:name="net.nature.mobile.SelectAccountActivity"
             android:label="@string/title_activity_select_account" >
+        </activity>
+        <activity
+            android:name="net.nature.mobile.EditNoteActivity"
+            android:label="@string/title_activity_edit_note" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

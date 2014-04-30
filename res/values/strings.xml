@@ -10,5 +10,12 @@
     <string name="action_camera">Camera</string>
     <string name="action_gallery">Gallery</string>
     <string name="title_activity_select_account">Select Account</string>
+    <string name="title_activity_edit_note">Note</string>
+    
+    <string name="prompt_note_content">Edit description.</string>
+    
+    <string name="save">Save</string>
+    
+    <string name="cancel">Cancel</string>
 
 </resources>
