@@ -4,26 +4,26 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.google.common.base.Objects;
 
-public class User extends Model {
-
+public class Activity extends Model {
+	
+	@Column(name="Description")
+	public String description;
+	
 	@Column(name="Name")
 	public String name;
 	
-	@Column(name="Username")
-	public String username;
-	
-	@Column(name="Email")
-	public String email;
+	@Column(name="Site")
+	public Site site;
 	
 	@Column(name="UID")
-	public Integer id;
+	public Long id;
 	
 	public String toString(){
 		return Objects.toStringHelper(this).
-				add("username", username).
 				add("name", name).
-				add("email", email).
-				add("id", id).toString();
-	}
-	
+				add("description", description).
+				add("site", site.name).
+				add("site.id", site.id).
+				toString();
+	}	
 }

@@ -1,16 +1,13 @@
 package net.nature.mobile.tests;
 
 import java.util.Date;
-import java.util.List;
 
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 
+import net.nature.mobile.model.Activity;
 import net.nature.mobile.model.User;
-import net.nature.mobile.rest.NatureNetAPI;
-import net.nature.mobile.rest.NatureNetAPI.Result;
-import net.nature.mobile.sync.Sync;
-import retrofit.RestAdapter;
+import net.nature.mobile.rest.Sync;
 import android.test.AndroidTestCase;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -65,6 +62,24 @@ public class SyncTest extends AndroidTestCase {
 		sync.pullAllUsers();
 		
 		int countAfterAgain = (new Select()).from(User.class).execute().size();
+		
+		assertThat(countAfterAgain, equalTo(countAfter));
+	}
+	
+	public void testPullAllActivities(){
+		
+		(new Delete()).from(Activity.class).execute();
+		int countBefore = (new Select()).from(Activity.class).execute().size();
+				
+		sync.pullAllActivities();
+		
+		int countAfter = (new Select()).from(Activity.class).execute().size();
+	
+		assertThat(countAfter, greaterThan(countBefore + 3));
+		
+		sync.pullAllActivities();
+		
+		int countAfterAgain = (new Select()).from(Activity.class).execute().size();
 		
 		assertThat(countAfterAgain, equalTo(countAfter));
 	}
