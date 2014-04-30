@@ -1,6 +1,10 @@
 package net.nature.mobile;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.util.List;
+
+import net.nature.mobile.model.Context;
 import net.nature.mobile.model.Note;
 import android.app.Activity;
 import android.os.Bundle;
@@ -9,10 +13,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 
+import com.activeandroid.query.Select;
+import com.google.common.collect.Lists;
 import com.squareup.picasso.Picasso;
 
 public class EditNoteActivity extends Activity {
@@ -25,6 +35,7 @@ public class EditNoteActivity extends Activity {
 	private Button mCancel;
 	private ImageView mImage;
 	private EditText mContent;
+	private Spinner mContext;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +107,37 @@ public class EditNoteActivity extends Activity {
 			}
 		});
 		
+		mContext = (Spinner) findViewById(R.id.note_context);
+		
+		List<Context> contexts = new Select().from(Context.class).execute();
+		final List<String> context_names = Lists.newArrayList();
+		for (Context c : contexts){
+			context_names.add(c.name);
+		}
+		
+		ArrayAdapter<CharSequence> adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, context_names.toArray());		        
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		mContext.setAdapter(adapter);
+		
+		int position = context_names.indexOf(note.getContext().name);		
+		mContext.setSelection(position);
+		
+		
+		mContext.setOnItemSelectedListener(new OnItemSelectedListener() {
+		    @Override
+		    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+		    	Context context = new Select().from(Context.class).where("name = ?", context_names.get(position)).executeSingle();
+		    	checkNotNull(context);
+		    	note.context_id = context.id;
+				note.save();
+		    }
+
+		    @Override
+		    public void onNothingSelected(AdapterView<?> parentView) {
+		        // your code here
+		    }
+
+		});
 	}
 
 

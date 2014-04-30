@@ -33,10 +33,10 @@ public class Note extends Model {
 	}
 	
 	@Expose
-	public Account account;
+	public AccountJson account;
 	
 	@Expose
-	public Context context;
+	public ContextJson context;
 		
 	public Long syncForeignKeysAndSave(){
 		if (account_id == null && account != null)
@@ -46,12 +46,12 @@ public class Note extends Model {
 		return save();
 	}
 	
-	static public class Account {
+	static public class AccountJson {
 		public Long id;
 		public String username;
 	}
 	
-	static public class Context{
+	static public class ContextJson{
 		public String kind;
 		public Long id;
 	}
@@ -63,6 +63,10 @@ public class Note extends Model {
 	public boolean exists() {
 		return new Select().from(Note.class)
 			.where("uid = ?", id).exists();
+	}
+
+	public Context getContext() {
+		return new Select().from(Context.class).where("uid = ?", context_id).executeSingle();
 	}
 	
 //	public int count(){

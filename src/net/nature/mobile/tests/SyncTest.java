@@ -18,7 +18,6 @@ import net.nature.mobile.rest.Sync;
 import android.test.AndroidTestCase;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
 
 public class SyncTest extends AndroidTestCase {
 	

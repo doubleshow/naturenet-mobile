@@ -7,6 +7,7 @@ import net.nature.mobile.CreateAccountActivity;
 import net.nature.mobile.EditNoteActivity;
 import net.nature.mobile.R;
 import net.nature.mobile.model.Account;
+import net.nature.mobile.model.Context;
 import net.nature.mobile.model.Note;
 import android.content.Intent;
 import android.test.ActivityInstrumentationTestCase2;
@@ -18,9 +19,10 @@ import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewA
 import static org.hamcrest.Matchers.*;
 
 public class EditNoteActivityTest extends ActivityInstrumentationTestCase2<EditNoteActivity> {
-
-	private String newUsername = "testUser123";
+	
 	private Note note;
+	private Context context1;
+	private Context context2;
 
 	public EditNoteActivityTest() {
 		super(EditNoteActivity.class);
@@ -30,11 +32,25 @@ public class EditNoteActivityTest extends ActivityInstrumentationTestCase2<EditN
 	protected void setUp() throws Exception {
 		super.setUp();		
 		new Delete().from(Note.class).execute();
+		new Delete().from(Context.class).execute();
 		
 		note = new Note();
 		note.id = 1L;
 		note.content = "Mock content";
+		note.context_id = 2L;
 		note.save();
+		
+		context1 = new Context();
+		context1.id = 1L;
+		context1.kind = "Activity";
+		context1.name = "Ask an expert";
+		context1.save();
+		
+		context2 = new Context();
+		context2.id = 2L;
+		context2.kind = "Activity";
+		context2.name = "Take a picture";
+		context2.save();		
 		
 		Intent intent = new Intent();
 		intent.putExtra(EditNoteActivity.Extras.NOTE_ID, 1L);
@@ -43,7 +59,7 @@ public class EditNoteActivityTest extends ActivityInstrumentationTestCase2<EditN
 	}
 
 	@MediumTest
-	public void test_display_note(){		
+	public void test_view_note(){		
 		onView(withId(R.id.note_content)).
 			check(matches(isDisplayed())).
 			check(matches(withText(note.content)));
@@ -54,42 +70,21 @@ public class EditNoteActivityTest extends ActivityInstrumentationTestCase2<EditN
 		onView(withId(R.id.note_cancel)).
 			check(matches(not(isDisplayed())));
 		
-		onView(withId(R.id.note_content)).
-			perform(click());
-		
-		onView(withId(R.id.note_save)).
-			check(matches(isDisplayed()));
-
-		onView(withId(R.id.note_cancel)).
-			check(matches(isDisplayed()));
-		
-		onView(withId(R.id.note_cancel)).
-			perform(click());
-		
-		onView(withId(R.id.note_cancel)).
-			check(matches(not(isDisplayed())));		
-	}
-
-	@MediumTest
-	public void test_click_to_edit_content_and_cancel(){
-		onView(withId(R.id.note_content)).
-			perform(click());
-		
-		onView(withId(R.id.note_save)).
-			check(matches(isDisplayed()));
+		onView(withId(R.id.note_context)).
+			check(matches(hasDescendant(withText(context2.name))));		
+	}	
 	
-		onView(withId(R.id.note_cancel)).
-			check(matches(isDisplayed()));
-		
-		onView(withId(R.id.note_cancel)).
+	@MediumTest
+	public void test_click_to_change_context(){
+		onView(withId(R.id.note_context)).
 			perform(click());
 		
-		onView(withId(R.id.note_cancel)).
-			check(matches(not(isDisplayed())));
+		onView(withText(context1.name)).
+			perform(click());
 		
 		Note note = Note.find(1L);
-		assertThat("content should stay the same", 
-				note.content, equalTo(note.content));
+		assertThat("context should change to 1", 
+				note.context_id, equalTo(context1.id));
 	}
 	
 	@MediumTest
@@ -112,8 +107,8 @@ public class EditNoteActivityTest extends ActivityInstrumentationTestCase2<EditN
 		onView(withId(R.id.note_save)).
 			check(matches(not(isDisplayed())));
 				
-		Note note = Note.find(1L);
+		Note updatedNote = Note.find(1L);
 		assertThat("content should have few more characters",
-				note.content, equalTo(note.content + "more"));
+				updatedNote.content, equalTo(note.content + "more"));
 	}
 }
