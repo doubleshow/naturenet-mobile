@@ -29,6 +29,10 @@ public class Account extends Model {
 				add("id", id).toString();
 	}
 	
+	public static int count(){
+		 return new Select().from(Account.class).count();
+	}
+	
 	public int countNotes(){		
 		 return new Select().from(Note.class).where("account_id = ?", id).count();
 	}
@@ -37,4 +41,9 @@ public class Account extends Model {
 		return new Select().from(Note.class).where("account_id = ?", id).execute();		
 	}
 	
+	public boolean exists() {
+		return new Select().from(Account.class)
+			.where("uid = ?", id).exists();
+	}
+
 }

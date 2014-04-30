@@ -23,28 +23,11 @@ import static org.mockito.Mockito.*;
 public class SyncTest extends AndroidTestCase {
 	
 	private Sync sync;
-	private NatureNetAPI api;
 	
-		@Override
+	@Override
 	protected void setUp() throws Exception{
 		super.setUp();
 		sync = new Sync();
-		RestAdapter restAdapter = new RestAdapter.Builder()
-	    .setEndpoint("http://naturenet.herokuapp.com/api")
-	    .build();		
-		api = restAdapter.create(NatureNetAPI.class);
-	}
-
-	public void testPullNewRemoteUser(){
-		Account user = new Account();
-		String newName = "remote" + (new Date()).getTime();
-		user.username = newName;
-		
-		sync.pull(user);
-		
-		Account u = (new Select()).from(Account.class).where("username = ?", user.username).executeSingle();		
-		assertThat(u, notNullValue());
-		assertThat(u.username, equalTo(newName));
 	}
 	
 	public void testSyncNotesForTomYeh(){
@@ -85,53 +68,42 @@ public class SyncTest extends AndroidTestCase {
 		
 	}
 	
-	public void testPullExistingRemoteUser(){
-		Account user = (new Select()).from(Account.class).executeSingle();
-		
-		int countBefore = (new Select()).from(Account.class).execute().size();
-						
-		sync.pull(user);
-		
-		int countAfter = (new Select()).from(Account.class).execute().size();
-						
-		assertThat(countBefore, equalTo(countAfter));
-		
-	}
-	
-	public void testPullAllUsers(){
-		
+	public void testSyncAccounts(){		
 		(new Delete()).from(Account.class).execute();
-		int countBefore = (new Select()).from(Account.class).execute().size();
+		
+		assertThat("after deleting all accounts, the number of account should be zero",
+				Account.count(), equalTo(0));
+								
+		sync.syncAccounts();
+		
+		int countAfterFirstSync = Account.count();
+		
+		assertThat("after the first sync, the number of accounts should be at least 5",
+				countAfterFirstSync, greaterThan(5));
 				
-		sync.pullAllUsers();
+		sync.syncAccounts();
+		int countAfterSecondSync = Account.count();
 		
-		int countAfter = (new Select()).from(Account.class).execute().size();
+		assertThat("after the second sync, the number of accounts should not change",
+				countAfterSecondSync, equalTo(countAfterFirstSync));
 		
-		// assuming at least 5 accounts, this must hold
-		assertThat(countAfter, greaterThan(countBefore + 5));
-		
-		sync.pullAllUsers();
-		
-		int countAfterAgain = (new Select()).from(Account.class).execute().size();
-		
-		assertThat(countAfterAgain, equalTo(countAfter));
 	}
 	
-	public void testPullAllActivities(){
-		
-		(new Delete()).from(Context.class).execute();
-		int countBefore = (new Select()).from(Context.class).execute().size();
-				
-		sync.pullAllActivities();
-		
-		int countAfter = (new Select()).from(Context.class).execute().size();
-	
-		assertThat(countAfter, greaterThan(countBefore + 3));
-		
-		sync.pullAllActivities();
-		
-		int countAfterAgain = (new Select()).from(Context.class).execute().size();
-		
-		assertThat(countAfterAgain, equalTo(countAfter));
-	}
+//	public void testPullAllActivities(){
+//		
+//		(new Delete()).from(Context.class).execute();
+//		int countBefore = (new Select()).from(Context.class).execute().size();
+//				
+//		sync.pullAllActivities();
+//		
+//		int countAfter = (new Select()).from(Context.class).execute().size();
+//	
+//		assertThat(countAfter, greaterThan(countBefore + 3));
+//		
+//		sync.pullAllActivities();
+//		
+//		int countAfterAgain = (new Select()).from(Context.class).execute().size();
+//		
+//		assertThat(countAfterAgain, equalTo(countAfter));
+//	}
 }

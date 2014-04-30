@@ -25,20 +25,20 @@ public class Sync {
 		api = restAdapter.create(NatureNetAPI.class);
 	}
 
-	public void pull(Account remoteUser){
-		Account localUser = (new Select()).from(Account.class).where("username = ?", remoteUser.username).executeSingle();
-		if (localUser == null){
-			remoteUser.save();
+	public void sync(Account account){
+		checkNotNull(account);
+		if (!account.exists()){
+			account.save();
 		}
 	}
-	
+
 	public void pull(Context remote){
 		Context local = (new Select()).from(Context.class).where("uid = ?", remote.id).executeSingle();
 		if (local == null){
 			remote.save();
 		}
 	}	
-	
+
 	public void sync(Note note){
 		checkNotNull(note);	
 		if (!note.exists()){
@@ -46,7 +46,7 @@ public class Sync {
 			note.syncForeignKeysAndSave();
 		}
 	}
-	
+
 	public void syncNotesForUsers(String username){
 		checkNotNull(api);	
 		Result<List<Note>> r = api.listNotes(username);
@@ -56,21 +56,20 @@ public class Sync {
 			}
 		}
 	}
-	
 
-	public void pullAllUsers(){
-		if (api != null){
-			Result<List<Account>> r = api.listAccounts();
-			if (r.status_code == 200){
-				for (Account u : r.data){
-					pull(u);
-				}
+
+	public void syncAccounts(){
+		checkNotNull(api);
+		Result<List<Account>> r = api.listAccounts();
+		if (r.status_code == 200){
+			for (Account u : r.data){
+				sync(u);
 			}
 		}
 	}
-	
 
-	
+
+
 	public void pullAllActivities(){
 		if (api != null){
 			Result<List<Context>> r = api.listActivities();
