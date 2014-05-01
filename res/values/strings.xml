@@ -21,5 +21,6 @@
     <string name="action_sync">Sync</string>
     <string name="title_activity_list_note">Notes</string>
     <string name="title_activity_signin">Sign in</string>
+    <string name="title_activity_create_note">Create a New Note</string>
 
 </resources>

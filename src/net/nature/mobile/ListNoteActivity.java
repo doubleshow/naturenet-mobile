@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.nature.mobile.ListNoteActivity.UserArrayAdapter.ViewHolder;
 import net.nature.mobile.model.Account;
+import net.nature.mobile.model.Media;
 import net.nature.mobile.model.Note;
 import android.app.Activity;
 import android.content.Context;
@@ -107,8 +108,12 @@ public class ListNoteActivity extends Activity {
 			String s = notes[position].content;
 			holder.text.setText(s);
 
-			String url = notes[position].getMedias().get(0).url;
-			Picasso.with(getContext()).load(url).resize(400,300).centerCrop().into(holder.image);	
+			
+			Media media = notes[position].getMediaSingle();
+			if (media != null){
+				String path = media.getPath();
+				Picasso.with(getContext()).load(path).resize(400,300).centerCrop().into(holder.image);				
+			}
 
 //			String avatarName = users[position].getAvatarName();
 //			int id = context.getResources().getIdentifier(avatarName.toLowerCase(), "drawable", context.getPackageName());

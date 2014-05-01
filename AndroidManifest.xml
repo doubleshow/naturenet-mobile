@@ -9,7 +9,9 @@
         android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <uses-feature android:name="android.hardware.camera" android:required="true" />
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />    
+    
     <application
         android:name="com.activeandroid.app.Application"
         android:allowBackup="true"
@@ -75,6 +77,10 @@
             android:name="net.nature.mobile.EditNoteActivity"
             android:label="@string/title_activity_edit_note" >
         </activity>
+        <activity
+            android:name="net.nature.mobile.CreateNoteActivity"
+            android:label="@string/title_activity_create_note" >
+        </activity>        
     </application>
 
     <instrumentation

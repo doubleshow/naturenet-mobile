@@ -9,6 +9,7 @@ import net.nature.mobile.R;
 import net.nature.mobile.CreateAccountActivity.UserLoginTask;
 import net.nature.mobile.exp.DisplayMessageActivity;
 import net.nature.mobile.model.Account;
+import net.nature.mobile.model.Context;
 import net.nature.mobile.model.Media;
 import net.nature.mobile.model.Note;
 import net.nature.mobile.rest.Sync;
@@ -33,19 +34,25 @@ public class MainActivity extends Activity {
 
 	private static final int CREATE_ACCOUNT = 2;
 	private static final int SIGNIN_RESPONSE = 1;
+	protected static final int CREATE_NOTE = 3;
+	
 	static final String EXTRA_MESSAGE = "net.nature.mobile.MESSAGE";
+	
 	
 	private SyncTask mAuthTask;
 	private Account mAccount;
+	private Context mContext;
 	
-	private Button mSignin;
+	private Button mButtonSignin;
 	private TextView mUsername;
-	private Button mCreateAccount;
+	private Button mButtonCreateAccount;
 	private View mUserContainer;
 	private View mSigninContainer;
-	private Button mGallery;
+	private Button mButtonGallery;
 	private ImageView mLastImage1st;
 	private ImageView mLastImage2nd;
+	private TextView mContextName;
+	private Button mButtonCreateNote;
 
 
 	@Override
@@ -64,18 +71,20 @@ public class MainActivity extends Activity {
 		}
 		
 		mAccount =  Account.find(2L);
-//		mAccount.username = "Tom Yeh";
+		mContext = Context.find(1L);
 
 		mSigninContainer = findViewById(R.id.main_signin_container);        
-		mSignin = (Button) findViewById(R.id.main_signin);
-		mCreateAccount = (Button) findViewById(R.id.main_create_account);
+		
+		mButtonSignin = (Button) findViewById(R.id.main_signin);
+		mButtonCreateAccount = (Button) findViewById(R.id.main_create_account);
+		mButtonCreateNote = (Button) findViewById(R.id.main_button_create_note);
 
 		mUserContainer = findViewById(R.id.main_user_container);
 		mUsername = (TextView) findViewById(R.id.main_username);
-		mGallery = (Button) findViewById(R.id.main_gallery);
+		mButtonGallery = (Button) findViewById(R.id.main_gallery);
 		mLastImage1st = (ImageView) findViewById(R.id.main_image_last_1st);
 		mLastImage2nd = (ImageView) findViewById(R.id.main_image_last_2nd);
-
+		mContextName = (TextView) findViewById(R.id.main_context);
 
 		if (mAccount == null){
 			mUserContainer.setVisibility(View.INVISIBLE);
@@ -84,7 +93,7 @@ public class MainActivity extends Activity {
 			onAccountSelected(mAccount);
 		}
 
-		mSignin.setOnClickListener(new OnClickListener(){
+		mButtonSignin.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(getBaseContext(), SigninActivity.class);
@@ -92,7 +101,7 @@ public class MainActivity extends Activity {
 			}        	
 		});
 
-		mCreateAccount.setOnClickListener(new OnClickListener(){
+		mButtonCreateAccount.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(getBaseContext(), CreateAccountActivity.class);
@@ -100,7 +109,7 @@ public class MainActivity extends Activity {
 			}        	
 		});
 		
-		mGallery.setOnClickListener(new OnClickListener(){
+		mButtonGallery.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(getBaseContext(), ListNoteActivity.class);
@@ -108,7 +117,25 @@ public class MainActivity extends Activity {
 				startActivity(intent);
 			}        	
 		});
+		
+		mButtonCreateNote.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				checkNotNull(mAccount); checkNotNull(mContext);
+				
+				Intent intent = new Intent(getBaseContext(), CreateNoteActivity.class);
+				intent.putExtra(CreateNoteActivity.Extras.INPUT_ACCOUNT_ID, mAccount.id);
+				intent.putExtra(CreateNoteActivity.Extras.INPUT_CONTEXT_ID, mContext.id);
+				startActivityForResult(intent, CREATE_NOTE);
+			}        	
+		});
 
+		
+		if (mContext == null){
+			
+		}else{
+			onContextSelected(mContext);
+		}
 
 	}
 	
@@ -121,7 +148,19 @@ public class MainActivity extends Activity {
 	        	checkNotNull(account);	        	
 	        	onAccountSelected(account);
 	        }
+	    }else if (requestCode == CREATE_NOTE){
+	    	if (resultCode == RESULT_OK) {
+	        	Long note_id = data.getLongExtra(CreateNoteActivity.Extras.OUTPUT_NOTE_ID,-1);
+	        	Intent intent = new Intent(getBaseContext(), EditNoteActivity.class);
+				intent.putExtra(EditNoteActivity.Extras.NOTE_ID, note_id);
+				startActivity(intent);
+	        }
 	    }
+	}
+	
+	private void onContextSelected(Context context){
+		checkNotNull(context);
+		mContextName.setText(context.name);
 	}
 
 	private void onAccountSelected(Account account){
@@ -145,7 +184,8 @@ public class MainActivity extends Activity {
 		checkNotNull(note);
 		Media media = note.getMediaSingle();
 		if (media != null){
-			Picasso.with(this).load(media.url).resize(150,150).centerCrop().into(view);				
+			String path = media.getPath();
+			Picasso.with(this).load(path).resize(150,150).centerCrop().into(view);				
 		}		
 	}
 	

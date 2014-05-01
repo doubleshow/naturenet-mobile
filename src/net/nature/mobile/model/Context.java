@@ -36,4 +36,9 @@ public class Context extends Model {
 			.where("uid = ?", id).exists();
 	}
 
+	public static Context find(Long id) {
+		return new Select().from(Context.class).where("uid = ?", id).executeSingle();
+	}
+
+
 }
