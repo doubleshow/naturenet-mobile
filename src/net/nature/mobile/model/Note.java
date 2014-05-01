@@ -28,7 +28,7 @@ public class Note extends Model {
 		return Objects.toStringHelper(this).
 				add("id", id).
 				add("content", content).
-				add("user_id", account_id).
+				add("account_id", account_id).
 				add("context_id", context_id).
 				add("medias", medias).
 //				add("email", email).
@@ -40,6 +40,10 @@ public class Note extends Model {
 	
 	public List<Media> getMedias(){
 		return new Select().from(Media.class).where("note_id = ?", id).execute();
+	}
+	
+	public Media getMediaSingle(){
+		return new Select().from(Media.class).where("note_id = ?", id).executeSingle();
 	}
 	
 	@Expose
