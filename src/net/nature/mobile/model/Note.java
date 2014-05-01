@@ -1,5 +1,7 @@
 package net.nature.mobile.model;
 
+import java.util.List;
+
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.query.Select;
@@ -28,6 +30,7 @@ public class Note extends Model {
 				add("content", content).
 				add("user_id", account_id).
 				add("context_id", context_id).
+				add("medias", medias).
 //				add("email", email).
 				toString();
 	}
@@ -35,8 +38,21 @@ public class Note extends Model {
 	@Expose
 	public AccountJson account;
 	
+	public List<Media> getMedias(){
+		return new Select().from(Media.class).where("note_id = ?", id).execute();
+	}
+	
 	@Expose
 	public ContextJson context;
+	
+	@Expose
+	public Media[] medias;
+//	static public class MediaJson{
+//		public Long id;
+//		public String kind;
+//		public String link;
+//		public String title;
+//	}
 		
 	public Long syncForeignKeysAndSave(){
 		if (account_id == null && account != null)

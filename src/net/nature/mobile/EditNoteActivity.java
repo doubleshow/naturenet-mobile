@@ -5,6 +5,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.List;
 
 import net.nature.mobile.model.Context;
+import net.nature.mobile.model.Media;
 import net.nature.mobile.model.Note;
 import android.app.Activity;
 import android.os.Bundle;
@@ -61,10 +62,24 @@ public class EditNoteActivity extends Activity {
 
 		final Note note = Note.find(id);
 		checkNotNull(note);
+ 		
+		//
+		// Note Image
+		//
+		List<Media> medias = note.getMedias();
+		if (medias.size() > 0){
+			Media media = medias.get(0);
+			if (media.path != null){
+				Picasso.with(this).load(media.path).into(mImage);				
+			}else{
+				Picasso.with(this).load(media.url).into(mImage);
+			}
+		}
 
+		//
+		// Note Content
+		//
 		mContent.setText(note.content);
-		Picasso.with(this).load("http://i.imgur.com/DvpvklR.png").into(mImage);
-
 		
 		OnFocusChangeListener focusChangeListener = new OnFocusChangeListener() {
 			@Override
@@ -88,6 +103,9 @@ public class EditNoteActivity extends Activity {
 		});
 		mContent.requestFocus();
 		
+		//
+		// Note Save/Cancel Buttons
+		// 
 		mCancel.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {

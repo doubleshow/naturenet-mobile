@@ -55,11 +55,4 @@ public class NatureNetAPITest extends AndroidTestCase {
 		}	
 	}
 	
-	public void testGetActivities(){		
-		Result<List<Context>> res = api.listActivities();
-		assertThat(res.data.size(), greaterThan(3));
-		for (Context activity : res.data){			
-			System.out.println(activity);
-		}
-	}
 }

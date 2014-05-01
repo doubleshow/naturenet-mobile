@@ -1,5 +1,6 @@
 package net.nature.mobile.exp;
 
+import net.nature.mobile.MainActivity;
 import net.nature.mobile.R;
 import net.nature.mobile.R.id;
 import net.nature.mobile.R.layout;
@@ -23,7 +24,7 @@ public class DisplayMessageActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_display_message);
 		Intent intent = getIntent();
-		String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+//		String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
 //
 //		if (savedInstanceState == null) {
 //			getSupportFragmentManager().beginTransaction()
@@ -33,7 +34,7 @@ public class DisplayMessageActivity extends Activity {
 		 // Create the text view
 	    TextView textView = new TextView(this);
 	    textView.setTextSize(40);
-	    textView.setText(message);
+//	    textView.setText(message);
 	    textView.setId(R.id.view_hello);
 
 	    // Set the text view as the activity layout

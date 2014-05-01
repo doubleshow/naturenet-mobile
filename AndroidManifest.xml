@@ -26,14 +26,17 @@
             android:value="2" />
 
         <activity
-            android:name="net.nature.mobile.exp.MainActivity"
+            android:name="net.nature.mobile.MainActivity"
             android:label="@string/app_name" >
-            
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>                        
         </activity>
         <activity
             android:name="net.nature.mobile.exp.DisplayMessageActivityvity"
             android:label="@string/title_activity_display_message"
-            android:parentActivityName="net.nature.mobile.exp.MainActivity" >
+            android:parentActivityName="net.nature.mobile.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="net.nature.mobile.MainActivity" />
@@ -41,7 +44,7 @@
         <activity
             android:name="net.nature.mobile.CreateAccountActivity"
             android:label="@string/title_activity_create_account"
-            android:parentActivityName="net.nature.mobile.exp.MainActivity"
+            android:parentActivityName="net.nature.mobile.MainActivity"
             android:windowSoftInputMode="adjustResize|stateVisible" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -52,12 +55,12 @@
             android:label="@string/title_activity_select_account" >
         </activity>
         <activity
+            android:name="net.nature.mobile.ListNoteActivity"
+            android:label="@string/title_activity_list_note" >
+        </activity>        
+        <activity
             android:name="net.nature.mobile.EditNoteActivity"
             android:label="@string/title_activity_edit_note" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 

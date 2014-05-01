@@ -8,6 +8,7 @@ import net.nature.mobile.EditNoteActivity;
 import net.nature.mobile.R;
 import net.nature.mobile.model.Account;
 import net.nature.mobile.model.Context;
+import net.nature.mobile.model.Media;
 import net.nature.mobile.model.Note;
 import android.content.Intent;
 import android.test.ActivityInstrumentationTestCase2;
@@ -23,6 +24,7 @@ public class EditNoteActivityTest extends ActivityInstrumentationTestCase2<EditN
 	private Note note;
 	private Context context1;
 	private Context context2;
+	private Media media;
 
 	public EditNoteActivityTest() {
 		super(EditNoteActivity.class);
@@ -33,6 +35,11 @@ public class EditNoteActivityTest extends ActivityInstrumentationTestCase2<EditN
 		super.setUp();		
 		new Delete().from(Note.class).execute();
 		new Delete().from(Context.class).execute();
+		
+		media = new Media();
+		media.note_id = 1L; 
+		media.url = "http://i.imgur.com/DvpvklR.png";
+		media.save();
 		
 		note = new Note();
 		note.id = 1L;

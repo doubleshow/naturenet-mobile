@@ -2,6 +2,7 @@ package net.nature.mobile.model;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
+import com.activeandroid.query.Select;
 import com.google.common.base.Objects;
 
 public class Context extends Model {
@@ -27,5 +28,12 @@ public class Context extends Model {
 				add("description", description).				
 				add("site_id", site_id).
 				toString();
-	}	
+	}
+	
+	// TODO: pull-up to base class
+	public boolean exists() {
+		return new Select().from(this.getClass())
+			.where("uid = ?", id).exists();
+	}
+
 }
