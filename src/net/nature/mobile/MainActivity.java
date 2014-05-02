@@ -35,11 +35,11 @@ public class MainActivity extends Activity {
 	private static final int REQUEST_SIGNIN = 1;
 	private static final int REQUEST_CREATE_NOTE = 3;
 	private static final int REQUEST_EDIT_NOTE = 4;
+	private static final int REQUEST_SELECT_CONTEXT = 5;
 	
 	static final String EXTRA_MESSAGE = "net.nature.mobile.MESSAGE";
 	
-
-
+	
 	private SyncTask mAuthTask;
 	private Account mAccount;
 	private Context mContext;
@@ -54,6 +54,7 @@ public class MainActivity extends Activity {
 	private ImageView mLastImage2nd;
 	private TextView mContextName;
 	private Button mButtonCreateNote;
+	private Button mButtonSelectContext;
 
 
 	@Override
@@ -85,7 +86,10 @@ public class MainActivity extends Activity {
 		mButtonGallery = (Button) findViewById(R.id.main_gallery);
 		mLastImage1st = (ImageView) findViewById(R.id.main_image_last_1st);
 		mLastImage2nd = (ImageView) findViewById(R.id.main_image_last_2nd);
+		
+		
 		mContextName = (TextView) findViewById(R.id.main_context);
+		mButtonSelectContext = (Button) findViewById(R.id.main_button_select_activity);
 
 		if (mAccount == null){
 			mUserContainer.setVisibility(View.INVISIBLE);
@@ -130,7 +134,17 @@ public class MainActivity extends Activity {
 				startActivityForResult(intent, REQUEST_CREATE_NOTE);
 			}        	
 		});
-
+		
+		mButtonSelectContext.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				checkNotNull(mContext);
+				
+				Intent intent = new Intent(getBaseContext(), SelectContextActivity.class);				
+				intent.putExtra(SelectContextActivity.EXTRA_INPUT_CONTEXT_ID, mContext.id);
+				startActivityForResult(intent, REQUEST_SELECT_CONTEXT);
+			}        	
+		});
 
 		if (mContext == null){
 
@@ -157,6 +171,14 @@ public class MainActivity extends Activity {
 			}
 		}else if (requestCode == REQUEST_EDIT_NOTE){
 			
+		}else if (requestCode == REQUEST_SELECT_CONTEXT){
+			if (resultCode == RESULT_OK) {	    	
+				loadRecentNotes(mAccount);
+				Long context_id = data.getLongExtra(SelectContextActivity.EXTRA_OUTPUT_CONTEXT_ID, -1);
+				Context context = Context.find(context_id);
+				checkNotNull(context);				
+				onContextSelected(context);
+			}
 		}
 	}
 
