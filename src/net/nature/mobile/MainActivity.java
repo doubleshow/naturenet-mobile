@@ -184,6 +184,7 @@ public class MainActivity extends Activity {
 
 	private void onContextSelected(Context context){
 		checkNotNull(context);
+		mContext = context;
 		mContextName.setText(context.name);
 	}
 

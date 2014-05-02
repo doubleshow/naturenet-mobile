@@ -68,7 +68,8 @@ public class ListNoteActivity extends Activity {
 		private final Note[] notes;
 
 		static public class ViewHolder {
-			public TextView text;
+			public TextView textContent;
+			public TextView textContext;
 			public ImageView image;
 			public Note note;
 		}
@@ -86,27 +87,20 @@ public class ListNoteActivity extends Activity {
 				LayoutInflater inflater = LayoutInflater.from(context);
 				rowView = inflater.inflate(R.layout.item_note, null);
 				ViewHolder viewHolder = new ViewHolder();
-				viewHolder.text = (TextView) rowView.findViewById(R.id.textViewUsername);
-				viewHolder.image = (ImageView) rowView
-						.findViewById(R.id.imageViewAvatar);
+				viewHolder.textContent = (TextView) rowView.findViewById(R.id.note_content);
+				viewHolder.textContext = (TextView) rowView.findViewById(R.id.note_context);
+				viewHolder.image = (ImageView) rowView.findViewById(R.id.note_image);
 				rowView.setTag(viewHolder);
 				
 			}
 			
-//			SquaredImageView view = (SquaredImageView) convertView;
-//			  if (view == null) {
-//			    view = new SquaredImageView(context);
-//			  }
-//			  String url = getItem(position);
-
-			
-
-			ViewHolder holder = (ViewHolder) rowView.getTag();
-			
+			ViewHolder holder = (ViewHolder) rowView.getTag();			
 			holder.note = notes[position];
 			
-			String s = notes[position].content;
-			holder.text.setText(s);
+			Note note = notes[position];
+			
+			holder.textContent.setText(note.content);
+			holder.textContext.setText(note.getContext().name);
 
 			
 			Media media = notes[position].getMediaSingle();
@@ -115,9 +109,6 @@ public class ListNoteActivity extends Activity {
 				Picasso.with(getContext()).load(path).resize(250,150).centerCrop().into(holder.image);				
 			}
 
-//			String avatarName = users[position].getAvatarName();
-//			int id = context.getResources().getIdentifier(avatarName.toLowerCase(), "drawable", context.getPackageName());
-//			holder.image.setImageResource(id);
 			return rowView;
 		}
 	} 
