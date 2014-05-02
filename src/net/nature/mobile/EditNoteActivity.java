@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -37,6 +38,8 @@ public class EditNoteActivity extends Activity {
 	private ImageView mImage;
 	private EditText mContent;
 	private Spinner mContext;
+	private Note mNote;
+	private View mButtonBar;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +54,8 @@ public class EditNoteActivity extends Activity {
 		//		}	
 		mImage = (ImageView) findViewById(R.id.note_image);
 		mContent = (EditText) findViewById(R.id.note_content);
+		
+		mButtonBar =findViewById(R.id.note_save_cancel_bar);
 		mSave = (Button) findViewById(R.id.note_save);
 		mCancel = (Button) findViewById(R.id.note_cancel);
 
@@ -60,36 +65,29 @@ public class EditNoteActivity extends Activity {
 		Long id = bundle.getLong(Extras.NOTE_ID);
 		checkNotNull(id);
 
-		final Note note = Note.find(id);
-		checkNotNull(note);
+		mNote = Note.find(id);
+		checkNotNull(mNote);
  		
 		//
 		// Note Image
 		//
-		List<Media> medias = note.getMedias();
-		if (medias.size() > 0){
-			Media media = medias.get(0);
-			if (media.path != null){
-				Picasso.with(this).load(media.path).into(mImage);				
-			}else{
-				Picasso.with(this).load(media.url).into(mImage);
-			}
+		Media media = mNote.getMediaSingle();
+		if (media != null){						
+			Picasso.with(this).load(media.getPath()).resize(600, 400).centerCrop().into(mImage);							
 		}
 
 		//
 		// Note Content
 		//
-		mContent.setText(note.content);
+		mContent.setText(mNote.content);
 		
 		OnFocusChangeListener focusChangeListener = new OnFocusChangeListener() {
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
 				if(hasFocus){
-					mSave.setVisibility(View.VISIBLE);
-					mCancel.setVisibility(View.VISIBLE);					
+					mButtonBar.setVisibility(View.VISIBLE);					
 				}else {
-					mSave.setVisibility(View.INVISIBLE);
-					mCancel.setVisibility(View.INVISIBLE);					
+					mButtonBar.setVisibility(View.INVISIBLE);
 				}
 			}
 		};
@@ -97,31 +95,32 @@ public class EditNoteActivity extends Activity {
 		mContent.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				mSave.setVisibility(View.VISIBLE);
-				mCancel.setVisibility(View.VISIBLE);						
+				mButtonBar.setVisibility(View.VISIBLE);
 			}			
-		});
-		mContent.requestFocus();
+		});		
 		
 		//
 		// Note Save/Cancel Buttons
 		// 
+		mButtonBar.setVisibility(View.INVISIBLE);
+		
 		mCancel.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				mSave.setVisibility(View.INVISIBLE);
-				mCancel.setVisibility(View.INVISIBLE);						
+				checkNotNull(mNote);
+				mContent.setText(mNote.content);		
+				mContent.invalidate();
+				editFinished();
 			}
 		});
 		
 		mSave.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				mSave.setVisibility(View.INVISIBLE);
-				mCancel.setVisibility(View.INVISIBLE);
-				
-				note.content = mContent.getText().toString();
-				note.save();				
+				checkNotNull(mNote);
+				mNote.content = mContent.getText().toString();
+				mNote.save();
+				editFinished();
 			}
 		});
 		
@@ -137,7 +136,7 @@ public class EditNoteActivity extends Activity {
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mContext.setAdapter(adapter);
 		
-		int position = context_names.indexOf(note.getContext().name);		
+		int position = context_names.indexOf(mNote.getContext().name);		
 		mContext.setSelection(position);
 		
 		
@@ -146,8 +145,8 @@ public class EditNoteActivity extends Activity {
 		    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
 		    	Context context = new Select().from(Context.class).where("name = ?", context_names.get(position)).executeSingle();
 		    	checkNotNull(context);
-		    	note.context_id = context.id;
-				note.save();
+		    	mNote.context_id = context.id;
+				mNote.save();
 		    }
 
 		    @Override
@@ -156,6 +155,21 @@ public class EditNoteActivity extends Activity {
 		    }
 
 		});
+	}
+	
+	private void editFinished(){
+		
+		// close the soft keyboard
+		InputMethodManager inputManager = (InputMethodManager)
+                getSystemService(android.content.Context.INPUT_METHOD_SERVICE); 
+		inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                   InputMethodManager.HIDE_NOT_ALWAYS);
+		
+		// hide save/cancel buttons
+		mButtonBar.setVisibility(View.INVISIBLE);
+
+		// give the focus to parent, forcing all edit components to lose focus
+		findViewById(R.id.note_parent_layout).requestFocus();
 	}
 
 
@@ -179,20 +193,4 @@ public class EditNoteActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	//	/**
-	//	 * A placeholder fragment containing a simple view.
-	//	 */
-	//	public static class PlaceholderFragment extends Fragment {
-	//
-	//		public PlaceholderFragment() {
-	//		}
-	//
-	//		@Override
-	//		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	//				Bundle savedInstanceState) {
-	//			View rootView = inflater.inflate(R.layout.fragment_edit_note,
-	//					container, false);
-	//			return rootView;
-	//		}
-	//	}
 }

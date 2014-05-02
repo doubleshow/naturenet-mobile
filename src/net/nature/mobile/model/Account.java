@@ -53,5 +53,9 @@ public class Account extends Model {
 	public List<Note> getRecentNotes(int n) {
 		return new Select().from(Note.class).where("account_id = ?", id).orderBy("uid DESC").limit(n).execute();		
 	}
+	
+	public List<Note> getNotesOrderedByRecency() {
+		return new Select().from(Note.class).where("account_id = ?", id).orderBy("uid DESC").execute();		
+	}
 
 }

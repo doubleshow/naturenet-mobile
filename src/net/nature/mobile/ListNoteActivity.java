@@ -41,7 +41,7 @@ public class ListNoteActivity extends Activity {
 		Account mAccount = Account.find(account_id);
 		checkNotNull(mAccount);
 		
-		List<Note> notes = mAccount.notes();
+		List<Note> notes = mAccount.getNotesOrderedByRecency();
 		
 		final ListView listview = new ListView(this);
 		Note[] values = notes.toArray(new Note[]{});
@@ -112,7 +112,7 @@ public class ListNoteActivity extends Activity {
 			Media media = notes[position].getMediaSingle();
 			if (media != null){
 				String path = media.getPath();
-				Picasso.with(getContext()).load(path).resize(400,300).centerCrop().into(holder.image);				
+				Picasso.with(getContext()).load(path).resize(250,150).centerCrop().into(holder.image);				
 			}
 
 //			String avatarName = users[position].getAvatarName();

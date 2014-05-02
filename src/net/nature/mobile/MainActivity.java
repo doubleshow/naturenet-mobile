@@ -7,7 +7,6 @@ import com.squareup.picasso.Picasso;
 
 import net.nature.mobile.R;
 import net.nature.mobile.CreateAccountActivity.UserLoginTask;
-import net.nature.mobile.exp.DisplayMessageActivity;
 import net.nature.mobile.model.Account;
 import net.nature.mobile.model.Context;
 import net.nature.mobile.model.Media;
@@ -33,16 +32,18 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class MainActivity extends Activity {
 
 	private static final int CREATE_ACCOUNT = 2;
-	private static final int SIGNIN_RESPONSE = 1;
-	protected static final int CREATE_NOTE = 3;
+	private static final int REQUEST_SIGNIN = 1;
+	private static final int REQUEST_CREATE_NOTE = 3;
+	private static final int REQUEST_EDIT_NOTE = 4;
 	
 	static final String EXTRA_MESSAGE = "net.nature.mobile.MESSAGE";
 	
-	
+
+
 	private SyncTask mAuthTask;
 	private Account mAccount;
 	private Context mContext;
-	
+
 	private Button mButtonSignin;
 	private TextView mUsername;
 	private Button mButtonCreateAccount;
@@ -59,7 +60,7 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+
 		if (savedInstanceState == null) {
 			mAccount = null;
 			//          getFragmentManager().beginTransaction()
@@ -69,12 +70,12 @@ public class MainActivity extends Activity {
 			mAccount = new Account();
 			mAccount.username = "Tom Yeh";
 		}
-		
+
 		mAccount =  Account.find(2L);
 		mContext = Context.find(1L);
 
 		mSigninContainer = findViewById(R.id.main_signin_container);        
-		
+
 		mButtonSignin = (Button) findViewById(R.id.main_signin);
 		mButtonCreateAccount = (Button) findViewById(R.id.main_create_account);
 		mButtonCreateNote = (Button) findViewById(R.id.main_button_create_note);
@@ -97,7 +98,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(getBaseContext(), SigninActivity.class);
-				startActivityForResult(intent, SIGNIN_RESPONSE);
+				startActivityForResult(intent, REQUEST_SIGNIN);
 			}        	
 		});
 
@@ -108,7 +109,7 @@ public class MainActivity extends Activity {
 				startActivityForResult(intent, CREATE_ACCOUNT);
 			}        	
 		});
-		
+
 		mButtonGallery.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
@@ -117,50 +118,70 @@ public class MainActivity extends Activity {
 				startActivity(intent);
 			}        	
 		});
-		
+
 		mButtonCreateNote.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
 				checkNotNull(mAccount); checkNotNull(mContext);
-				
+
 				Intent intent = new Intent(getBaseContext(), CreateNoteActivity.class);
 				intent.putExtra(CreateNoteActivity.Extras.INPUT_ACCOUNT_ID, mAccount.id);
 				intent.putExtra(CreateNoteActivity.Extras.INPUT_CONTEXT_ID, mContext.id);
-				startActivityForResult(intent, CREATE_NOTE);
+				startActivityForResult(intent, REQUEST_CREATE_NOTE);
 			}        	
 		});
 
-		
+
 		if (mContext == null){
-			
+
 		}else{
 			onContextSelected(mContext);
 		}
 
 	}
-	
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-	    if (requestCode == SIGNIN_RESPONSE) {
-	        if (resultCode == RESULT_OK) {
-	        	Long account_id = data.getLongExtra(SigninActivity.EXTRA_ACCOUNT_ID,-1);
-	        	Account account = Account.find(account_id);
-	        	checkNotNull(account);	        	
-	        	onAccountSelected(account);
-	        }
-	    }else if (requestCode == CREATE_NOTE){
-	    	if (resultCode == RESULT_OK) {
-	        	Long note_id = data.getLongExtra(CreateNoteActivity.Extras.OUTPUT_NOTE_ID,-1);
-	        	Intent intent = new Intent(getBaseContext(), EditNoteActivity.class);
-				intent.putExtra(EditNoteActivity.Extras.NOTE_ID, note_id);
-				startActivity(intent);
-	        }
-	    }
+		if (requestCode == REQUEST_SIGNIN) {
+			if (resultCode == RESULT_OK) {
+				Long account_id = data.getLongExtra(SigninActivity.EXTRA_ACCOUNT_ID,-1);
+				Account account = Account.find(account_id);
+				checkNotNull(account);	        	
+				onAccountSelected(account);
+			}
+		}else if (requestCode == REQUEST_CREATE_NOTE){
+			if (resultCode == RESULT_OK) {	    	
+				loadRecentNotes(mAccount);
+				Long note_id = data.getLongExtra(CreateNoteActivity.Extras.OUTPUT_NOTE_ID,-1);
+				launchEditNoteActivity(note_id);
+			}
+		}else if (requestCode == REQUEST_EDIT_NOTE){
+			
+		}
 	}
-	
+
 	private void onContextSelected(Context context){
 		checkNotNull(context);
 		mContextName.setText(context.name);
+	}
+
+	private void launchEditNoteActivity(Long note_id){
+		Intent intent = new Intent(getBaseContext(), EditNoteActivity.class);
+		intent.putExtra(EditNoteActivity.Extras.NOTE_ID, note_id);
+		startActivityForResult(intent, REQUEST_EDIT_NOTE);
+	}
+
+	class OnClickToLaunchEditNoteActivity implements OnClickListener{
+		private final Long note_id;
+		public OnClickToLaunchEditNoteActivity(Long note_id) {
+			super();
+			this.note_id = note_id;
+		}
+
+		@Override
+		public void onClick(View arg0) {
+			launchEditNoteActivity(note_id);
+		}
 	}
 
 	private void onAccountSelected(Account account){
@@ -169,26 +190,35 @@ public class MainActivity extends Activity {
 		mSigninContainer.setVisibility(View.INVISIBLE);
 		mUsername.setText(account.username);
 		
+		loadRecentNotes(account);
+	}
+
+	private void loadRecentNotes(Account account){
+		checkNotNull(account);
+		
 		// display the last two recent notes
-		List<Note> notes = account.getRecentNotes(2);
-		if (notes.size() >= 1){
+		List<Note> notes = mAccount.getRecentNotes(2);
+		if (notes.size() >= 1){			
 			showNoteImageHelper(notes.get(0), mLastImage1st);
 		}
-		
+
 		if (notes.size() >= 2){
 			showNoteImageHelper(notes.get(1), mLastImage2nd);
 		}		
 	}
-	
+
 	private void showNoteImageHelper(Note note, ImageView view){
 		checkNotNull(note);
+
+		view.setOnClickListener(new OnClickToLaunchEditNoteActivity(note.id));
+
 		Media media = note.getMediaSingle();
 		if (media != null){
 			String path = media.getPath();
 			Picasso.with(this).load(path).resize(150,150).centerCrop().into(view);				
 		}		
 	}
-	
+
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -221,7 +251,7 @@ public class MainActivity extends Activity {
 		mAuthTask.execute((Void) null);
 	}
 
-	
+
 	/**
 	 * Represents an asynchronous login/registration task used to authenticate
 	 * the user.

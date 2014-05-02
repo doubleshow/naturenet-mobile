@@ -52,7 +52,7 @@ public class CreateNoteActivity extends Activity {
 	private Button mCancel;
 	private ImageView mImage;
 	private EditText mContent;
-	
+
 	private Account mAccount;
 	private Context mContext;
 
@@ -81,94 +81,100 @@ public class CreateNoteActivity extends Activity {
 		Long context_id = bundle.getLong(Extras.INPUT_CONTEXT_ID);
 		checkNotNull(account_id);
 		checkNotNull(context_id);
-		
+
 		mAccount = Account.find(account_id);
 		mContext = Context.find(context_id);
 
-//		final Note note = Note.find(id);
+		//		final Note note = Note.find(id);
 		checkNotNull(mAccount);
 		checkNotNull(mContext);
-		
+
 		dispatchTakePictureIntent();
 
 	}
-	
-	private void dispatchTakePictureIntent() {
-	    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-	    // Ensure that there's a camera activity to handle the intent
-	    if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-	        // Create the File where the photo should go
-	        File photoFile = null;
-	        try {
-	            photoFile = createImageFile();
-	        } catch (IOException ex) {
-	            // Error occurred while creating the File
-	        }
-	        // Continue only if the File was successfully created
-	        if (photoFile != null) {
-	            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-	                    Uri.fromFile(photoFile));
-	            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-	        }
-	    }
-	}
-	
-	private File createImageFile() throws IOException {
-	    // Create an image file name
-	    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-	    String imageFileName = "JPEG_" + timeStamp + "_";
-	    File storageDir = Environment.getExternalStoragePublicDirectory(
-	            Environment.DIRECTORY_PICTURES);
-	    File image = File.createTempFile(
-	        imageFileName,  /* prefix */
-	        ".jpg",         /* suffix */
-	        storageDir      /* directory */
-	    );
 
-	    // Save a file: path for use with ACTION_VIEW intents
-	    mCurrentPhotoPath = "file:" + image.getAbsolutePath();
-	    return image;
+	private void dispatchTakePictureIntent() {
+		Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		// Ensure that there's a camera activity to handle the intent
+		if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+			// Create the File where the photo should go
+			File photoFile = null;
+			try {
+				photoFile = createImageFile();
+			} catch (IOException ex) {
+				// Error occurred while creating the File
+			}
+			// Continue only if the File was successfully created
+			if (photoFile != null) {
+				takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+						Uri.fromFile(photoFile));
+				startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+			}
+		}
+	}
+
+	private File createImageFile() throws IOException {
+		// Create an image file name
+		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+		String imageFileName = "JPEG_" + timeStamp + "_";
+		File storageDir = Environment.getExternalStoragePublicDirectory(
+				Environment.DIRECTORY_PICTURES);
+		File image = File.createTempFile(
+				imageFileName,  /* prefix */
+				".jpg",         /* suffix */
+				storageDir      /* directory */
+				);
+
+		// Save a file: path for use with ACTION_VIEW intents
+		mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+		return image;
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-	    if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-	    		    		    
-	    	Note note = new Note();
-	    	note.account_id = mAccount.id;
-	    	note.context_id = mContext.id;
-	    	long internal_id = note.save();	    	
-	    	note.id = internal_id;
-	    	note.save();
-	    	
-	    	Log.d(TAG, "save " + note);
-	    	
-	    	Media media = new Media();
-	    	media.note_id = internal_id;
-	    	media.path = mCurrentPhotoPath;
-	    	media.save();
-	    	
-	    	Log.d(TAG, "save " + media);
-	    	
-//	        Bundle extras = data.getExtras();
-//	        Bitmap imageBitmap = (Bitmap) extras.get("data");
-//	        mImageView.setImageBitmap(imageBitmap);
-	        galleryAddPic();
-	        
-	        
-	        Intent result = new Intent();
-	        result.putExtra(Extras.OUTPUT_NOTE_ID, note.id);
-		    setResult(RESULT_OK, result);
-	        finish();
-	    }
+		if (requestCode == REQUEST_IMAGE_CAPTURE) {
+
+
+			if (resultCode == RESULT_OK){
+				Note note = new Note();
+				note.account_id = mAccount.id;
+				note.context_id = mContext.id;
+				long internal_id = note.save();	    	
+				note.id = internal_id;
+				note.save();
+
+				Log.d(TAG, "save " + note);
+
+				Media media = new Media();
+				media.note_id = internal_id;
+				media.path = mCurrentPhotoPath;
+				media.save();
+
+				Log.d(TAG, "save " + media);
+
+				//	        Bundle extras = data.getExtras();
+				//	        Bitmap imageBitmap = (Bitmap) extras.get("data");
+				//	        mImageView.setImageBitmap(imageBitmap);
+				galleryAddPic();
+
+
+				Intent result = new Intent();
+				result.putExtra(Extras.OUTPUT_NOTE_ID, note.id);
+				setResult(RESULT_OK, result);
+				finish();
+			}
+			else if (resultCode == RESULT_CANCELED){
+				finish();
+			}
+		}
 	}
-	
+
 	private void galleryAddPic() {
-	    Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-	    File f = new File(mCurrentPhotoPath);
-	    Uri contentUri = Uri.fromFile(f);
-	    mediaScanIntent.setData(contentUri);
-	    this.sendBroadcast(mediaScanIntent);
+		Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+		File f = new File(mCurrentPhotoPath);
+		Uri contentUri = Uri.fromFile(f);
+		mediaScanIntent.setData(contentUri);
+		this.sendBroadcast(mediaScanIntent);
 	}
 
 	@Override
