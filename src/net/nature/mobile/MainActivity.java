@@ -40,7 +40,7 @@ public class MainActivity extends Activity {
 	static final String EXTRA_MESSAGE = "net.nature.mobile.MESSAGE";
 	
 	
-	private SyncTask mAuthTask;
+	private SyncTask mSyncTask;
 	private Account mAccount;
 	private Context mContext;
 
@@ -281,6 +281,7 @@ public class MainActivity extends Activity {
 	public boolean onPrepareOptionsMenu(Menu menu) {
 	    MenuItem item = menu.findItem(R.id.action_signout);
 	    item.setEnabled(mAccount != null);
+	    menu.findItem(R.id.action_sync).setEnabled(mSyncTask == null);
 	    return super.onPrepareOptionsMenu(menu);
 	}
 
@@ -292,8 +293,8 @@ public class MainActivity extends Activity {
 	}
 
 	private void doSync() {
-		mAuthTask = new SyncTask();
-		mAuthTask.execute((Void) null);
+		mSyncTask = new SyncTask();
+		mSyncTask.execute((Void) null);
 	}
 
 
@@ -311,7 +312,7 @@ public class MainActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(final Boolean success) {
-			//			mAuthTask = null;
+			mSyncTask = null;
 			//			showProgress(false);
 			//
 			//			if (success) {
@@ -325,7 +326,7 @@ public class MainActivity extends Activity {
 
 		@Override
 		protected void onCancelled() {
-			//			mAuthTask = null;
+			mSyncTask = null;
 			//			showProgress(false);
 		}
 	}
