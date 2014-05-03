@@ -40,7 +40,7 @@
     <LinearLayout
         android:id="@+id/main_user_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical" >
 
         <TextView
@@ -78,13 +78,27 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:src="@drawable/ab_texture_tile_example" />
+            
+            <ImageView
+                android:id="@+id/main_image_last_3rd"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ab_texture_tile_example" />            
 
             <Button
                 android:id="@+id/main_gallery"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_weight="0"
                 android:text="Gallery" />
+            
+            <ImageView
+                android:id="@+id/main_image_right_arrow"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.2"
+                android:src="@drawable/arrow_right" />            
         </LinearLayout>
 
         <TextView
@@ -114,11 +128,17 @@
                 android:layout_alignParentTop="true"
                 android:text="Select" />
         </RelativeLayout>
+
+        <Button
+            android:id="@+id/main_button_create_note"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Create a New Note" />
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/main_signin_container"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
         <Button
@@ -131,15 +151,10 @@
             android:id="@+id/main_create_account"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
             android:text="Create Account" />
-    </LinearLayout>
 
-    <Button
-        android:id="@+id/main_button_create_note"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"        
-        android:text="Create a New Note" />
+    </RelativeLayout>
 
 </RelativeLayout>

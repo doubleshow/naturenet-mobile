@@ -49,6 +49,10 @@ public class Account extends Model {
 	public static Account find(Long id) {
 		return new Select().from(Account.class).where("uid = ?", id).executeSingle();
 	}
+	
+	public static Account find_by_username(String username) {
+		return new Select().from(Account.class).where("username = ?", username).executeSingle();
+	}
 
 	public List<Note> getRecentNotes(int n) {
 		return new Select().from(Note.class).where("account_id = ?", id).orderBy("uid DESC").limit(n).execute();		

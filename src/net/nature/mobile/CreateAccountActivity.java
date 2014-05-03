@@ -1,10 +1,12 @@
 package net.nature.mobile;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import net.nature.mobile.model.Account;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -220,12 +222,16 @@ public class CreateAccountActivity extends Activity {
 			mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
 		}
 	}
+	
+	private Account mAccount;
 
 	/**
 	 * Represents an asynchronous login/registration task used to authenticate
 	 * the user.
 	 */
 	public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+
+
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			// TODO: attempt authentication against a network service.
@@ -246,10 +252,12 @@ public class CreateAccountActivity extends Activity {
 			}
 
 			// register the new account here.
-			Account user = new Account();
-			user.username = mUsername;
-			user.name = mName;			
-			user.save();			
+			mAccount = new Account();
+			mAccount.username = mUsername;
+			mAccount.name = mName;			
+			Long localId = mAccount.save();		
+			mAccount.id = localId;
+			mAccount.save();
 			return true;
 		}
 
@@ -259,7 +267,11 @@ public class CreateAccountActivity extends Activity {
 			showProgress(false);
 
 			if (success) {
-				finish();
+				checkNotNull(mAccount);
+				Intent result = new Intent();
+				result.putExtra(SigninActivity.EXTRA_ACCOUNT_ID, mAccount.id);
+			    setResult(RESULT_OK, result);
+			    finish();
 			} else {
 				mPasswordView
 						.setError(getString(R.string.error_incorrect_password));

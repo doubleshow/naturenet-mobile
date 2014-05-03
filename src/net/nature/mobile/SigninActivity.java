@@ -208,17 +208,30 @@ public class SigninActivity extends Activity {
 			} catch (InterruptedException e) {
 				return false;
 			}
-
-			for (String credential : DUMMY_CREDENTIALS) {
-//				String[] pieces = credential.split(":");
-//				if (pieces[0].equals(mEmail)) {
-//					// Account exists, return true if the password matches.
-//					return pieces[1].equals(mPassword);
-//				}
+						
+			mAccount = Account.find_by_username(mUsername);
+			if (mAccount == null){
+				return false;
 			}
+
+			//if (account.password.equals(mPassword)){
+				return true;
+//			}
 			
-			mAccount = Account.find(1L); 			
-			return true;
+			
+//			for (String credential : DUMMY_CREDENTIALS) {
+//				//Account.find
+//				
+//				
+////				String[] pieces = credential.split(":");
+////				if (pieces[0].equals(mEmail)) {
+////					// Account exists, return true if the password matches.
+////					return pieces[1].equals(mPassword);
+////				}
+//			}
+			
+//			mAccount = Account.find(1L); 			
+//			return true;
 		}
 
 		@Override

@@ -2,15 +2,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="net.nature.mobile.MainActivity" >
-
+    
     <item
-        android:id="@+id/action_camera"
-        android:icon="@drawable/ic_camera"
-        android:title="@string/action_camera"/>
-    <item
-        android:id="@+id/action_gallery"
-        android:icon="@drawable/ic_gallery"
-        android:title="@string/action_gallery"/>
+        android:id="@+id/action_signout"
+        android:title="@string/action_signout"/>
+    
     <item
         android:id="@+id/action_sync"
         android:orderInCategory="100"

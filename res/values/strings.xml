@@ -23,5 +23,6 @@
     <string name="title_activity_signin">Sign in</string>
     <string name="title_activity_create_note">Create a New Note</string>
     <string name="title_activity_select_context">Select an Activity</string>
+    <string name="action_signout">Sign out</string>
 
 </resources>

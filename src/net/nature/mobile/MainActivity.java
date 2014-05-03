@@ -31,7 +31,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class MainActivity extends Activity {
 
-	private static final int CREATE_ACCOUNT = 2;
+	private static final int REQUEST_CREATE_ACCOUNT = 2;
 	private static final int REQUEST_SIGNIN = 1;
 	private static final int REQUEST_CREATE_NOTE = 3;
 	private static final int REQUEST_EDIT_NOTE = 4;
@@ -49,9 +49,10 @@ public class MainActivity extends Activity {
 	private Button mButtonCreateAccount;
 	private View mUserContainer;
 	private View mSigninContainer;
-	private Button mButtonGallery;
+	private View mButtonGallery;
 	private ImageView mLastImage1st;
 	private ImageView mLastImage2nd;
+	private ImageView mLastImage3rd;
 	private TextView mContextName;
 	private Button mButtonCreateNote;
 	private Button mButtonSelectContext;
@@ -72,8 +73,8 @@ public class MainActivity extends Activity {
 			mAccount.username = "Tom Yeh";
 		}
 
-		mAccount =  Account.find(2L);
-		mContext = Context.find(1L);
+//		mAccount =  Account.find(2L);
+//		mContext = Context.find(1L);
 
 		mSigninContainer = findViewById(R.id.main_signin_container);        
 
@@ -83,9 +84,10 @@ public class MainActivity extends Activity {
 
 		mUserContainer = findViewById(R.id.main_user_container);
 		mUsername = (TextView) findViewById(R.id.main_username);
-		mButtonGallery = (Button) findViewById(R.id.main_gallery);
+		mButtonGallery = (View) findViewById(R.id.main_image_right_arrow);
 		mLastImage1st = (ImageView) findViewById(R.id.main_image_last_1st);
 		mLastImage2nd = (ImageView) findViewById(R.id.main_image_last_2nd);
+		mLastImage3rd = (ImageView) findViewById(R.id.main_image_last_3rd);
 		
 		
 		mContextName = (TextView) findViewById(R.id.main_context);
@@ -95,7 +97,7 @@ public class MainActivity extends Activity {
 			mUserContainer.setVisibility(View.INVISIBLE);
 			mSigninContainer.setVisibility(View.VISIBLE);
 		}else{        	
-			onAccountSelected(mAccount);
+			onSignedIn(mAccount);
 		}
 
 		mButtonSignin.setOnClickListener(new OnClickListener(){
@@ -110,7 +112,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(getBaseContext(), CreateAccountActivity.class);
-				startActivityForResult(intent, CREATE_ACCOUNT);
+				startActivityForResult(intent, REQUEST_CREATE_ACCOUNT);
 			}        	
 		});
 
@@ -156,12 +158,12 @@ public class MainActivity extends Activity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == REQUEST_SIGNIN) {
+		if (requestCode == REQUEST_SIGNIN || requestCode == REQUEST_CREATE_ACCOUNT) {
 			if (resultCode == RESULT_OK) {
 				Long account_id = data.getLongExtra(SigninActivity.EXTRA_ACCOUNT_ID,-1);
-				Account account = Account.find(account_id);
-				checkNotNull(account);	        	
-				onAccountSelected(account);
+				Account account = Account.find(account_id);				
+				checkNotNull(account);
+				onSignedIn(account);				
 			}
 		}else if (requestCode == REQUEST_CREATE_NOTE){
 			if (resultCode == RESULT_OK) {	    	
@@ -207,20 +209,25 @@ public class MainActivity extends Activity {
 		}
 	}
 
-	private void onAccountSelected(Account account){
+	private void onSignedIn(Account account){
 		checkNotNull(account);		
+		mAccount = account;
 		mUserContainer.setVisibility(View.VISIBLE);
 		mSigninContainer.setVisibility(View.INVISIBLE);
 		mUsername.setText(account.username);
 		
 		loadRecentNotes(account);
+		
+		// select the default  context
+		Context context = Context.find(1L);
+		onContextSelected(context);			
 	}
 
 	private void loadRecentNotes(Account account){
 		checkNotNull(account);
 		
 		// display the last two recent notes
-		List<Note> notes = mAccount.getRecentNotes(2);
+		List<Note> notes = mAccount.getRecentNotes(3);
 		if (notes.size() >= 1){			
 			showNoteImageHelper(notes.get(0), mLastImage1st);
 		}
@@ -228,6 +235,11 @@ public class MainActivity extends Activity {
 		if (notes.size() >= 2){
 			showNoteImageHelper(notes.get(1), mLastImage2nd);
 		}		
+		
+		if (notes.size() >= 3){			
+			showNoteImageHelper(notes.get(2), mLastImage3rd);
+		}
+
 	}
 
 	private void showNoteImageHelper(Note note, ImageView view){
@@ -257,16 +269,26 @@ public class MainActivity extends Activity {
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
 			return true;
-		}else if (id == R.id.action_gallery){
-			Intent intent = new Intent(this, ListNoteActivity.class);
-			startActivity(intent);
-		}else if (id == R.id.action_camera){        
-			Intent intent = new Intent(this, SelectAccountActivity.class);
-			startActivity(intent);        
 		}else if (id == R.id.action_sync){        	
 			doSync();
+		}else if (id == R.id.action_signout){        	
+			doSignout();
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+	    MenuItem item = menu.findItem(R.id.action_signout);
+	    item.setEnabled(mAccount != null);
+	    return super.onPrepareOptionsMenu(menu);
+	}
+
+	private void doSignout() {
+		mAccount = null;
+		mContext = null;
+		mSigninContainer.setVisibility(View.VISIBLE);
+		mUserContainer.setVisibility(View.INVISIBLE);
 	}
 
 	private void doSync() {
@@ -282,30 +304,8 @@ public class MainActivity extends Activity {
 	public class SyncTask extends AsyncTask<Void, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(Void... params) {
-			// TODO: attempt authentication against a network service.
-
-			//			try {				
 			Sync sync = new Sync();
 			sync.syncAll();
-
-			//				Thread.sleep(1000);
-			//			} catch (InterruptedException e) {
-			//				return false;
-			//			}
-
-			//			for (String credential : DUMMY_CREDENTIALS) {
-			//				String[] pieces = credential.split(":");
-			//				if (pieces[0].equals(mEmail)) {
-			//					// Account exists, return true if the password matches.
-			//					return pieces[1].equals(mPassword);
-			//				}
-			//			}
-			//
-			//			// register the new account here.
-			//			Account user = new Account();
-			//			user.username = mUsername;
-			//			user.name = mName;			
-			//			user.save();			
 			return true;
 		}
 
