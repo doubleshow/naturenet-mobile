@@ -1,23 +1,34 @@
 package net.nature.mobile.rest;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
+
+import android.util.Log;
 
 import com.activeandroid.TableInfo;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.google.common.base.Objects;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 
 import net.nature.mobile.model.Context;
 import net.nature.mobile.model.Account;
 import net.nature.mobile.model.Media;
 import net.nature.mobile.model.Note;
+import retrofit.ErrorHandler;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+import retrofit.converter.GsonConverter;
 import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
 import retrofit.http.POST;
 import retrofit.http.Path;
+import retrofit.mime.TypedByteArray;
 
 public interface NatureNetAPI {
 
@@ -30,6 +41,10 @@ public interface NatureNetAPI {
 		public String status_txt;
 
 	}
+
+	String TAG = "NNAPI";
+	
+	
 	
 //	static abstract class Model {
 //		private Long mId = null;

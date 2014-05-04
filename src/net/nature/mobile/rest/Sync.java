@@ -9,6 +9,7 @@ import com.activeandroid.query.Select;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import net.nature.mobile.model.BaseModel;
 import net.nature.mobile.model.Context;
 import net.nature.mobile.model.Media;
 import net.nature.mobile.model.Note;
@@ -37,6 +38,10 @@ public class Sync {
 		.setEndpoint("http://naturenet.herokuapp.com/api")
 		.build();		
 		api = restAdapter.create(NatureNetAPI.class);
+	}
+	
+	public int countRemoteAccounts(){
+		return api.countAccounts().data;
 	}
 
 	public void sync(Account account){
@@ -77,12 +82,22 @@ public class Sync {
 
 	public void syncAccounts(){
 		checkNotNull(api);
-		Result<List<Account>> r = api.listAccounts();
-		if (r.status_code == 200){
-			for (Account u : r.data){
-				sync(u);
+		if (BaseModel.count(Account.class) == 0){
+			Result<List<Account>> r = api.listAccounts();
+			if (r.status_code == 200){
+				for (Account u : r.data){
+					sync(u);
+				}
+			}			
+		}else{
+		
+			List<Account> xs = new Select().from(Account.class).execute();
+			for (Account x : xs){
+				sync(x);
 			}
+		
 		}
+		
 	}
 	
 	public void syncContexts(){

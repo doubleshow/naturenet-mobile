@@ -1,6 +1,7 @@
 package net.nature.mobile.rest;
 
 //import java.util.Date;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Before;
@@ -11,6 +12,7 @@ import org.robolectric.shadows.ShadowLog;
 
 import retrofit.RestAdapter;
 
+import com.activeandroid.Model;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 
@@ -31,11 +33,18 @@ import static net.nature.mobile.model.BaseModel.*;
 public class SyncTest {
 	
 	private Sync sync;
+	private Account newAccount;
 	
 	@Before
 	public void setUp(){
 		ShadowLog.stream = System.out;
 		sync = new Sync();
+		
+		newAccount = new Account();
+		newAccount.username = "n" + (new Date()).getTime();
+		newAccount.name = "first last";
+		newAccount.email = "new@email.com";
+		
 		// Roboletric would start an in-memory db so "delete" are not needed
 //		new Delete().from(Note.class).execute();
 //		new Delete().from(Context.class).execute();
@@ -80,6 +89,27 @@ public class SyncTest {
 		assertThat("after syncing again, the number of notes should be go back to just before",
 				countAfterThirdSync, equalTo(countAfterSecondSync));
 		
+	}
+	
+	@Test
+	public void test_sync_one_new_local_account(){		
+		
+		sync.syncAccounts();
+		
+		int count = count(Account.class); 
+		
+		newAccount.save();
+		
+		assertThat(count(Account.class), equalTo(count + 1));
+		
+		sync.syncAccounts();
+		
+		assertThat(sync.countRemoteAccounts(), equalTo(count + 1));
+		
+		Account savedNewAccount = Model.load(Account.class, newAccount.getId());
+		
+		assertThat(savedNewAccount.existsRemotely(), equalTo(true));
+				
 	}
 	
 	@Test

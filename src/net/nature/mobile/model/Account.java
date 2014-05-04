@@ -3,6 +3,10 @@ package net.nature.mobile.model;
 import java.io.Serializable;
 import java.util.List;
 
+import net.nature.mobile.rest.NatureNetAPI;
+import net.nature.mobile.rest.NatureNetAPI.Result;
+import net.nature.mobile.rest.NatureNetRestAdapter;
+
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
@@ -10,6 +14,8 @@ import com.activeandroid.query.Select;
 import com.google.common.base.Objects;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import static com.google.common.base.Preconditions.*;
 
 @Table(name="ACCOUNT", id="tID")
 public class Account extends BaseModel {
@@ -28,18 +34,21 @@ public class Account extends BaseModel {
 	
 	public String toString(){
 		return Objects.toStringHelper(this).
-				add("id", getId()).
-				add("uid", getUId()).
+				//addValue(super.toString()).				
+				add("base", super.toString()).
 				add("username", username).
 				add("name", name).
 				add("email", email).
 				toString();
 	}
 	
-	public static int count(){
-		 return new Select().from(Account.class).count();
+	protected void saveRemotely(NatureNetAPI api) {
+		checkNotNull(api);
+		Result<Account> r = api.createAccount(username, name, "", email, "I consent");
+		this.uID = r.data.getUId();
+		save();
 	}
-	
+		
 	public int countNotes(){		
 		 return new Select().from(Note.class).where("account_id = ?", getId()).count();
 	}
