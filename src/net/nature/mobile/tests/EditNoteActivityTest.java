@@ -36,28 +36,29 @@ public class EditNoteActivityTest extends ActivityInstrumentationTestCase2<EditN
 		new Delete().from(Note.class).execute();
 		new Delete().from(Context.class).execute();
 		
-		media = new Media();
-		media.note_id = 1L; 
-		media.url = "http://i.imgur.com/DvpvklR.png";
-		media.save();
-		
-		note = new Note();
-		note.id = 1L;
-		note.content = "Mock content";
-		note.context_id = 2L;
-		note.save();
-		
 		context1 = new Context();
-		context1.id = 1L;
+		//context1.(1L);
 		context1.kind = "Activity";
 		context1.name = "Ask an expert";
 		context1.save();
 		
 		context2 = new Context();
-		context2.id = 2L;
+//		context2.setuID(2L);
 		context2.kind = "Activity";
 		context2.name = "Take a picture";
 		context2.save();		
+		
+		note = new Note();
+		//note.uID = 1L;
+		note.content = "Mock content";
+		note.context_id = context2.getId();
+		note.save();
+		
+		media = new Media();
+		media.setNote(note); 
+		media.setURL("http://i.imgur.com/DvpvklR.png");
+		media.save();
+
 		
 		Intent intent = new Intent();
 		intent.putExtra(EditNoteActivity.Extras.NOTE_ID, 1L);
@@ -91,7 +92,7 @@ public class EditNoteActivityTest extends ActivityInstrumentationTestCase2<EditN
 		
 		Note note = Note.find(1L);
 		assertThat("context should change to 1", 
-				note.context_id, equalTo(context1.id));
+				note.context_id, equalTo(context1.getUId()));
 	}
 	
 	@MediumTest

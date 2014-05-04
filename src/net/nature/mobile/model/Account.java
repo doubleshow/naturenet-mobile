@@ -1,32 +1,39 @@
 package net.nature.mobile.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.google.common.base.Objects;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
-public class Account extends Model {
+@Table(name="ACCOUNT", id="tID")
+public class Account extends BaseModel {
 
+	@Expose
 	@Column(name="Name")
 	public String name;
 	
+	@Expose
 	@Column(name="Username")
 	public String username;
 	
+	@Expose
 	@Column(name="Email")
 	public String email;
 	
-	@Column(name="UID")
-	public Long id;
-	
 	public String toString(){
 		return Objects.toStringHelper(this).
+				add("id", getId()).
+				add("uid", getUId()).
 				add("username", username).
 				add("name", name).
 				add("email", email).
-				add("id", id).toString();
+				toString();
 	}
 	
 	public static int count(){
@@ -34,20 +41,11 @@ public class Account extends Model {
 	}
 	
 	public int countNotes(){		
-		 return new Select().from(Note.class).where("account_id = ?", id).count();
+		 return new Select().from(Note.class).where("account_id = ?", getId()).count();
 	}
 
 	public List<Note> notes() {
-		return new Select().from(Note.class).where("account_id = ?", id).execute();		
-	}
-	
-	public boolean exists() {
-		return new Select().from(Account.class)
-			.where("uid = ?", id).exists();
-	}
-
-	public static Account find(Long id) {
-		return new Select().from(Account.class).where("uid = ?", id).executeSingle();
+		return new Select().from(Note.class).where("account_id = ?", getId()).execute();		
 	}
 	
 	public static Account find_by_username(String username) {
@@ -55,11 +53,15 @@ public class Account extends Model {
 	}
 
 	public List<Note> getRecentNotes(int n) {
-		return new Select().from(Note.class).where("account_id = ?", id).orderBy("uid DESC").limit(n).execute();		
+		return new Select().from(Note.class).where("account_id = ?", getUId()).orderBy("uid DESC").limit(n).execute();		
 	}
 	
 	public List<Note> getNotesOrderedByRecency() {
-		return new Select().from(Note.class).where("account_id = ?", id).orderBy("uid DESC").execute();		
+		return new Select().from(Note.class).where("account_id = ?", getUId()).orderBy("uid DESC").execute();		
+	}
+
+	public static Account find_by_uid(Long uid) {
+		return new Select().from(Account.class).where("uid = ?", uid).executeSingle();		
 	}
 
 }

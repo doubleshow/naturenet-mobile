@@ -2,94 +2,211 @@ package net.nature.mobile.model;
 
 import java.util.List;
 
+import android.util.Log;
+
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.google.common.base.Objects;
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
-public class Note extends Model {
+@Table(name="NOTE", id="tID")
+public class Note extends BaseModel {
+
+	// Local
 
 	@Expose
-	@Column(name="Content")
+	@Column(name="content")
 	public String content;
-	
-	@Expose
-	@Column(name="UID")
-	public Long id;
-	
-	@Column(name="Context_ID")
+
+	//	@Expose
+	//	@SerializedName("id")
+	//	@Column(name="uID")
+	//	public Long uID;
+
+	@Column(name="Context_ID", notNull=true)
 	public Long context_id;
 
-	@Column(name="Account_ID")
+	@Column(name="Account_ID", notNull=true)
 	public Long account_id;
-	
-	public String toString(){
-		return Objects.toStringHelper(this).
-				add("id", id).
-				add("content", content).
-				add("account_id", account_id).
-				add("context_id", context_id).
-				add("medias", medias).
-//				add("email", email).
-				toString();
-	}
-	
+
+	// Remote Json
+
 	@Expose
-	public AccountJson account;
-	
-	public List<Media> getMedias(){
-		return new Select().from(Media.class).where("note_id = ?", id).execute();
-	}
-	
-	public Media getMediaSingle(){
-		return new Select().from(Media.class).where("note_id = ?", id).executeSingle();
-	}
-	
+	@SerializedName("account")
+	//	private AccountJson accountJson;
+	private Account account;
+
+
+	//private ContextJson contextJson;
+
 	@Expose
-	public ContextJson context;
-	
+	@SerializedName("context")
+	private Context context;
+
 	@Expose
-	public Media[] medias;
-//	static public class MediaJson{
-//		public Long id;
-//		public String kind;
-//		public String link;
-//		public String title;
-//	}
-		
-	public Long syncForeignKeysAndSave(){
-		if (account_id == null && account != null)
-			account_id = account.id;
-		if (context_id == null && context != null)
-			context_id = context.id;		
-		return save();
-	}
-	
+	private Media[] medias;
+
 	static public class AccountJson {
+		@Expose
 		public Long id;
+		@Expose
 		public String username;
 	}
-	
-	static public class ContextJson{
-		public String kind;
-		public Long id;
+
+	//	static public class ContextJson{
+	//		@Expose
+	//		public String kind;
+	//		@Expose
+	//		public Long id;
+	//	}
+
+	public List<Media> getMedias(){
+//		return getMany(Media.class, "note");
+		return new Select().from(Media.class).where("note_id = ?", getId()).execute();
 	}
 
-	public static Note find(Long id){
+	public Media getMediaSingle(){
+		return new Select().from(Media.class).where("note_id = ?", getId()).executeSingle();
+	}
+
+	public Long syncForeignKeysAndSave(){
+		//		checkNotNull(accountJson);
+		//		checkNotNull(contextJson);
+		//		
+		//		if (accountJson != null && contextJson != null && medias != null){			
+		//			BaseModel account = Account.find_by_uid(accountJson.id);			
+		//			account_id = account.getId();			
+		//				
+		//			Context context = Context.find_by_uid(contextJson.id);
+		//			context_id = context.getId();			
+		//		
+		//			save();
+		//		
+		//			for (Media media : medias){	
+		//				media.setNote(this);
+		//				media.save();
+		////				Log.d(TAG, "    saved " + media);
+		//			}
+		//		}
+		return getId();
+	}
+
+	//	void resolveForeignKeys(){
+	//		if (accountJson != null && contextJson != null){
+	//			System.out.println(accountJson.id);
+	//			Account account = Account.find_by_uid(accountJson.id);			
+	//			account_id = account.getId();			
+	//			
+	//			Context context = Context.find_by_uid(contextJson.id);
+	//			context_id = context.getId();			
+	//		}
+	//	}
+
+
+	public static Note find(Long id){		
 		return new Select().from(Note.class).where("uid = ?", id).executeSingle();
 	}
-	
-	public boolean exists() {
-		return new Select().from(Note.class)
-			.where("uid = ?", id).exists();
+
+	//	public boolean exists() {
+	//		return new Select().from(Note.class)
+	//			.where("uid = ?", uID).exists();
+	//	}
+
+	//	Long getContextId(){
+	//		if (context_id == null && contextJson != null){
+	//			return  contextJson.id;
+	//		}else{
+	//			return context_id;
+	//		}		
+	//	}
+	//	
+	//	Long getAccountId(){
+	//		if (account_id == null && accountJson != null){
+	//			return  accountJson.id;
+	//		}else{
+	//			return account_id;
+	//		}		
+	//	}
+	//	
+	//	private void resolve(){
+	//		if (accountJson != null && contextJson != null && medias != null){			
+	//			BaseModel account = Account.find_by_uid(accountJson.id);			
+	//			account_id = account.getId();			
+	//
+	//			Context context = Context.find_by_uid(contextJson.id);
+	//			context_id = context.getId();			
+	//
+	//			save();
+	//
+	//			for (Media media : medias){	
+	//				media.setNote(this);
+	//				media.save();
+	//				//			Log.d(TAG, "    saved " + media);
+	//			}
+	//		}
+	//	}
+
+
+	public void sync(){
+		// if it does not exist locally
+		if (!existsLocally()){
+
+			if (account != null && context != null){
+
+				// resolve relationships
+				BaseModel local_account = BaseModel.find_by_uid(Account.class, account.getUId());			
+				account_id = local_account.getId();			
+
+				Context local_context = BaseModel.find_by_uid(Context.class, context.getUId());			
+				context_id = local_context.getId();			
+
+				save();
+				
+				//			
+				for (Media media : medias){	
+					media.setNote(this);					
+					media.save();
+					Log.d(TAG, "saved " +  media);
+				}
+
+				Log.d(TAG, "saved " + this);
+			}
+		}
 	}
 
+
 	public Context getContext() {
-		return new Select().from(Context.class).where("uid = ?", context_id).executeSingle();
+		if (context == null && context_id != null){
+			return Model.load(Context.class, context_id);
+		}else{
+			return context;
+		}
+
 	}
-	
-//	public int count(){
-//		return new Select().from(Note.class).count();
-//	}
+
+	public Account getAccount() {
+		if (account == null && account_id != null){
+			return Model.load(Account.class,  account_id);
+		}else{
+			return account;
+		}
+	}
+
+	public String toString(){
+		return Objects.toStringHelper(this).
+				add("id", getId()).
+				add("uid", getUId()).
+				add("content", content).
+				add("account", getAccount()).
+				add("context", getContext()).
+				add("medias", getMedias()).
+				toString();
+	}
+
+	//	public int count(){
+	//		return new Select().from(Note.class).count();
+	//	}
 }

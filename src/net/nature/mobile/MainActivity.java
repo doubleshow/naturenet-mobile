@@ -3,6 +3,7 @@ package net.nature.mobile;
 
 import java.util.List;
 
+import com.activeandroid.Model;
 import com.squareup.picasso.Picasso;
 
 import net.nature.mobile.R;
@@ -120,7 +121,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(getBaseContext(), ListNoteActivity.class);
-				intent.putExtra(ListNoteActivity.EXTRA_ACCOUNT_ID, mAccount.id);
+				intent.putExtra(ListNoteActivity.EXTRA_ACCOUNT_ID, mAccount.getUId());
 				startActivity(intent);
 			}        	
 		});
@@ -131,8 +132,8 @@ public class MainActivity extends Activity {
 				checkNotNull(mAccount); checkNotNull(mContext);
 
 				Intent intent = new Intent(getBaseContext(), CreateNoteActivity.class);
-				intent.putExtra(CreateNoteActivity.Extras.INPUT_ACCOUNT_ID, mAccount.id);
-				intent.putExtra(CreateNoteActivity.Extras.INPUT_CONTEXT_ID, mContext.id);
+				intent.putExtra(CreateNoteActivity.Extras.INPUT_ACCOUNT_ID, mAccount.getUId());
+				intent.putExtra(CreateNoteActivity.Extras.INPUT_CONTEXT_ID, mContext.getUId());
 				startActivityForResult(intent, REQUEST_CREATE_NOTE);
 			}        	
 		});
@@ -143,7 +144,7 @@ public class MainActivity extends Activity {
 				checkNotNull(mContext);
 				
 				Intent intent = new Intent(getBaseContext(), SelectContextActivity.class);				
-				intent.putExtra(SelectContextActivity.EXTRA_INPUT_CONTEXT_ID, mContext.id);
+				intent.putExtra(SelectContextActivity.EXTRA_INPUT_CONTEXT_ID, mContext.getUId());
 				startActivityForResult(intent, REQUEST_SELECT_CONTEXT);
 			}        	
 		});
@@ -161,7 +162,7 @@ public class MainActivity extends Activity {
 		if (requestCode == REQUEST_SIGNIN || requestCode == REQUEST_CREATE_ACCOUNT) {
 			if (resultCode == RESULT_OK) {
 				Long account_id = data.getLongExtra(SigninActivity.EXTRA_ACCOUNT_ID,-1);
-				Account account = Account.find(account_id);				
+				Account account = Model.load(Account.class,  account_id);				
 				checkNotNull(account);
 				onSignedIn(account);				
 			}
@@ -177,7 +178,7 @@ public class MainActivity extends Activity {
 			if (resultCode == RESULT_OK) {	    	
 				loadRecentNotes(mAccount);
 				Long context_id = data.getLongExtra(SelectContextActivity.EXTRA_OUTPUT_CONTEXT_ID, -1);
-				Context context = Context.find(context_id);
+				Context context = Model.load(Context.class,  context_id);
 				checkNotNull(context);				
 				onContextSelected(context);
 			}
@@ -219,7 +220,7 @@ public class MainActivity extends Activity {
 		loadRecentNotes(account);
 		
 		// select the default  context
-		Context context = Context.find(1L);
+		Context context = Model.load(Context.class, 1L);
 		onContextSelected(context);			
 	}
 
@@ -245,7 +246,7 @@ public class MainActivity extends Activity {
 	private void showNoteImageHelper(Note note, ImageView view){
 		checkNotNull(note);
 
-		view.setOnClickListener(new OnClickToLaunchEditNoteActivity(note.id));
+		view.setOnClickListener(new OnClickToLaunchEditNoteActivity(note.getId()));
 
 		Media media = note.getMediaSingle();
 		if (media != null){

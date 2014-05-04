@@ -6,6 +6,8 @@ import retrofit.RestAdapter;
 import android.util.Log;
 
 import com.activeandroid.query.Select;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import net.nature.mobile.model.Context;
 import net.nature.mobile.model.Media;
@@ -20,6 +22,17 @@ public class Sync {
 	private NatureNetAPI api;
 
 	public Sync(){
+		 Gson gson = new GsonBuilder()
+		 .excludeFieldsWithoutExposeAnnotation()
+//	     .registerTypeAdapter(Id.class, new IdTypeAdapter())
+//	     .enableComplexMapKeySerialization()
+//	     .serializeNulls()
+//	     .setDateFormat(DateFormat.LONG)
+//	     .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
+//	     .setPrettyPrinting()
+//	     .setVersion(1.0)
+	     .create();
+		 
 		RestAdapter restAdapter = new RestAdapter.Builder()
 		.setEndpoint("http://naturenet.herokuapp.com/api")
 		.build();		
@@ -28,30 +41,17 @@ public class Sync {
 
 	public void sync(Account account){
 		checkNotNull(account);
-		if (!account.exists()){
-			account.save();
-		}
+		account.sync();
 	}
 
 	public void sync(Context context){
 		checkNotNull(context);
-		if (!context.exists()){
-			context.save();
-		}
+		context.sync();
 	}	
 
 	public void sync(Note note){
 		checkNotNull(note);	
-		if (!note.exists()){			
-			note.syncForeignKeysAndSave();
-			Log.d(TAG, "saved " + note);
-			
-			for (Media media : note.medias){	
-				media.note_id = note.id;
-				media.save();
-				Log.d(TAG, "    saved " + media);
-			}
-		}
+		note.sync();
 	}
 
 	public void syncNotesForUsers(String username){
@@ -59,7 +59,7 @@ public class Sync {
 		Result<List<Note>> r = api.listNotes(username);
 		if (r.status_code == 200){
 			for (Note u : r.data){
-				sync(u);
+				u.sync();
 			}
 		}
 	}

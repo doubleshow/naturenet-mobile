@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.activeandroid.Model;
 import com.activeandroid.query.Select;
 import com.squareup.picasso.Picasso;
 
@@ -38,7 +39,7 @@ public class ListNoteActivity extends Activity {
 
 					
 		Long account_id = getIntent().getExtras().getLong(EXTRA_ACCOUNT_ID);
-		Account mAccount = Account.find(account_id);
+		Account mAccount = Model.load(Account.class, account_id);
 		checkNotNull(mAccount);
 		
 		List<Note> notes = mAccount.getNotesOrderedByRecency();
@@ -57,7 +58,7 @@ public class ListNoteActivity extends Activity {
 			public void onItemClick(AdapterView<?> arg0, View v, int arg2, long arg3) {
 				ViewHolder holder = (UserArrayAdapter.ViewHolder) v.getTag();
 				Intent intent = new Intent(getBaseContext(), EditNoteActivity.class);
-				intent.putExtra(EditNoteActivity.Extras.NOTE_ID, holder.note.id);				
+				intent.putExtra(EditNoteActivity.Extras.NOTE_ID, holder.note.getId());				
 				startActivity(intent);
 			}
 		});

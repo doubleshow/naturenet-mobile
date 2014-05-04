@@ -255,8 +255,8 @@ public class CreateAccountActivity extends Activity {
 			mAccount = new Account();
 			mAccount.username = mUsername;
 			mAccount.name = mName;			
-			Long localId = mAccount.save();		
-			mAccount.id = localId;
+//			Long localId = mAccount.save();		
+			//mAccount.setuID(localId);
 			mAccount.save();
 			return true;
 		}
@@ -269,7 +269,7 @@ public class CreateAccountActivity extends Activity {
 			if (success) {
 				checkNotNull(mAccount);
 				Intent result = new Intent();
-				result.putExtra(SigninActivity.EXTRA_ACCOUNT_ID, mAccount.id);
+				result.putExtra(SigninActivity.EXTRA_ACCOUNT_ID, mAccount.getUId());
 			    setResult(RESULT_OK, result);
 			    finish();
 			} else {

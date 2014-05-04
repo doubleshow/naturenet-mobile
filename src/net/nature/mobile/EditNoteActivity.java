@@ -145,7 +145,7 @@ public class EditNoteActivity extends Activity {
 		    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
 		    	Context context = new Select().from(Context.class).where("name = ?", context_names.get(position)).executeSingle();
 		    	checkNotNull(context);
-		    	mNote.context_id = context.id;
+		    	mNote.context_id = context.getUId();
 				mNote.save();
 		    }
 

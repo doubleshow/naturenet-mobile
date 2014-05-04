@@ -32,6 +32,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
+import com.activeandroid.Model;
 import com.activeandroid.query.Select;
 import com.google.common.collect.Lists;
 import com.squareup.picasso.Picasso;
@@ -82,8 +83,8 @@ public class CreateNoteActivity extends Activity {
 		checkNotNull(account_id);
 		checkNotNull(context_id);
 
-		mAccount = Account.find(account_id);
-		mContext = Context.find(context_id);
+		mAccount = Model.load(Account.class, account_id);
+		mContext = Model.load(Context.class, context_id);
 
 		//		final Note note = Note.find(id);
 		checkNotNull(mAccount);
@@ -137,17 +138,17 @@ public class CreateNoteActivity extends Activity {
 
 			if (resultCode == RESULT_OK){
 				Note note = new Note();
-				note.account_id = mAccount.id;
-				note.context_id = mContext.id;
-				long internal_id = note.save();	    	
-				note.id = internal_id;
+				note.account_id = mAccount.getUId();
+				note.context_id = mContext.getUId();
+				//long internal_id = note.save();	    	
+				//note.uID = internal_id;
 				note.save();
 
 				Log.d(TAG, "save " + note);
 
 				Media media = new Media();
-				media.note_id = internal_id;
-				media.path = mCurrentPhotoPath;
+				media.setNote(note);
+				media.setLocal(mCurrentPhotoPath);
 				media.save();
 
 				Log.d(TAG, "save " + media);
@@ -159,7 +160,7 @@ public class CreateNoteActivity extends Activity {
 
 
 				Intent result = new Intent();
-				result.putExtra(Extras.OUTPUT_NOTE_ID, note.id);
+				result.putExtra(Extras.OUTPUT_NOTE_ID, note.getId());
 				setResult(RESULT_OK, result);
 				finish();
 			}

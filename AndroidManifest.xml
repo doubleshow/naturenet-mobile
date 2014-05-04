@@ -6,7 +6,7 @@
 
     <uses-sdk
         android:minSdkVersion="14"
-        android:targetSdkVersion="19" />
+        android:targetSdkVersion="18" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-feature android:name="android.hardware.camera" android:required="true" />
@@ -22,11 +22,11 @@
 
         <meta-data
             android:name="AA_DB_NAME"
-            android:value="test.db" />
-        <meta-data
+            android:value="test1.db" />
+<!--         <meta-data
             android:name="AA_DB_VERSION"
-            android:value="2" />
-
+            android:value="1" />
+ -->
         <activity
             android:name="net.nature.mobile.MainActivity"
             android:label="@string/app_name" >

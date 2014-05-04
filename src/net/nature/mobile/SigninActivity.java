@@ -242,7 +242,7 @@ public class SigninActivity extends Activity {
 			if (success) {
 				checkNotNull(mAccount);
 				Intent result = new Intent();
-				result.putExtra(EXTRA_ACCOUNT_ID, mAccount.id);
+				result.putExtra(EXTRA_ACCOUNT_ID, mAccount.getUId());
 			    setResult(RESULT_OK, result);
 			    finish();
 			} else {

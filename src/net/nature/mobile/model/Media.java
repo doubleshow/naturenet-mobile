@@ -7,44 +7,60 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.squareup.picasso.Picasso;
 
-public class Media extends Model{
+public class Media extends BaseModel{
 
-	@Expose
-	@Column(name="UID")
-	public Long id;
+//	@Expose
+	@Column(name="Note_ID", notNull=true)
+	private Long note_id;
 	
-	@Column(name="Note_ID")
-	public Long note_id;
+	
+//	@Column(name = "NOTE")
+//    public Note note;
 	
 	@Expose
 	@SerializedName("link")
 	@Column(name="URL")
-	public String url;	
+	private String url;	
 	
-	@Expose
 	@Column(name="PATH")
-	// TODO: change this to local
-	public String path;
+	private String local;
 	
 	@Expose
 	@Column(name="title")
 	public String title;
 	
 	public String getPath(){
-		if (path != null){
-			return path;				
+		if (local != null){
+			return local;				
 		}else{
-			return url;
+			return getURL();
 		}
 	}
 	
 	public String toString(){
 		return Objects.toStringHelper(this).
-				add("id", id).
+				add("id", getId()).
+				add("uid", getUId()).
 				add("title", title).
-				add("url", url).
-				add("path", path).
-				add("note_id", note_id).
+				add("url", getURL()).
+				add("local", local).
+//				add("note_id", note_id).
 				toString();
+	}
+
+	public void setLocal(String local) {
+		this.local = local;
+	}
+
+	public void setNote(Note note) {
+		this.note_id = note.getId();		
+	}
+
+	public String getURL() {
+		return url;
+	}
+
+	public void setURL(String url) {
+		this.url = url;
 	}
 }
