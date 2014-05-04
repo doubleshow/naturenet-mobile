@@ -26,9 +26,12 @@ import retrofit.converter.GsonConverter;
 import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
+import retrofit.http.Multipart;
 import retrofit.http.POST;
+import retrofit.http.Part;
 import retrofit.http.Path;
 import retrofit.mime.TypedByteArray;
+import retrofit.mime.TypedFile;
 
 public interface NatureNetAPI {
 
@@ -114,6 +117,10 @@ public interface NatureNetAPI {
 	@POST("/note/new/{username}")
 	Result<Note> createNote(@Path("username") String username, @Field("kind") String kind, @Field("content") String content, @Field("context") String context);
 
+	@Multipart
+//	@FormUrlEncoded
+	@POST("/note/{id}/new/photo")
+	Result<Media> createMedia(@Path("id") Long note_id, @Part("title") String title, @Part("file") TypedFile photo);
 
 	@GET("/medias")
 	Result<List<Media>> listMedias();

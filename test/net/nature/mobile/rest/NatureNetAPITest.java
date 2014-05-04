@@ -1,5 +1,6 @@
 package net.nature.mobile.rest;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
@@ -21,6 +22,7 @@ import com.google.gson.GsonBuilder;
 import net.nature.mobile.MainActivity;
 import net.nature.mobile.model.Context;
 import net.nature.mobile.model.Account;
+import net.nature.mobile.model.Media;
 import net.nature.mobile.model.Note;
 import net.nature.mobile.rest.NatureNetAPI;
 import net.nature.mobile.rest.NoteJson;
@@ -32,6 +34,7 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 import retrofit.converter.GsonConverter;
 import retrofit.mime.TypedByteArray;
+import retrofit.mime.TypedFile;
 import android.app.Activity;
 import android.test.AndroidTestCase;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -147,5 +150,16 @@ public class NatureNetAPITest {
 		System.out.println(r.data);		
 		assertThat(r.status_code, equalTo(200));
 		assertThat(r.data.content, equalTo("some content about this note"));			
+	}
+	
+	@Test
+	public void testAddMedia(){
+		Account a = api.getAccount("jenny").data;
+		Context c = api.getContext(1L).data;		
+		Note n = api.listNotes(a.username).data.get(0);
+		
+		Media m = api.createMedia(n.getUId(), "some title", new TypedFile("image/png", new File("test.png"))).data;
+
+		System.out.println(m);
 	}
 }

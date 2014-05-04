@@ -108,9 +108,46 @@ public class SyncTest {
 		
 		Account savedNewAccount = Model.load(Account.class, newAccount.getId());
 		
-		assertThat(savedNewAccount.existsRemotely(), equalTo(true));
-				
+		assertThat(savedNewAccount.existsRemotely(), equalTo(true));				
 	}
+
+	
+	@Test
+	public void test_sync_one_new_local_note(){		
+		
+		sync.syncAccounts();
+		sync.syncContexts();
+				
+		Account account = Account.find_by_username("tomyeh");		
+						
+		sync.syncNotesForUsers(account.username);
+		int count = account.countNotes(); 
+		assertThat(account.countNotes(), greaterThan(1));
+		
+		Context context1 = Model.load(Context.class, 1L);	
+		
+		Note newNote = new Note();
+		newNote.content = "this is a new note";		
+		newNote.setAccount(account);
+		newNote.setContext(context1);				
+		newNote.save();		
+		assertThat(account.countNotes(), equalTo(count + 1));
+		assertThat(newNote.existsRemotely(), equalTo(false));
+		
+		Media newMedia = new Media();
+		newMedia.setTitle("some title");
+		newMedia.setLocal("test.png");
+		newMedia.setNote(newNote);
+		newMedia.save();
+		assertThat(newNote.getMedias().size(), equalTo(1));
+		
+		newNote.sync();
+		assertThat(newNote.existsRemotely(), equalTo(true));
+		
+		Media savedMedia = newNote.getMedias().get(0);
+		assertThat(savedMedia.existsRemotely(), equalTo(true));
+	}
+	
 	
 	@Test
 	public void testSyncAccounts(){		

@@ -13,10 +13,6 @@ public class Media extends BaseModel{
 	@Column(name="Note_ID", notNull=true)
 	private Long note_id;
 	
-	
-//	@Column(name = "NOTE")
-//    public Note note;
-	
 	@Expose
 	@SerializedName("link")
 	@Column(name="URL")
@@ -27,7 +23,7 @@ public class Media extends BaseModel{
 	
 	@Expose
 	@Column(name="title")
-	public String title;
+	private String title = "";
 	
 	public String getPath(){
 		if (local != null){
@@ -41,7 +37,7 @@ public class Media extends BaseModel{
 		return Objects.toStringHelper(this).
 				add("id", getId()).
 				add("uid", getUId()).
-				add("title", title).
+				add("title", getTitle()).
 				add("url", getURL()).
 				add("local", local).
 //				add("note_id", note_id).
@@ -50,6 +46,10 @@ public class Media extends BaseModel{
 
 	public void setLocal(String local) {
 		this.local = local;
+	}
+	
+	public String getLocal(){
+		return local;
 	}
 
 	public void setNote(Note note) {
@@ -62,5 +62,13 @@ public class Media extends BaseModel{
 
 	public void setURL(String url) {
 		this.url = url;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 }

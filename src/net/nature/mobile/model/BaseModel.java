@@ -40,7 +40,7 @@ public abstract class BaseModel extends Model {
 	private Long created_at;
 	
 	public String toString(){
-		return Objects.toStringHelper(this).				
+		return Objects.toStringHelper(this).		
 				add("id", getId()).
 				add("uid", uID).
 				add("created_at", getTimeCreated()).
@@ -95,6 +95,10 @@ public abstract class BaseModel extends Model {
 	
 	
 
+	public void setUId(Long uid){
+		uID = uid;
+	}
+	
 	public Long getUId() {
 		return uID;
 	}

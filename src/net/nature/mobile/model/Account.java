@@ -34,8 +34,8 @@ public class Account extends BaseModel {
 	
 	public String toString(){
 		return Objects.toStringHelper(this).
-				//addValue(super.toString()).				
-				add("base", super.toString()).
+				addValue(super.toString()).				
+//				add("base", super.toString()).
 				add("username", username).
 				add("name", name).
 				add("email", email).
@@ -58,7 +58,7 @@ public class Account extends BaseModel {
 	}
 	
 	public static Account find_by_username(String username) {
-		return new Select().from(Account.class).where("username = ?", username).executeSingle();
+		return new Select().from(Account.class).where("Username = ?", username).executeSingle();
 	}
 
 	public List<Note> getRecentNotes(int n) {
