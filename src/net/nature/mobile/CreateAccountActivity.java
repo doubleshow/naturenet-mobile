@@ -1,7 +1,11 @@
 package net.nature.mobile;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import retrofit.RetrofitError;
 import net.nature.mobile.model.Account;
+import net.nature.mobile.rest.NatureNetAPI;
+import net.nature.mobile.rest.NatureNetAPI.Result;
+import net.nature.mobile.rest.NatureNetRestAdapter;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
@@ -232,33 +236,28 @@ public class CreateAccountActivity extends Activity {
 	public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
 
+		private NatureNetAPI api;
+
 		@Override
 		protected Boolean doInBackground(Void... params) {
-			// TODO: attempt authentication against a network service.
+			api = NatureNetRestAdapter.get();
+			try{
+				
+				Result<Account> r = api.createAccount(mUsername,  mName, mPassword, mEmail, "I consent");
 
-			try {
-				// Simulate network access.
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
+				// register the new account here.
+				mAccount = new Account();
+				mAccount.username = mUsername;
+				mAccount.name = mName;		
+				mAccount.setUId(r.data.getUId());
+				mAccount.save();
+				
+				return true;
+				
+			}catch (RetrofitError e){
+				
 				return false;
 			}
-
-			for (String credential : DUMMY_CREDENTIALS) {
-				String[] pieces = credential.split(":");
-				if (pieces[0].equals(mEmail)) {
-					// Account exists, return true if the password matches.
-					return pieces[1].equals(mPassword);
-				}
-			}
-
-			// register the new account here.
-			mAccount = new Account();
-			mAccount.username = mUsername;
-			mAccount.name = mName;			
-//			Long localId = mAccount.save();		
-			//mAccount.setuID(localId);
-			mAccount.save();
-			return true;
 		}
 
 		@Override
@@ -269,13 +268,17 @@ public class CreateAccountActivity extends Activity {
 			if (success) {
 				checkNotNull(mAccount);
 				Intent result = new Intent();
-				result.putExtra(SigninActivity.EXTRA_ACCOUNT_ID, mAccount.getUId());
+				result.putExtra(SigninActivity.EXTRA_ACCOUNT_ID, mAccount.getId());
 			    setResult(RESULT_OK, result);
 			    finish();
 			} else {
-				mPasswordView
-						.setError(getString(R.string.error_incorrect_password));
-				mPasswordView.requestFocus();
+				mUsernameView.setError("This username is already taken");
+				mUsernameView.requestFocus();
+				//getString(R.stringerror_field_required));
+				//mUsernameView.setError(getString(R.string.error_field_required));
+				
+				//mPasswordView.setError(getString(R.string.error_incorrect_password));
+				//mPasswordView.requestFocus();
 			}
 		}
 

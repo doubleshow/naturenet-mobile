@@ -24,7 +24,7 @@ public class Note extends BaseModel {
 
 	@Expose
 	@Column(name="content")
-	public String content;
+	public String content = "";
 
 	//	@Expose
 	//	@SerializedName("id")
@@ -58,9 +58,6 @@ public class Note extends BaseModel {
 		return new Select().from(Media.class).where("note_id = ?", getId()).executeSingle();
 	}
 
-	public static Note find(Long id){		
-		return new Select().from(Note.class).where("uid = ?", id).executeSingle();
-	}
 	public void sync(){
 		// if it does not exist locally
 		if (!existsLocally()){
@@ -98,11 +95,17 @@ public class Note extends BaseModel {
 		Result<Note> r = api.createNote(getAccount().username, "FieldNote",  content, getContext().name);
 		setUId(r.data.getUId());
 		save();
-		
-		for (Media media : getMedias()){			
-			TypedFile file = new TypedFile("image/png", new File(media.getLocal())); 
+
+		for (Media media : getMedias()){
+			// Hack to get around this problem
+			// Caused by: java.io.FileNotFoundException: /file:/storage/emulated/0/Pictures/JPEG_20140504_114444_559339952.jpg: open failed: ENOENT (No such file or directory)
+			String local = media.getLocal();
+			local = local.replaceAll("file:", "");
+			
+			TypedFile file = new TypedFile("image/jpeg", new File(local)); 
 			Result<Media> m = api.createMedia(getUId(), media.getTitle(), file);
-			media.uID = m.data.getUId(); 
+			media.setUId(m.data.getUId()); 
+			media.setURL(m.data.getURL());
 			media.save();
 			Log.d(TAG, "pushed " +  media);
 		}		

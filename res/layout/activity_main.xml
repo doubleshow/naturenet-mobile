@@ -69,22 +69,22 @@
                 android:id="@+id/main_image_last_1st"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:src="@drawable/ab_texture_tile_example" />
+                android:layout_weight="1"                
+                android:src="@drawable/ic_place_holder" />
 
             <ImageView
                 android:id="@+id/main_image_last_2nd"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:src="@drawable/ab_texture_tile_example" />
+                android:src="@drawable/ic_place_holder" />
             
             <ImageView
                 android:id="@+id/main_image_last_3rd"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:src="@drawable/ab_texture_tile_example" />            
+                android:src="@drawable/ic_place_holder" />            
 
             <Button
                 android:id="@+id/main_gallery"
@@ -122,17 +122,21 @@
 
             <Button
                 android:id="@+id/main_button_select_activity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
-                android:text="Select" />
+                android:background="@drawable/ic_edit"  
+                android:text="" />
         </RelativeLayout>
 
         <Button
             android:id="@+id/main_button_create_note"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="wrap_content"            
+            android:drawableLeft="@drawable/ic_camera"
+            style="@style/ButtonText"
+            android:background="@drawable/btn_green"
             android:text="Create a New Note" />
     </LinearLayout>
 
@@ -145,6 +149,8 @@
             android:id="@+id/main_signin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            style="@style/ButtonText"
+            android:background="@drawable/btn_green"            
             android:text="Sign in" />
 
         <Button
@@ -153,6 +159,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
+            style="@style/ButtonText"
+            android:background="@drawable/btn_green"            
             android:text="Create Account" />
 
     </RelativeLayout>

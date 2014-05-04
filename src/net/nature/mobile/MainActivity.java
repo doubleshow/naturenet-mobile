@@ -3,6 +3,8 @@ package net.nature.mobile;
 
 import java.util.List;
 
+import retrofit.RetrofitError;
+
 import com.activeandroid.Model;
 import com.squareup.picasso.Picasso;
 
@@ -12,12 +14,14 @@ import net.nature.mobile.model.Account;
 import net.nature.mobile.model.Context;
 import net.nature.mobile.model.Media;
 import net.nature.mobile.model.Note;
+import net.nature.mobile.model.Session;
 import net.nature.mobile.rest.Sync;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,10 +41,10 @@ public class MainActivity extends Activity {
 	private static final int REQUEST_CREATE_NOTE = 3;
 	private static final int REQUEST_EDIT_NOTE = 4;
 	private static final int REQUEST_SELECT_CONTEXT = 5;
-	
+
 	static final String EXTRA_MESSAGE = "net.nature.mobile.MESSAGE";
-	
-	
+
+
 	private SyncTask mSyncTask;
 	private Account mAccount;
 	private Context mContext;
@@ -64,21 +68,7 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		if (savedInstanceState == null) {
-			mAccount = null;
-			//          getFragmentManager().beginTransaction()
-			//                  .add(R.id.container, new PlaceholderFragment())
-			//                  .commit();
-		}else{
-			mAccount = new Account();
-			mAccount.username = "Tom Yeh";
-		}
-
-//		mAccount =  Account.find(2L);
-//		mContext = Context.find(1L);
-
 		mSigninContainer = findViewById(R.id.main_signin_container);        
-
 		mButtonSignin = (Button) findViewById(R.id.main_signin);
 		mButtonCreateAccount = (Button) findViewById(R.id.main_create_account);
 		mButtonCreateNote = (Button) findViewById(R.id.main_button_create_note);
@@ -89,11 +79,13 @@ public class MainActivity extends Activity {
 		mLastImage1st = (ImageView) findViewById(R.id.main_image_last_1st);
 		mLastImage2nd = (ImageView) findViewById(R.id.main_image_last_2nd);
 		mLastImage3rd = (ImageView) findViewById(R.id.main_image_last_3rd);
-		
-		
+
+
 		mContextName = (TextView) findViewById(R.id.main_context);
 		mButtonSelectContext = (Button) findViewById(R.id.main_button_select_activity);
 
+		mAccount = Session.getAccount();
+		Log.d("main", ""+mAccount);
 		if (mAccount == null){
 			mUserContainer.setVisibility(View.INVISIBLE);
 			mSigninContainer.setVisibility(View.VISIBLE);
@@ -121,7 +113,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(getBaseContext(), ListNoteActivity.class);
-				intent.putExtra(ListNoteActivity.EXTRA_ACCOUNT_ID, mAccount.getUId());
+				intent.putExtra(ListNoteActivity.EXTRA_ACCOUNT_ID, mAccount.getId());
 				startActivity(intent);
 			}        	
 		});
@@ -132,19 +124,19 @@ public class MainActivity extends Activity {
 				checkNotNull(mAccount); checkNotNull(mContext);
 
 				Intent intent = new Intent(getBaseContext(), CreateNoteActivity.class);
-				intent.putExtra(CreateNoteActivity.Extras.INPUT_ACCOUNT_ID, mAccount.getUId());
-				intent.putExtra(CreateNoteActivity.Extras.INPUT_CONTEXT_ID, mContext.getUId());
+				intent.putExtra(CreateNoteActivity.Extras.INPUT_ACCOUNT_ID, mAccount.getId());
+				intent.putExtra(CreateNoteActivity.Extras.INPUT_CONTEXT_ID, mContext.getId());
 				startActivityForResult(intent, REQUEST_CREATE_NOTE);
 			}        	
 		});
-		
+
 		mButtonSelectContext.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
 				checkNotNull(mContext);
-				
+
 				Intent intent = new Intent(getBaseContext(), SelectContextActivity.class);				
-				intent.putExtra(SelectContextActivity.EXTRA_INPUT_CONTEXT_ID, mContext.getUId());
+				intent.putExtra(SelectContextActivity.EXTRA_INPUT_CONTEXT_ID, mContext.getId());
 				startActivityForResult(intent, REQUEST_SELECT_CONTEXT);
 			}        	
 		});
@@ -164,7 +156,7 @@ public class MainActivity extends Activity {
 				Long account_id = data.getLongExtra(SigninActivity.EXTRA_ACCOUNT_ID,-1);
 				Account account = Model.load(Account.class,  account_id);				
 				checkNotNull(account);
-				onSignedIn(account);				
+				onSignedIn(account);		
 			}
 		}else if (requestCode == REQUEST_CREATE_NOTE){
 			if (resultCode == RESULT_OK) {	    	
@@ -173,7 +165,7 @@ public class MainActivity extends Activity {
 				launchEditNoteActivity(note_id);
 			}
 		}else if (requestCode == REQUEST_EDIT_NOTE){
-			
+
 		}else if (requestCode == REQUEST_SELECT_CONTEXT){
 			if (resultCode == RESULT_OK) {	    	
 				loadRecentNotes(mAccount);
@@ -212,35 +204,47 @@ public class MainActivity extends Activity {
 
 	private void onSignedIn(Account account){
 		checkNotNull(account);		
+		Session.signIn(account);
 		mAccount = account;
 		mUserContainer.setVisibility(View.VISIBLE);
 		mSigninContainer.setVisibility(View.INVISIBLE);
 		mUsername.setText(account.username);
-		
-		loadRecentNotes(account);
-		
+
 		// select the default  context
 		Context context = Model.load(Context.class, 1L);
-		onContextSelected(context);			
+		onContextSelected(context);
+
+		loadRecentNotes(account);
 	}
 
 	private void loadRecentNotes(Account account){
 		checkNotNull(account);
-		
+
 		// display the last two recent notes
 		List<Note> notes = mAccount.getRecentNotes(3);
 		if (notes.size() >= 1){			
 			showNoteImageHelper(notes.get(0), mLastImage1st);
+		}else{
+			showPlaceHolderImageHelper(mLastImage1st);
 		}
 
 		if (notes.size() >= 2){
 			showNoteImageHelper(notes.get(1), mLastImage2nd);
+		}else{
+			showPlaceHolderImageHelper(mLastImage2nd);
 		}		
-		
+
 		if (notes.size() >= 3){			
 			showNoteImageHelper(notes.get(2), mLastImage3rd);
+		}else{
+			showPlaceHolderImageHelper(mLastImage3rd);
 		}
 
+	}
+
+	private void showPlaceHolderImageHelper(ImageView view){
+		view.setImageResource(R.drawable.ic_place_holder);
+		view.setOnClickListener(null);
 	}
 
 	private void showNoteImageHelper(Note note, ImageView view){
@@ -277,13 +281,13 @@ public class MainActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-	    MenuItem item = menu.findItem(R.id.action_signout);
-	    item.setEnabled(mAccount != null);
-	    menu.findItem(R.id.action_sync).setEnabled(mSyncTask == null);
-	    return super.onPrepareOptionsMenu(menu);
+		MenuItem item = menu.findItem(R.id.action_signout);
+		item.setEnabled(mAccount != null);
+		menu.findItem(R.id.action_sync).setEnabled(mSyncTask == null);
+		return super.onPrepareOptionsMenu(menu);
 	}
 
 	private void doSignout() {
@@ -291,6 +295,7 @@ public class MainActivity extends Activity {
 		mContext = null;
 		mSigninContainer.setVisibility(View.VISIBLE);
 		mUserContainer.setVisibility(View.INVISIBLE);
+		Session.signOut();
 	}
 
 	private void doSync() {
@@ -307,7 +312,11 @@ public class MainActivity extends Activity {
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			Sync sync = new Sync();
-			sync.syncAll();
+			try {
+				sync.syncAll();
+			}catch (RetrofitError e){
+				e.printStackTrace();
+			}
 			return true;
 		}
 

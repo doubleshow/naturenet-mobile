@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
+import com.activeandroid.Model;
 import com.activeandroid.query.Select;
 import com.google.common.collect.Lists;
 import com.squareup.picasso.Picasso;
@@ -65,7 +66,7 @@ public class EditNoteActivity extends Activity {
 		Long id = bundle.getLong(Extras.NOTE_ID);
 		checkNotNull(id);
 
-		mNote = Note.find(id);
+		mNote = Model.load(Note.class, id);
 		checkNotNull(mNote);
  		
 		//
@@ -145,7 +146,7 @@ public class EditNoteActivity extends Activity {
 		    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
 		    	Context context = new Select().from(Context.class).where("name = ?", context_names.get(position)).executeSingle();
 		    	checkNotNull(context);
-		    	mNote.context_id = context.getUId();
+		    	mNote.context_id = context.getId();
 				mNote.save();
 		    }
 

@@ -49,11 +49,6 @@ public class CreateNoteActivity extends Activity {
 
 	private static final String TAG = "CreateNoteActivity";
 
-	private Button mSave;
-	private Button mCancel;
-	private ImageView mImage;
-	private EditText mContent;
-
 	private Account mAccount;
 	private Context mContext;
 
@@ -64,16 +59,6 @@ public class CreateNoteActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit_note);
 
-		//		if (savedInstanceState == null) {
-		////			getFragmentManager().beginTransaction()
-		////					.add(R.id.container, new PlaceholderFragment()).commit();
-		//			
-		//			
-		//		}	
-		mImage = (ImageView) findViewById(R.id.note_image);
-		mContent = (EditText) findViewById(R.id.note_content);
-		mSave = (Button) findViewById(R.id.note_save);
-		mCancel = (Button) findViewById(R.id.note_cancel);
 
 		Bundle bundle = getIntent().getExtras();
 		checkNotNull(bundle);
@@ -86,7 +71,6 @@ public class CreateNoteActivity extends Activity {
 		mAccount = Model.load(Account.class, account_id);
 		mContext = Model.load(Context.class, context_id);
 
-		//		final Note note = Note.find(id);
 		checkNotNull(mAccount);
 		checkNotNull(mContext);
 
@@ -138,24 +122,18 @@ public class CreateNoteActivity extends Activity {
 
 			if (resultCode == RESULT_OK){
 				Note note = new Note();
-				note.account_id = mAccount.getUId();
-				note.context_id = mContext.getUId();
-				//long internal_id = note.save();	    	
-				//note.uID = internal_id;
+				note.account_id = mAccount.getId();
+				note.context_id = mContext.getId();
 				note.save();
-
 				Log.d(TAG, "save " + note);
 
 				Media media = new Media();
 				media.setNote(note);
 				media.setLocal(mCurrentPhotoPath);
 				media.save();
-
 				Log.d(TAG, "save " + media);
 
-				//	        Bundle extras = data.getExtras();
-				//	        Bitmap imageBitmap = (Bitmap) extras.get("data");
-				//	        mImageView.setImageBitmap(imageBitmap);
+
 				galleryAddPic();
 
 

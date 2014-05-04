@@ -5,6 +5,7 @@ import java.util.List;
 import retrofit.RestAdapter;
 import android.util.Log;
 
+import com.activeandroid.Model;
 import com.activeandroid.query.Select;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -23,23 +24,9 @@ public class Sync {
 	private NatureNetAPI api;
 
 	public Sync(){
-		 Gson gson = new GsonBuilder()
-		 .excludeFieldsWithoutExposeAnnotation()
-//	     .registerTypeAdapter(Id.class, new IdTypeAdapter())
-//	     .enableComplexMapKeySerialization()
-//	     .serializeNulls()
-//	     .setDateFormat(DateFormat.LONG)
-//	     .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
-//	     .setPrettyPrinting()
-//	     .setVersion(1.0)
-	     .create();
-		 
-		RestAdapter restAdapter = new RestAdapter.Builder()
-		.setEndpoint("http://naturenet.herokuapp.com/api")
-		.build();		
-		api = restAdapter.create(NatureNetAPI.class);
+		api = NatureNetRestAdapter.get();
 	}
-	
+
 	public int countRemoteAccounts(){
 		return api.countAccounts().data;
 	}
@@ -68,14 +55,23 @@ public class Sync {
 			}
 		}
 	}
-	
+
 	public void syncNotes(){
 		checkNotNull(api);	
-		Result<List<Note>> r = api.listNotes();
-		if (r.status_code == 200){
-			for (Note u : r.data){
-				sync(u);
+		if (BaseModel.count(Note.class) == 0){
+			Result<List<Note>> r = api.listNotes();
+			if (r.status_code == 200){
+				for (Note u : r.data){
+					sync(u);
+				}
 			}
+		}else{
+
+			List<Note> xs = new Select().from(Note.class).execute();
+			for (Note x : xs){
+				sync(x);
+			}
+
 		}
 	}
 
@@ -90,16 +86,16 @@ public class Sync {
 				}
 			}			
 		}else{
-		
+
 			List<Account> xs = new Select().from(Account.class).execute();
 			for (Account x : xs){
 				sync(x);
 			}
-		
+
 		}
-		
+
 	}
-	
+
 	public void syncContexts(){
 		checkNotNull(api);
 		Result<List<Context>> r = api.listContexts();
@@ -117,14 +113,14 @@ public class Sync {
 	}
 
 
-//	public void pullAllActivities(){
-//		if (api != null){
-//			Result<List<Context>> r = api.listActivities();
-//			if (r.status_code == 200){
-//				for (Context u : r.data){
-//					pull(u);
-//				}
-//			}
-//		}
-//	}
+	//	public void pullAllActivities(){
+	//		if (api != null){
+	//			Result<List<Context>> r = api.listActivities();
+	//			if (r.status_code == 200){
+	//				for (Context u : r.data){
+	//					pull(u);
+	//				}
+	//			}
+	//		}
+	//	}
 }

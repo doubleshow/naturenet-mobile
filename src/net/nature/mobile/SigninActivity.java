@@ -1,6 +1,11 @@
 package net.nature.mobile;
 
+import retrofit.RetrofitError;
 import net.nature.mobile.model.Account;
+import net.nature.mobile.rest.NatureNetAPI;
+import net.nature.mobile.rest.NatureNetRestAdapter;
+import net.nature.mobile.rest.NatureNetAPI.Result;
+import net.nature.mobile.rest.Sync;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
@@ -200,22 +205,46 @@ public class SigninActivity extends Activity {
 
 		@Override
 		protected Boolean doInBackground(Void... params) {
-			// TODO: attempt authentication against a network service.
+			NatureNetAPI api = NatureNetRestAdapter.get();
+			try{
+				
+				Result<Account> r = api.getAccount(mUsername);
 
-			try {
-				// Simulate network access.
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
+				Account account = r.data;
+				account.sync();								
+				
+				new Sync().syncContexts();
+				new Sync().syncNotesForUsers(mUsername);
+				
+				mAccount = Account.find_by_username(mUsername);
+				// register the new account here.
+//				mAccount = new Account();
+//				mAccount.username = mUsername;
+//				mAccount.name = mName;		
+//				mAccount.setUId(r.data.getUId());
+//				mAccount.save();
+				
+				return true;
+				
+			}catch (RetrofitError e){
+				
 				return false;
 			}
+
+//			try {
+//				// Simulate network access.
+//				Thread.sleep(1000);
+//			} catch (InterruptedException e) {
+//				return false;
+//			}
 						
-			mAccount = Account.find_by_username(mUsername);
-			if (mAccount == null){
-				return false;
-			}
+//			mAccount = Account.find_by_username(mUsername);
+//			if (mAccount == null){
+//				return false;
+//			}
 
 			//if (account.password.equals(mPassword)){
-				return true;
+//				return true;
 //			}
 			
 			
@@ -242,7 +271,7 @@ public class SigninActivity extends Activity {
 			if (success) {
 				checkNotNull(mAccount);
 				Intent result = new Intent();
-				result.putExtra(EXTRA_ACCOUNT_ID, mAccount.getUId());
+				result.putExtra(EXTRA_ACCOUNT_ID, mAccount.getId());
 			    setResult(RESULT_OK, result);
 			    finish();
 			} else {

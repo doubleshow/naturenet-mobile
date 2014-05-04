@@ -1,5 +1,6 @@
 package net.nature.mobile.tests;
 
+import com.activeandroid.Model;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 
@@ -90,7 +91,7 @@ public class EditNoteActivityTest extends ActivityInstrumentationTestCase2<EditN
 		onView(withText(context1.name)).
 			perform(click());
 		
-		Note note = Note.find(1L);
+		Note note = Model.load(Note.class, 1L);
 		assertThat("context should change to 1", 
 				note.context_id, equalTo(context1.getUId()));
 	}
@@ -115,7 +116,7 @@ public class EditNoteActivityTest extends ActivityInstrumentationTestCase2<EditN
 		onView(withId(R.id.note_save)).
 			check(matches(not(isDisplayed())));
 				
-		Note updatedNote = Note.find(1L);
+		Note updatedNote = Model.load(Note.class, 1L);
 		assertThat("content should have few more characters",
 				updatedNote.content, equalTo(note.content + "more"));
 	}

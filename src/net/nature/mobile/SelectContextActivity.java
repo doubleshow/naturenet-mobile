@@ -49,7 +49,7 @@ public class SelectContextActivity extends Activity {
 				Context context = holder.context;
 
 				Intent result = new Intent();
-				result.putExtra(EXTRA_OUTPUT_CONTEXT_ID, context.getUId());
+				result.putExtra(EXTRA_OUTPUT_CONTEXT_ID, context.getId());
 				setResult(Activity.RESULT_OK, result);
 				finish();
 			}

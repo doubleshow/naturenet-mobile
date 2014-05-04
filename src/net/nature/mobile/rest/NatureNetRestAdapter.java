@@ -21,12 +21,13 @@ public class NatureNetRestAdapter {
 	static class MyErrorHandler implements ErrorHandler {
 		@Override public Throwable handleError(RetrofitError cause) {
 			Response r = cause.getResponse();
-			TypedByteArray t = (TypedByteArray) r.getBody();
-			Log.d(TAG, ""+t);
-			try {
-				t.writeTo(System.out);
-			} catch (IOException e) {
-			}
+			Log.d(TAG, "response:"+r);
+//			TypedByteArray t = (TypedByteArray) r.getBody();
+//			Log.d(TAG, ""+t);
+//			try {
+////				t.writeTo(System.out);
+//			} catch (IOException e) {
+//			}
 			return cause;
 		}
 	}

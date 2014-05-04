@@ -101,7 +101,9 @@ public interface NatureNetAPI {
 
 	@FormUrlEncoded
 	@POST("/account/new/{username}")
-	Result<Account> createAccount(@Path("username") String username, @Field("name") String name, @Field("password") String password, @Field("email") String email, @Field("consent") String consent); 	
+	Result<Account> createAccount(@Path("username") String username, 
+			@Field("name") String name, @Field("password") String password,
+			@Field("email") String email, @Field("consent") String consent); 	
 
 	@GET("/account/{username}/notes")
 	Result<List<Note>> listNotes(@Path("username") String username);
