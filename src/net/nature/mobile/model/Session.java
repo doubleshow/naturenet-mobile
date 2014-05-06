@@ -1,5 +1,6 @@
 package net.nature.mobile.model;
 
+import android.location.Location;
 import android.util.Log;
 
 import com.activeandroid.Model;

@@ -182,8 +182,12 @@ public class SyncTest {
 				
 		sync.syncContexts();
 		
-		assertThat(count(Context.class), equalTo(countAfterFirstSync));
-		
+		assertThat(count(Context.class), equalTo(countAfterFirstSync));	
+	}
+	
+	@Test
+	public void testSyncAll(){		
+		sync.syncAll();	
 	}
 	
 }

@@ -56,11 +56,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/main_username"
-            android:layout_marginTop="21dp"
             android:text="Your Notes"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
-        <LinearLayout
+       <LinearLayout
             android:id="@+id/linearLayout1"
             android:layout_width="match_parent"
             android:layout_height="100dp" >
@@ -69,7 +68,7 @@
                 android:id="@+id/main_image_last_1st"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"                
+                android:layout_weight="1"
                 android:src="@drawable/ic_place_holder" />
 
             <ImageView
@@ -78,40 +77,32 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:src="@drawable/ic_place_holder" />
-            
+
             <ImageView
                 android:id="@+id/main_image_last_3rd"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:src="@drawable/ic_place_holder" />            
+                android:src="@drawable/ic_place_holder" />
 
-            <Button
-                android:id="@+id/main_gallery"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0"
-                android:text="Gallery" />
-            
             <ImageView
                 android:id="@+id/main_image_right_arrow"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.2"
-                android:src="@drawable/arrow_right" />            
+                android:src="@drawable/arrow_right" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/label_activity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
             android:text="Your Current Activity"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="100dp" >
+            android:layout_height="wrap_content" >
 
             <TextView
                 android:id="@+id/main_context"
@@ -120,23 +111,50 @@
                 android:text="Context"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/main_button_select_activity"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
-                android:background="@drawable/ic_edit"  
-                android:text="" />
+                android:src="@drawable/ic_ellipsis"
+                android:text=""
+                android:visibility="visible" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/label_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your Current Location"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <com.nutiteq.MapView
+                android:id="@+id/mapView"
+                android:layout_width="match_parent"
+                android:layout_height="200dp" />
+
+            <ImageButton
+                android:id="@+id/main_button_mylocation"
+                android:background="@null"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:src="@drawable/ic_menu_mylocation" />
         </RelativeLayout>
 
         <Button
             android:id="@+id/main_button_create_note"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"            
-            android:drawableLeft="@drawable/ic_camera"
             style="@style/ButtonText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:background="@drawable/btn_green"
+            android:drawableLeft="@drawable/ic_camera"
             android:text="Create a New Note" />
     </LinearLayout>
 
@@ -147,22 +165,21 @@
 
         <Button
             android:id="@+id/main_signin"
+            style="@style/ButtonText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/ButtonText"
-            android:background="@drawable/btn_green"            
+            android:background="@drawable/btn_green"
             android:text="Sign in" />
 
         <Button
             android:id="@+id/main_create_account"
+            style="@style/ButtonText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            style="@style/ButtonText"
-            android:background="@drawable/btn_green"            
+            android:background="@drawable/btn_green"
             android:text="Create Account" />
-
     </RelativeLayout>
 
 </RelativeLayout>
