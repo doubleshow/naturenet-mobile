@@ -449,7 +449,7 @@ GooglePlayServicesClient.OnConnectionFailedListener {
 		checkNotNull(account);
 
 		// display the last two recent notes
-		List<Note> notes = mAccount.getRecentNotes(3);
+		List<Note> notes = mAccount.getRecentNotes(4);
 		if (notes.size() >= 1){			
 			showNoteImageHelper(notes.get(0), mLastImage1st);
 		}else{
