@@ -6,7 +6,8 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin" >
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".MainActivity" >
 
     <!--
     <TextView
@@ -59,7 +60,7 @@
             android:text="Your Notes"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
-       <LinearLayout
+        <LinearLayout
             android:id="@+id/linearLayout1"
             android:layout_width="match_parent"
             android:layout_height="100dp" >
@@ -122,31 +123,25 @@
                 android:visibility="visible" />
         </RelativeLayout>
 
+        <fragment
+            android:id="@+id/map"
+            android:name="net.nature.mobile.MapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <fragment
+            android:visibility="gone"            
+            android:id="@+id/location"
+            android:name="net.nature.mobile.LocationFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <TextView
             android:id="@+id/label_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Your Current Location"
             android:textAppearance="?android:attr/textAppearanceSmall" />
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-
-            <com.nutiteq.MapView
-                android:id="@+id/mapView"
-                android:layout_width="match_parent"
-                android:layout_height="200dp" />
-
-            <ImageButton
-                android:id="@+id/main_button_mylocation"
-                android:background="@null"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:src="@drawable/ic_menu_mylocation" />
-        </RelativeLayout>
 
         <Button
             android:id="@+id/main_button_create_note"
