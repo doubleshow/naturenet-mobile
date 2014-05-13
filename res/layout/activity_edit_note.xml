@@ -43,6 +43,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/note_content" />
+
+        <fragment
+            android:id="@+id/note_map"
+            android:name="net.nature.mobile.MapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" 
+            android:layout_below="@+id/note_context"/>
     </RelativeLayout>
 
     <RelativeLayout

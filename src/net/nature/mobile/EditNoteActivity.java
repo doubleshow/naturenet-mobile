@@ -41,6 +41,7 @@ public class EditNoteActivity extends Activity {
 	private Spinner mContext;
 	private Note mNote;
 	private View mButtonBar;
+	private MapFragment mMap;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +56,8 @@ public class EditNoteActivity extends Activity {
 		//		}	
 		mImage = (ImageView) findViewById(R.id.note_image);
 		mContent = (EditText) findViewById(R.id.note_content);
+		
+		mMap = (MapFragment) getFragmentManager().findFragmentById(R.id.note_map);
 		
 		mButtonBar =findViewById(R.id.note_save_cancel_bar);
 		mSave = (Button) findViewById(R.id.note_save);
@@ -99,6 +102,13 @@ public class EditNoteActivity extends Activity {
 				mButtonBar.setVisibility(View.VISIBLE);
 			}			
 		});		
+		
+		// Note Map	
+		if (mNote.isGeoTagged()){
+			mMap.setCurrentLocation(mNote.latitude, mNote.longitude, true);
+		}else{
+			mMap.getView().setVisibility(View.INVISIBLE);
+		}
 		
 		//
 		// Note Save/Cancel Buttons

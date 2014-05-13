@@ -26,18 +26,25 @@ public class Note extends BaseModel {
 	@Column(name="content")
 	public String content = "";
 
-	//	@Expose
-	//	@SerializedName("id")
-	//	@Column(name="uID")
-	//	public Long uID;
-
 	@Column(name="Context_ID", notNull=true)
 	public Long context_id;
 
 	@Column(name="Account_ID", notNull=true)
 	public Long account_id;
+	
+	@Expose
+	@Column(name="longitude")
+	public Double longitude;
+	
+	@Expose
+	@Column(name="latitude")
+	public Double latitude;
 
 	// Remote Json
+	
+	public boolean isGeoTagged(){
+		return longitude != null && longitude != 0 && latitude != null && latitude != 0;
+	}
 
 	@Expose
 	@SerializedName("account")
@@ -92,7 +99,7 @@ public class Note extends BaseModel {
 		checkNotNull(getAccount());
 		checkNotNull(getContext());
 		
-		Result<Note> r = api.createNote(getAccount().username, "FieldNote",  content, getContext().name);
+		Result<Note> r = api.createNote(getAccount().username, "FieldNote",  content, getContext().name, latitude, longitude);
 		setUId(r.data.getUId());
 		save();
 
@@ -134,6 +141,7 @@ public class Note extends BaseModel {
 				add("id", getId()).
 				add("uid", getUId()).
 				add("content", content).
+				add("lat/lng", latitude + "," + longitude).
 				add("account", getAccount()).
 				add("context", getContext()).
 				//add("medias", getMedias()).

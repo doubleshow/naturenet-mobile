@@ -60,6 +60,7 @@ implements LocationListener {
 	private Button mButtonCreateNote;
 	private View mButtonSelectContext;
 	private MapFragment mMapFragment;
+	private Location mCurrentLocation;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -123,6 +124,10 @@ implements LocationListener {
 				Intent intent = new Intent(getBaseContext(), CreateNoteActivity.class);
 				intent.putExtra(CreateNoteActivity.Extras.INPUT_ACCOUNT_ID, mAccount.getId());
 				intent.putExtra(CreateNoteActivity.Extras.INPUT_CONTEXT_ID, mContext.getId());
+				if (mCurrentLocation != null){
+					intent.putExtra(CreateNoteActivity.Extras.INPUT_LONGITUDE,  mCurrentLocation.getLongitude());
+					intent.putExtra(CreateNoteActivity.Extras.INPUT_LATITUDE,  mCurrentLocation.getLatitude());
+				}
 				startActivityForResult(intent, REQUEST_CREATE_NOTE);
 			}        	
 		});
@@ -355,8 +360,13 @@ implements LocationListener {
 
 	@Override
 	public void onLocationChanged(Location location) {
-		Log.d(TAG, "location update :" + location);		
-		mMapFragment.setCurrentLocation(location);
+		Log.d(TAG, "location update :" + location);
+		mCurrentLocation = location;
+		mMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+		if (mMapFragment != null){
+			mMapFragment.setCurrentLocation(location);
+		}
+
 	}
 
 }

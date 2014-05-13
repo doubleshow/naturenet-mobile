@@ -31,6 +31,8 @@ public class MapFragment extends Fragment {
 	private MarkerLayer mMarkerLayer;
 	private View mButtonCurrentPosition;	
 	private Location mCurrentLocation;
+	private double mLongitude;
+	private double mLatitude;
 	private Marker mMarker;
 
 	@Override
@@ -57,7 +59,7 @@ public class MapFragment extends Fragment {
 
 		// Set allowed zoom range and bounding box. 
 		// Bounding box must be in layer projection units, so conversion is needed.
-		mMapView.getConstraints().setZoomRange(new Range(12, 19));
+		mMapView.getConstraints().setZoomRange(new Range(14, 19));
 
 		mMapView.setMapRotation(0f);
 		// zoom - 0 = world, like on most web maps
@@ -73,15 +75,16 @@ public class MapFragment extends Fragment {
 		mButtonCurrentPosition.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				if (mCurrentLocation != null){
-					double latitude = mCurrentLocation.getLatitude();
-					double longitude = mCurrentLocation.getLongitude();
-					mMapView.setFocusPoint(mMapView.getLayers().getBaseLayer().getProjection().fromWgs84(longitude, latitude));
-				}
+//				if (mCurrentLocation != null){
+//					double latitude = mCurrentLocation.getLatitude();
+//					double longitude = mCurrentLocation.getLongitude();
+				mMapView.setFocusPoint(mMapView.getLayers().getBaseLayer().getProjection().fromWgs84(mLongitude, mLatitude));					
+//				}
 			}        	
-		});
+		});		
 		return view;		
 	}
+
 
 	@Override
 	public void onStop() {
@@ -103,25 +106,33 @@ public class MapFragment extends Fragment {
 		double longitude = location.getLongitude();
 		if (mCurrentLocation == null){
 			// if it's the first time acquiring a location, focus the map to the location
-			mMapView.setFocusPoint(mMapView.getLayers().getBaseLayer().getProjection().fromWgs84(longitude, latitude));
+			mMapView.setFocusPoint(mMapView.getLayers().getBaseLayer().getProjection().fromWgs84(longitude, latitude));			
 		}
 		mCurrentLocation = location;
-		MapPos markerLocation = mMapView.getLayers().getBaseLayer().getProjection().fromWgs84(longitude, latitude);
+		setCurrentLocation(location.getLatitude(), location.getLongitude(), false);
+	}
+
+	public void setCurrentLocation(double latitude, double longitude, boolean focus) {	
+		//MapPos markerLocation = mMapView.getLayers().getBaseLayer().getProjection().fromWgs84(longitude, latitude);
+		MapPos markerLocation = mMarkerLayer.getProjection().fromWgs84(longitude, latitude);
+		mLatitude = latitude;
+		mLongitude = longitude;
 		if (mMarker == null){
 			// define marker style (image, size, color)
 			Bitmap pointMarker = UnscaledBitmapLoader.decodeResource(getResources(), R.drawable.cur_position);
 			MarkerStyle markerStyle = MarkerStyle.builder().setBitmap(pointMarker).setSize(1.0f).setColor(Color.WHITE).build();
-			//			// define label what is shown when you click on marker
-			Label markerLabel = new DefaultLabel("You are here");//, "Here is a marker");
+			// define label what is shown when you click on marker
+			Label markerLabel = new DefaultLabel("Here");//, "Here is a marker");
 			//
 			mMarker = new Marker(markerLocation, markerLabel, markerStyle, mMarkerLayer);
-			mMarkerLayer.clear();		
-			mMarkerLayer.add(new Marker(markerLocation, markerLabel, markerStyle, mMarkerLayer));
+			mMarkerLayer.add(mMarker);
+		}
+
+		if (focus){
+			mMapView.setFocusPoint(mMapView.getLayers().getBaseLayer().getProjection().fromWgs84(longitude, latitude));
 		}
 
 		mMarker.setMapPos(markerLocation);		
-		mMarkerLayer.clear();
-		mMarkerLayer.add(mMarker);
-		mMapView.invalidate();		
+		mMapView.invalidate();
 	}
 }

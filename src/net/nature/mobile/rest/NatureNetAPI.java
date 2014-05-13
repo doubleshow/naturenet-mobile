@@ -46,49 +46,6 @@ public interface NatureNetAPI {
 	}
 
 	String TAG = "NNAPI";
-	
-	
-	
-//	static abstract class Model {
-//		private Long mId = null;
-//
-//		private final TableInfo mTableInfo;
-//		private final String idName;
-//		
-//		public Model() {
-//			mTableInfo = null;
-//			idName = null;
-//		}
-//	}
-//
-//	@Table(name="ACCOUNT", id="tID")
-//	static public class Account1 extends Model {
-//
-//		public Account1(){			
-//		}
-//
-//		@Expose
-//		@Column(name="Name")
-//		public String name;
-//
-//		@Expose
-//		@Column(name="Username")
-//		public String username;
-//
-//		@Expose
-//		@Column(name="Email")
-//		public String email;
-//
-//		public String toString(){
-//			return Objects.toStringHelper(this).
-//					//						add("id", getId()).
-//					//						add("uid", uID).
-//					add("username", username).
-//					add("name", name).
-//					add("email", email).
-//					toString();
-//		}
-//	}
 
 	@GET("/accounts")
 	Result<List<Account>> listAccounts();
@@ -117,7 +74,9 @@ public interface NatureNetAPI {
 
 	@FormUrlEncoded
 	@POST("/note/new/{username}")
-	Result<Note> createNote(@Path("username") String username, @Field("kind") String kind, @Field("content") String content, @Field("context") String context);
+	Result<Note> createNote(@Path("username") String username, 
+			@Field("kind") String kind, @Field("content") String content, @Field("context") String context,
+			@Field("latitude") Double latitude, @Field("longitude") Double longitude);
 
 	@Multipart
 //	@FormUrlEncoded

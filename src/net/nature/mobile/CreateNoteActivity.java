@@ -42,6 +42,8 @@ public class CreateNoteActivity extends Activity {
 	public static class Extras{
 		public static final String INPUT_ACCOUNT_ID = "account.id";
 		public static final String INPUT_CONTEXT_ID = "context.id";
+		public static final String INPUT_LONGITUDE = "longitude";
+		public static final String INPUT_LATITUDE = "latitude";
 		public static final String OUTPUT_NOTE_ID = "note.id";
 	}
 
@@ -51,6 +53,8 @@ public class CreateNoteActivity extends Activity {
 
 	private Account mAccount;
 	private Context mContext;
+	private Double mLatitude;
+	private Double mLongitude;
 
 	private String mCurrentPhotoPath;
 
@@ -67,15 +71,16 @@ public class CreateNoteActivity extends Activity {
 		Long context_id = bundle.getLong(Extras.INPUT_CONTEXT_ID);
 		checkNotNull(account_id);
 		checkNotNull(context_id);
-
+		
 		mAccount = Model.load(Account.class, account_id);
 		mContext = Model.load(Context.class, context_id);
-
 		checkNotNull(mAccount);
 		checkNotNull(mContext);
+		
+		mLatitude = bundle.getDouble(Extras.INPUT_LATITUDE);
+		mLongitude = bundle.getDouble(Extras.INPUT_LONGITUDE);		
 
 		dispatchTakePictureIntent();
-
 	}
 
 	private void dispatchTakePictureIntent() {
@@ -124,6 +129,8 @@ public class CreateNoteActivity extends Activity {
 				Note note = new Note();
 				note.account_id = mAccount.getId();
 				note.context_id = mContext.getId();
+				note.longitude = mLongitude;
+				note.latitude = mLatitude;
 				note.save();
 				Log.d(TAG, "save " + note);
 
