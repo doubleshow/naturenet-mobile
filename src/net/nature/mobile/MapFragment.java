@@ -64,25 +64,23 @@ public class MapFragment extends Fragment {
 		mMapView.setMapRotation(0f);
 		// zoom - 0 = world, like on most web maps
 		mMapView.setZoom(18.0f);
-
-
-		//MapEventListener mapListener = new MapEventListener(this);
-		//mMapView.getOptions().setMapListener(mapListener);
-
+				
 		mMarkerLayer = new MarkerLayer(mapLayer.getProjection());
 		mMapView.getLayers().addLayer(mMarkerLayer);
 
 		mButtonCurrentPosition.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-//				if (mCurrentLocation != null){
-//					double latitude = mCurrentLocation.getLatitude();
-//					double longitude = mCurrentLocation.getLongitude();
 				mMapView.setFocusPoint(mMapView.getLayers().getBaseLayer().getProjection().fromWgs84(mLongitude, mLatitude));					
-//				}
 			}        	
 		});		
 		return view;		
+	}
+	
+	public void setHomeButtonEnabled(boolean enabled){
+		if (!enabled){
+			mButtonCurrentPosition.setVisibility(View.INVISIBLE);
+		}
 	}
 
 
@@ -110,6 +108,30 @@ public class MapFragment extends Fragment {
 		}
 		mCurrentLocation = location;
 		setCurrentLocation(location.getLatitude(), location.getLongitude(), false);
+	}
+	
+	public void setCurrentLocationCameraMarker(double latitude, double longitude, boolean focus) {	
+		//MapPos markerLocation = mMapView.getLayers().getBaseLayer().getProjection().fromWgs84(longitude, latitude);
+		MapPos markerLocation = mMarkerLayer.getProjection().fromWgs84(longitude, latitude);
+		mLatitude = latitude;
+		mLongitude = longitude;
+		if (mMarker == null){
+			// define marker style (image, size, color)
+			Bitmap pointMarker = UnscaledBitmapLoader.decodeResource(getResources(), R.drawable.ic_camera);
+			MarkerStyle markerStyle = MarkerStyle.builder().setBitmap(pointMarker).setSize(1.0f).setColor(Color.WHITE).build();
+			// define label what is shown when you click on marker
+			Label markerLabel = new DefaultLabel("Here");//, "Here is a marker");
+			//
+			mMarker = new Marker(markerLocation, markerLabel, markerStyle, mMarkerLayer);
+			mMarkerLayer.add(mMarker);
+		}
+
+		if (focus){
+			mMapView.setFocusPoint(mMapView.getLayers().getBaseLayer().getProjection().fromWgs84(longitude, latitude));
+		}
+
+		mMarker.setMapPos(markerLocation);		
+		mMapView.invalidate();
 	}
 
 	public void setCurrentLocation(double latitude, double longitude, boolean focus) {	

@@ -103,12 +103,13 @@ public class EditNoteActivity extends Activity {
 			}			
 		});		
 		
-		// Note Map	
+		// Note Map 	
 		if (mNote.isGeoTagged()){
-			mMap.setCurrentLocation(mNote.latitude, mNote.longitude, true);
+			mMap.setCurrentLocationCameraMarker(mNote.latitude, mNote.longitude, true);
 		}else{
 			mMap.getView().setVisibility(View.INVISIBLE);
 		}
+		mMap.setHomeButtonEnabled(false);		
 		
 		//
 		// Note Save/Cancel Buttons
