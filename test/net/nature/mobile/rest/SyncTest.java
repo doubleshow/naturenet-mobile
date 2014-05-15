@@ -63,14 +63,14 @@ public class SyncTest {
 		int count = account.countNotes();
 		assertThat(count, equalTo(0));
 				
-		sync.syncNotesForUsers("tomyeh");		
+		sync.syncNotesForUser("tomyeh");		
 		
 		int countAfterFirstSync = account.countNotes();
 
 		assertThat("after the first sync, the number of notes should be more than four", 
 				countAfterFirstSync, greaterThan(4));
 		
-		sync.syncNotesForUsers("tomyeh");
+		sync.syncNotesForUser("tomyeh");
 		
 		int countAfterSecondSync = account.countNotes();
 				
@@ -83,7 +83,7 @@ public class SyncTest {
 		assertThat("after deleting a note, the number of notes should be one fewer",
 				countAfterDeleteOne, equalTo(countAfterSecondSync-1));
 		
-		sync.syncNotesForUsers("tomyeh");
+		sync.syncNotesForUser("tomyeh");
 		
 		int countAfterThirdSync = account.countNotes();
 		assertThat("after syncing again, the number of notes should be go back to just before",
@@ -120,7 +120,7 @@ public class SyncTest {
 				
 		Account account = Account.find_by_username("tomyeh");		
 						
-		sync.syncNotesForUsers(account.username);
+		sync.syncNotesForUser(account.username);
 		int count = account.countNotes(); 
 		assertThat(account.countNotes(), greaterThan(1));
 		

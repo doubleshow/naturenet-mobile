@@ -47,11 +47,6 @@ public abstract class BaseModel extends Model {
 				toString();
 	}
 	
-//	private boolean createdt = false;
-//	public void setModified(boolean modified){
-//		this.modified = modified;
-//	}
-
 	protected String TAG = "NatureNetModel";
 
 	public boolean existsLocally() {
@@ -64,15 +59,6 @@ public abstract class BaseModel extends Model {
 	public boolean existsRemotely(){
 		return uID > 0;
 	}
-
-	//	public int count() {
-	//		return new Select().from(getClass()).count();
-	////		Model ret = (new Select()).from(getClass()).where("uid = ?", getUId()).executeSingle();
-	//		// BUG: "exist()" does not work initially when database is empty
-	//		//		new Select().from(getClass()).where("tid = ?", getId()).exist();		
-	////		return ret != null;
-	//	}
-
 
 
 	public void sync(){

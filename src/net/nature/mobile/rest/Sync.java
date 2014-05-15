@@ -33,7 +33,11 @@ public class Sync {
 
 	public void sync(Account account){
 		checkNotNull(account);
+		// sync dependencies if necessary
+		syncContexts();
+		
 		account.sync();
+		syncNotesForAccount(account);
 	}
 
 	public void sync(Context context){
@@ -46,8 +50,25 @@ public class Sync {
 		note.sync();
 	}
 
-	public void syncNotesForUsers(String username){
-		checkNotNull(api);	
+	private void syncNotesForAccount(Account account){
+		checkNotNull(api);
+
+		// pull
+		Result<List<Note>> r = api.listNotes(account.username);
+		for (Note u : r.data){
+			u.sync();
+		}
+
+		// push
+		List<Note> xs = account.getNotes();
+		for (Note u : xs){
+			u.sync();
+		}
+	}
+
+	public void syncNotesForUser(String username){
+		checkNotNull(api);
+		// pull
 		Result<List<Note>> r = api.listNotes(username);
 		if (r.status_code == 200){
 			for (Note u : r.data){
@@ -66,7 +87,6 @@ public class Sync {
 				}
 			}
 		}else{
-
 			List<Note> xs = new Select().from(Note.class).execute();
 			for (Note x : xs){
 				sync(x);
@@ -98,8 +118,8 @@ public class Sync {
 
 	public void syncContexts(){
 		checkNotNull(api);
-		Result<List<Context>> r = api.listContexts();
-		if (r.status_code == 200){
+		if (BaseModel.count(Context.class) == 0){
+			Result<List<Context>> r = api.listContexts();
 			for (Context u : r.data){
 				sync(u);
 			}

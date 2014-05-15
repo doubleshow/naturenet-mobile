@@ -69,6 +69,11 @@ public class Account extends BaseModel {
 	public List<Note> getNotesOrderedByRecency() {
 		return new Select().from(Note.class).where("account_id = ?", getId()).orderBy("tid DESC").execute();		
 	}
+	
+	public List<Note> getNotes() {
+		return new Select().from(Note.class).where("account_id = ?", getId()).execute();		
+	}
+
 
 	public static Account find_by_uid(Long uid) {
 		return new Select().from(Account.class).where("uid = ?", uid).executeSingle();		

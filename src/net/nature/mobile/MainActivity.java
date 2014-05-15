@@ -330,7 +330,8 @@ implements LocationListener {
 		protected Boolean doInBackground(Void... params) {
 			Sync sync = new Sync();
 			try {
-				sync.syncAll();
+				checkNotNull(mAccount);
+				sync.sync(mAccount);
 			}catch (RetrofitError e){
 				e.printStackTrace();
 			}
@@ -340,15 +341,6 @@ implements LocationListener {
 		@Override
 		protected void onPostExecute(final Boolean success) {
 			mSyncTask = null;
-			//			showProgress(false);
-			//
-			//			if (success) {
-			//				finish();
-			//			} else {
-			//				mPasswordView
-			//						.setError(getString(R.string.error_incorrect_password));
-			//				mPasswordView.requestFocus();
-			//			}
 		}
 
 		@Override

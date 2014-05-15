@@ -1,11 +1,12 @@
 package net.nature.mobile;
 
-import retrofit.RetrofitError;
+import static com.google.common.base.Preconditions.checkNotNull;
 import net.nature.mobile.model.Account;
 import net.nature.mobile.rest.NatureNetAPI;
-import net.nature.mobile.rest.NatureNetRestAdapter;
 import net.nature.mobile.rest.NatureNetAPI.Result;
+import net.nature.mobile.rest.NatureNetRestAdapter;
 import net.nature.mobile.rest.Sync;
+import retrofit.RetrofitError;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
@@ -21,26 +22,15 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Activity which displays a login screen to the user, offering registration as
  * well.
  */
 public class SigninActivity extends Activity {
-	/**
-	 * A dummy authentication store containing known user names and passwords.
-	 * TODO: remove after connecting to a real authentication system.
-	 */
-	private static final String[] DUMMY_CREDENTIALS = new String[] {
-			"foo@example.com:hello", "bar@example.com:world" };
 
-	/**
-	 * The default email to populate the email field with.
-	 */
-	public static final String EXTRA_EMAIL = "com.example.android.authenticatordemo.extra.EMAIL";
-	public static final String EXTRA_NAME = "com.example.android.authenticatordemo.extra.NAME";
 	public static final String EXTRA_ACCOUNT_ID = "account.id";
+	public static final String TAG = "SigninActivity";
 
 	/**
 	 * Keep track of the login task to ensure we can cancel it if requested.
@@ -67,20 +57,20 @@ public class SigninActivity extends Activity {
 		// Set up the login form.		
 		mUsernameView = (EditText) findViewById(R.id.username);
 		mUsernameView.setText(mUsername);
-				
+
 		mPasswordView = (EditText) findViewById(R.id.password);
 		mPasswordView
-				.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-					@Override
-					public boolean onEditorAction(TextView textView, int id,
-							KeyEvent keyEvent) {
-						if (id == R.id.login || id == EditorInfo.IME_NULL) {
-							attemptLogin();
-							return true;
-						}
-						return false;
-					}
-				});
+		.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+			@Override
+			public boolean onEditorAction(TextView textView, int id,
+					KeyEvent keyEvent) {
+				if (id == R.id.login || id == EditorInfo.IME_NULL) {
+					attemptLogin();
+					return true;
+				}
+				return false;
+			}
+		});
 
 		mLoginFormView = findViewById(R.id.login_form);
 		mLoginStatusView = findViewById(R.id.login_status);
@@ -122,14 +112,14 @@ public class SigninActivity extends Activity {
 
 		boolean cancel = false;
 		View focusView = null;
-		
+
 		// Check for a valid username
 		if (TextUtils.isEmpty(mUsername)) {
 			mUsernameView.setError(getString(R.string.error_field_required));
 			focusView = mUsernameView;
 			cancel = true;
 		}
-		
+
 		// Check for a valid password.
 		if (TextUtils.isEmpty(mPassword)) {
 			mPasswordView.setError(getString(R.string.error_field_required));
@@ -169,25 +159,25 @@ public class SigninActivity extends Activity {
 
 			mLoginStatusView.setVisibility(View.VISIBLE);
 			mLoginStatusView.animate().setDuration(shortAnimTime)
-					.alpha(show ? 1 : 0)
-					.setListener(new AnimatorListenerAdapter() {
-						@Override
-						public void onAnimationEnd(Animator animation) {
-							mLoginStatusView.setVisibility(show ? View.VISIBLE
-									: View.GONE);
-						}
-					});
+			.alpha(show ? 1 : 0)
+			.setListener(new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					mLoginStatusView.setVisibility(show ? View.VISIBLE
+							: View.GONE);
+				}
+			});
 
 			mLoginFormView.setVisibility(View.VISIBLE);
 			mLoginFormView.animate().setDuration(shortAnimTime)
-					.alpha(show ? 0 : 1)
-					.setListener(new AnimatorListenerAdapter() {
-						@Override
-						public void onAnimationEnd(Animator animation) {
-							mLoginFormView.setVisibility(show ? View.GONE
-									: View.VISIBLE);
-						}
-					});
+			.alpha(show ? 0 : 1)
+			.setListener(new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					mLoginFormView.setVisibility(show ? View.GONE
+							: View.VISIBLE);
+				}
+			});
 		} else {
 			// The ViewPropertyAnimator APIs are not available, so simply show
 			// and hide the relevant UI components.
@@ -202,65 +192,33 @@ public class SigninActivity extends Activity {
 	 */
 	public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 		private Account mAccount;
+		private String errorMessage = "Login error";
 
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			NatureNetAPI api = NatureNetRestAdapter.get();
-			try{
-				
-				Result<Account> r = api.getAccount(mUsername);
 
-				Account account = r.data;
-				account.sync();								
-				
-				new Sync().syncContexts();
-				new Sync().syncNotesForUsers(mUsername);
-				
-				mAccount = Account.find_by_username(mUsername);
-				// register the new account here.
-//				mAccount = new Account();
-//				mAccount.username = mUsername;
-//				mAccount.name = mName;		
-//				mAccount.setUId(r.data.getUId());
-//				mAccount.save();
-				
-				return true;
-				
-			}catch (RetrofitError e){
-				
-				return false;
+			// attempt to log in locally
+			mAccount = Account.find_by_username(mUsername);
+
+			// if the account does not exist
+			if (mAccount == null){
+				// try to log in remotely 
+				try{
+					Result<Account> r = api.getAccount(mUsername);
+					mAccount = r.data;
+					new Sync().sync(mAccount);					
+				}catch (RetrofitError e){
+					if (e.getResponse() != null && e.getResponse().getStatus() == 400){					
+						errorMessage = "This account does not exist.";
+					}else{
+						errorMessage = "Error communicating with the server.";	
+					}
+					return false;
+				}
 			}
+			return true;
 
-//			try {
-//				// Simulate network access.
-//				Thread.sleep(1000);
-//			} catch (InterruptedException e) {
-//				return false;
-//			}
-						
-//			mAccount = Account.find_by_username(mUsername);
-//			if (mAccount == null){
-//				return false;
-//			}
-
-			//if (account.password.equals(mPassword)){
-//				return true;
-//			}
-			
-			
-//			for (String credential : DUMMY_CREDENTIALS) {
-//				//Account.find
-//				
-//				
-////				String[] pieces = credential.split(":");
-////				if (pieces[0].equals(mEmail)) {
-////					// Account exists, return true if the password matches.
-////					return pieces[1].equals(mPassword);
-////				}
-//			}
-			
-//			mAccount = Account.find(1L); 			
-//			return true;
 		}
 
 		@Override
@@ -272,12 +230,11 @@ public class SigninActivity extends Activity {
 				checkNotNull(mAccount);
 				Intent result = new Intent();
 				result.putExtra(EXTRA_ACCOUNT_ID, mAccount.getId());
-			    setResult(RESULT_OK, result);
-			    finish();
+				setResult(RESULT_OK, result);
+				finish();
 			} else {
-				mPasswordView
-						.setError(getString(R.string.error_incorrect_password));
-				mPasswordView.requestFocus();
+				mUsernameView.setError(errorMessage);
+				mUsernameView.requestFocus();
 			}
 		}
 
