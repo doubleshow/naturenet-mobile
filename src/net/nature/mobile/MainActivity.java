@@ -316,6 +316,7 @@ implements LocationListener {
 	}
 
 	private void doSync() {
+		((TextView) findViewById(R.id.label_notes)).setText("Your Notes (syncing...)");
 		mSyncTask = new SyncTask();
 		mSyncTask.execute((Void) null);
 	}
@@ -328,6 +329,7 @@ implements LocationListener {
 	public class SyncTask extends AsyncTask<Void, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(Void... params) {
+			
 			Sync sync = new Sync();
 			try {
 				checkNotNull(mAccount);
@@ -341,12 +343,13 @@ implements LocationListener {
 		@Override
 		protected void onPostExecute(final Boolean success) {
 			mSyncTask = null;
+			((TextView) findViewById(R.id.label_notes)).setText("Your Notes");
 		}
 
 		@Override
 		protected void onCancelled() {
 			mSyncTask = null;
-			//			showProgress(false);
+			((TextView) findViewById(R.id.label_notes)).setText("Your Notes");
 		}
 	}
 
