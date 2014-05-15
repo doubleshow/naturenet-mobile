@@ -79,10 +79,14 @@ public interface NatureNetAPI {
 			@Field("latitude") Double latitude, @Field("longitude") Double longitude);
 
 	@Multipart
-//	@FormUrlEncoded
 	@POST("/note/{id}/new/photo")
 	Result<Media> createMedia(@Path("id") Long note_id, @Part("title") String title, @Part("file") TypedFile photo);
 
+	@Multipart
+	@POST("/note/{id}/new/photo")
+	Result<Media> createMedia(@Path("id") Long note_id, @Part("title") String title, @Part("link") String link);
+
+	
 	@GET("/medias")
 	Result<List<Media>> listMedias();
 

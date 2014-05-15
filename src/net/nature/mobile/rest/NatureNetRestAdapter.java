@@ -24,12 +24,12 @@ public class NatureNetRestAdapter {
 //			Log.d(TAG, "cause: " + cause.getMessage());
 			Response r = cause.getResponse();
 			Log.d(TAG, "response:" + r);
-//			TypedByteArray t = (TypedByteArray) r.getBody();
-////			Log.d(TAG, ""+t);
-//			try {
-//				t.writeTo(System.out);
-//			} catch (IOException e) {
-//			}
+			TypedByteArray t = (TypedByteArray) r.getBody();
+//			Log.d(TAG, ""+t);
+			try {
+				t.writeTo(System.out);
+			} catch (IOException e) {
+			}
 //			cause.set
 			return cause;
 		}

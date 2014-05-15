@@ -1,7 +1,13 @@
 package net.nature.mobile.model;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import retrofit.mime.TypedFile;
 import net.nature.mobile.rest.NatureNetAPI;
@@ -12,6 +18,7 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.cloudinary.Cloudinary;
 import com.google.common.base.Objects;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -102,6 +109,13 @@ public class Note extends BaseModel {
 		Result<Note> r = api.createNote(getAccount().username, "FieldNote",  content, getContext().name, latitude, longitude);
 		setUId(r.data.getUId());
 		save();
+		
+		Map config = new HashMap();
+		config.put("cloud_name", "university-of-colorado");
+		config.put("api_key", "893246586645466");
+		config.put("api_secret", "8Liy-YcDCvHZpokYZ8z3cUxCtyk");
+		Cloudinary cloudinary = new Cloudinary(config);
+
 
 		for (Media media : getMedias()){
 			// Hack to get around this problem
@@ -109,12 +123,30 @@ public class Note extends BaseModel {
 			String local = media.getLocal();
 			local = local.replaceAll("file:", "");
 			
-			TypedFile file = new TypedFile("image/jpeg", new File(local)); 
-			Result<Media> m = api.createMedia(getUId(), media.getTitle(), file);
-			media.setUId(m.data.getUId()); 
-			media.setURL(m.data.getURL());
-			media.save();
-			Log.d(TAG, "pushed " +  media);
+			JSONObject ret;
+			try {
+				ret = cloudinary.uploader().upload(new File(local), Cloudinary.emptyMap());
+				String public_id = ret.getString("public_id");
+				String url = ret.getString("url");
+				Log.d(TAG, "uploaded to cloudinary: " + ret);
+				
+				Result<Media> m = api.createMedia(getUId(), media.getTitle(), url);
+				media.setUId(m.data.getUId()); 
+				media.setURL(m.data.getURL());
+				media.save();
+				Log.d(TAG, "pushed " +  media);
+				
+			} catch (IOException e) {				
+				
+			} catch (JSONException e) {
+				
+			}
+			
+			
+//			
+//			TypedFile file = new TypedFile("image/jpeg", new File(local)); 
+			
+
 		}		
 	}
 
