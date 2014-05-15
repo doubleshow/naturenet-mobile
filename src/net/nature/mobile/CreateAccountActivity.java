@@ -128,7 +128,7 @@ public class CreateAccountActivity extends Activity {
 		mPasswordView.setError(null);
 
 		// Store values at the time of the login attempt.
-		mUsername = mUsernameView.getText().toString();
+		mUsername = mUsernameView.getText().toString().trim();
 		mName = mNameView.getText().toString();
 		mEmail = mEmailView.getText().toString();
 		mPassword = mPasswordView.getText().toString();
@@ -137,10 +137,12 @@ public class CreateAccountActivity extends Activity {
 		View focusView = null;
 		
 		// Check for a valid username
-		if (TextUtils.isEmpty(mUsername)) {
+		if (TextUtils.isEmpty(mUsername)){
 			mUsernameView.setError(getString(R.string.error_field_required));
 			focusView = mUsernameView;
 			cancel = true;
+		}else if (TextUtils.split(mUsername, " ").length > 1){
+			mUsernameView.setError("Username can not have spaces");
 		}
 		
 		// Check for a valid name
@@ -237,6 +239,7 @@ public class CreateAccountActivity extends Activity {
 
 
 		private NatureNetAPI api;
+		private String errorMessage;
 
 		@Override
 		protected Boolean doInBackground(Void... params) {
@@ -255,7 +258,11 @@ public class CreateAccountActivity extends Activity {
 				return true;
 				
 			}catch (RetrofitError e){
-				
+				if (e.getResponse() != null && e.getResponse().getStatus() == 400){
+					errorMessage = "This username is already taken";
+				}else{
+					errorMessage = "Error communicating with the server.";
+				}
 				return false;
 			}
 		}
@@ -272,7 +279,7 @@ public class CreateAccountActivity extends Activity {
 			    setResult(RESULT_OK, result);
 			    finish();
 			} else {
-				mUsernameView.setError("This username is already taken");
+				mUsernameView.setError(errorMessage);
 				mUsernameView.requestFocus();
 				//getString(R.stringerror_field_required));
 				//mUsernameView.setError(getString(R.string.error_field_required));
