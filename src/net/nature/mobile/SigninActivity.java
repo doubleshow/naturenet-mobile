@@ -196,29 +196,16 @@ public class SigninActivity extends Activity {
 
 		@Override
 		protected Boolean doInBackground(Void... params) {
-			NatureNetAPI api = NatureNetRestAdapter.get();
-
 			// attempt to log in locally
 			mAccount = Account.findByUsername(mUsername);
-
 			// if the account does not exist
 			if (mAccount == null){
-				// try to log in remotely 
-				try{
-					Result<Account> r = api.getAccount(mUsername);
-					mAccount = r.data;
-					new Sync().sync(mAccount);					
-				}catch (RetrofitError e){
-					if (e.getResponse() != null && e.getResponse().getStatus() == 400){					
-						errorMessage = "This account does not exist.";
-					}else{
-						errorMessage = "Error communicating with the server.";	
-					}
-					return false;
-				}
+				errorMessage = "Unable to find " + mUsername;	
+				return false;
+			}else{
+				new Sync().sync(mAccount);
+				return true;
 			}
-			return true;
-
 		}
 
 		@Override
