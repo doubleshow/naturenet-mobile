@@ -41,9 +41,9 @@ public class SyncTest {
 		sync = new Sync();
 		
 		newAccount = new Account();
-		newAccount.username = "n" + (new Date()).getTime();
+		newAccount.setUsername("n" + (new Date()).getTime());
 		newAccount.name = "first last";
-		newAccount.email = "new@email.com";
+		newAccount.setEmail("new@email.com");
 		
 		// Roboletric would start an in-memory db so "delete" are not needed
 //		new Delete().from(Note.class).execute();
@@ -52,13 +52,20 @@ public class SyncTest {
 //		new Delete().from(Media.class).execute();
 	}
 	
+//	@Test
+//	public void testSyncAccountTomYeh(){
+//		
+//		sync.sync(account);
+//		
+//	}
+	
 	@Test
 	public void testSyncNotesForTomYeh(){
 						
 		sync.syncAccounts();
 		sync.syncContexts();
 		
-		Account account = Account.find_by_username("tomyeh");
+		Account account = Account.findByUsername("tomyeh");
 		
 		int count = account.countNotes();
 		assertThat(count, equalTo(0));
@@ -118,9 +125,9 @@ public class SyncTest {
 		sync.syncAccounts();
 		sync.syncContexts();
 				
-		Account account = Account.find_by_username("tomyeh");		
+		Account account = Account.findByUsername("tomyeh");		
 						
-		sync.syncNotesForUser(account.username);
+		sync.syncNotesForUser(account.getUsername());
 		int count = account.countNotes(); 
 		assertThat(account.countNotes(), greaterThan(1));
 		

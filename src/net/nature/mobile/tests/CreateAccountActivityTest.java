@@ -55,7 +55,7 @@ public class CreateAccountActivityTest extends ActivityInstrumentationTestCase2<
 		
 		Account newUser = new Select().from(Account.class).where("username = ?", newUsername).executeSingle();
 		assertNotNull(newUser);
-		assertEquals(newUsername, newUser.username);
+		assertEquals(newUsername, newUser.getUsername());
 
 	}
 	

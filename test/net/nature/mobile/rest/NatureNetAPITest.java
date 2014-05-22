@@ -111,7 +111,7 @@ public class NatureNetAPITest {
 	public void testGetAccountTomYeh(){
 		Result<Account> result = api.getAccount("tomyeh");
 		System.out.println(result.data);
-		assertThat(result.data.username, equalTo("tomyeh"));	
+		assertThat(result.data.getUsername(), equalTo("tomyeh"));	
 	}
 
 	@Test
@@ -120,7 +120,7 @@ public class NatureNetAPITest {
 		for (Note x : res.data){			
 			System.out.println(x);
 			assertThat(x.getAccount(), notNullValue());
-			assertThat(x.getAccount().username, equalTo("tomyeh"));
+			assertThat(x.getAccount().getUsername(), equalTo("tomyeh"));
 		}
 	}
 
@@ -131,7 +131,7 @@ public class NatureNetAPITest {
 		System.out.println(res.data);		
 		assertThat(res.status_code, equalTo(200));
 		assertThat(res.data, notNullValue());
-		assertThat(res.data.username, equalTo(unique_username));	
+		assertThat(res.data.getUsername(), equalTo(unique_username));	
 	}
 	
 	@Test
@@ -146,7 +146,7 @@ public class NatureNetAPITest {
 		Account a = api.getAccount("jenny").data;
 		Context c = api.getContext(1L).data;
 		
-		Result<Note> r = api.createNote(a.username, "FieldNote", "some content about this note", c.name, 0.0, 0.0);
+		Result<Note> r = api.createNote(a.getUsername(), "FieldNote", "some content about this note", c.name, 0.0, 0.0);
 		System.out.println(r.data);		
 		assertThat(r.status_code, equalTo(200));
 		assertThat(r.data.content, equalTo("some content about this note"));			
@@ -156,7 +156,7 @@ public class NatureNetAPITest {
 	public void testAddMedia(){
 		Account a = api.getAccount("jenny").data;
 		Context c = api.getContext(1L).data;		
-		Note n = api.listNotes(a.username).data.get(0);
+		Note n = api.listNotes(a.getUsername()).data.get(0);
 		
 		Media m = api.createMedia(n.getUId(), "some title", new TypedFile("image/png", new File("test.png"))).data;
 

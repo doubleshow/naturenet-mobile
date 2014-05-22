@@ -66,8 +66,7 @@ public abstract class BaseModel extends Model {
 		if (!existsLocally()){
 			save();
 			Log.d(TAG , "pulled " + this);
-		}else if (!existsRemotely()){
-			
+		}else if (!existsRemotely()){			
 			NatureNetAPI api = NatureNetRestAdapter.get();
 			if (api != null){
 				saveRemotely(api);				
@@ -75,6 +74,8 @@ public abstract class BaseModel extends Model {
 			Log.d(TAG , "pushed " + this);
 		}
 	}
+	
+
 
 	protected void saveRemotely(NatureNetAPI api) {		
 	}

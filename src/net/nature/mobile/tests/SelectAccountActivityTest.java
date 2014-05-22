@@ -32,7 +32,7 @@ public class SelectAccountActivityTest extends ActivityInstrumentationTestCase2<
 	protected void setUp() throws Exception {
 		super.setUp();
 		mockUser = new Account();
-		mockUser.username = ""+(new Date()).getTime();
+		mockUser.setUsername(""+(new Date()).getTime());
 		mockUser.save();
 		
 		getActivity();
@@ -49,7 +49,7 @@ public class SelectAccountActivityTest extends ActivityInstrumentationTestCase2<
 		  return new BoundedMatcher<Object, Account>(Account.class) {
 		    @Override
 		    public boolean matchesSafely(Account user) {
-		      return itemTextMatcher.matches(user.username);
+		      return itemTextMatcher.matches(user.getUsername());
 		    }
 
 		    @Override
@@ -86,11 +86,11 @@ public class SelectAccountActivityTest extends ActivityInstrumentationTestCase2<
 	@MediumTest
 	public void test_click_an_item_to_select(){
 		
-		onData(withUsername(equalTo(mockUser.username))).perform(click());
+		onData(withUsername(equalTo(mockUser.getUsername()))).perform(click());
 		
 		Intent intent = assertFinishCalledWithResult(Activity.RESULT_OK);
 		assertThat(intent, notNullValue());
-		assertThat(intent.getCharSequenceExtra("username").toString(),equalTo(mockUser.username));
+		assertThat(intent.getCharSequenceExtra("username").toString(),equalTo(mockUser.getUsername()));
 	}
 
 //	@MediumTest

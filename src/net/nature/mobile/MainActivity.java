@@ -217,7 +217,7 @@ implements LocationListener {
 		mAccount = account;
 		mUserContainer.setVisibility(View.VISIBLE);
 		mSigninContainer.setVisibility(View.INVISIBLE);
-		mUsername.setText(account.username);
+		mUsername.setText(account.getUsername());
 
 		// select the default  context
 		Context context = Model.load(Context.class, 1L);

@@ -106,7 +106,7 @@ public class Note extends BaseModel {
 		checkNotNull(getAccount());
 		checkNotNull(getContext());
 		
-		Result<Note> r = api.createNote(getAccount().username, "FieldNote",  content, getContext().name, latitude, longitude);
+		Result<Note> r = api.createNote(getAccount().getUsername(), "FieldNote",  content, getContext().name, latitude, longitude);
 		setUId(r.data.getUId());
 		save();
 		

@@ -54,7 +54,7 @@ public class Sync {
 		checkNotNull(api);
 
 		// pull
-		Result<List<Note>> r = api.listNotes(account.username);
+		Result<List<Note>> r = api.listNotes(account.getUsername());
 		for (Note u : r.data){
 			u.sync();
 		}

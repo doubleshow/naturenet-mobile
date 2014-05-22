@@ -47,7 +47,7 @@ public class SelectAccountActivity extends Activity {
 				Account user = holder.user;
 
 				Intent result = new Intent();
-				result.putExtra("username", user.username);
+				result.putExtra("username", user.getUsername());
 				setResult(Activity.RESULT_OK, result);
 				finish();
 			}
@@ -87,7 +87,7 @@ public class SelectAccountActivity extends Activity {
 			
 			holder.user = users[position];
 			
-			String s = users[position].username;
+			String s = users[position].getUsername();
 			holder.text.setText(s);
 
 //			String avatarName = users[position].getAvatarName();

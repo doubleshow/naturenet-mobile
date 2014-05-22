@@ -199,7 +199,7 @@ public class SigninActivity extends Activity {
 			NatureNetAPI api = NatureNetRestAdapter.get();
 
 			// attempt to log in locally
-			mAccount = Account.find_by_username(mUsername);
+			mAccount = Account.findByUsername(mUsername);
 
 			// if the account does not exist
 			if (mAccount == null){
