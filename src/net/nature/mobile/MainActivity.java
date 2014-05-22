@@ -189,7 +189,7 @@ implements LocationListener {
 	private void onContextSelected(Context context){
 		checkNotNull(context);
 		mContext = context;
-		mContextName.setText(context.name);
+		mContextName.setText(context.getName());
 	}
 
 	private void launchEditNoteActivity(Long note_id){

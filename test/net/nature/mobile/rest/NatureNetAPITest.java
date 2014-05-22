@@ -146,10 +146,10 @@ public class NatureNetAPITest {
 		Account a = api.getAccount("jenny").data;
 		Context c = api.getContext(1L).data;
 		
-		Result<Note> r = api.createNote(a.getUsername(), "FieldNote", "some content about this note", c.name, 0.0, 0.0);
+		Result<Note> r = api.createNote(a.getUsername(), "FieldNote", "some content about this note", c.getName(), 0.0, 0.0);
 		System.out.println(r.data);		
 		assertThat(r.status_code, equalTo(200));
-		assertThat(r.data.content, equalTo("some content about this note"));			
+		assertThat(r.data.getContent(), equalTo("some content about this note"));			
 	}
 	
 	@Test

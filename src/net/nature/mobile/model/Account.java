@@ -20,7 +20,7 @@ import com.google.gson.annotations.SerializedName;
 import static com.google.common.base.Preconditions.*;
 
 @Table(name="ACCOUNT", id="tID")
-public class Account extends BaseModel {
+public class Account extends SyncableModel {
 
 	@Expose
 	@Column(name="Name")

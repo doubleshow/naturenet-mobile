@@ -78,6 +78,12 @@ public interface NatureNetAPI {
 			@Field("kind") String kind, @Field("content") String content, @Field("context") String context,
 			@Field("latitude") Double latitude, @Field("longitude") Double longitude);
 
+	@FormUrlEncoded
+	@POST("/note/{id}/update")
+	Result<Note> updateNote(@Path("id") Long uid, @Field("username") String username, 
+			@Field("kind") String kind, @Field("content") String content, @Field("context") String context,
+			@Field("latitude") Double latitude, @Field("longitude") Double longitude);	
+	
 	@Multipart
 	@POST("/note/{id}/new/photo")
 	Result<Media> createMedia(@Path("id") Long note_id, @Part("title") String title, @Part("file") TypedFile photo);

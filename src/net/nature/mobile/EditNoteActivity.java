@@ -83,7 +83,7 @@ public class EditNoteActivity extends Activity {
 		//
 		// Note Content
 		//
-		mContent.setText(mNote.content);
+		mContent.setText(mNote.getContent());
 		
 		OnFocusChangeListener focusChangeListener = new OnFocusChangeListener() {
 			@Override
@@ -120,7 +120,7 @@ public class EditNoteActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				checkNotNull(mNote);
-				mContent.setText(mNote.content);		
+				mContent.setText(mNote.getContent());		
 				mContent.invalidate();
 				editFinished();
 			}
@@ -130,7 +130,7 @@ public class EditNoteActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				checkNotNull(mNote);
-				mNote.content = mContent.getText().toString();
+				mNote.setContent(mContent.getText().toString());
 				mNote.save();
 				editFinished();
 			}
@@ -141,14 +141,14 @@ public class EditNoteActivity extends Activity {
 		List<Context> contexts = new Select().from(Context.class).execute();
 		final List<String> context_names = Lists.newArrayList();
 		for (Context c : contexts){
-			context_names.add(c.name);
+			context_names.add(c.getName());
 		}
 		
 		ArrayAdapter<CharSequence> adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, context_names.toArray());		        
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mContext.setAdapter(adapter);
 		
-		int position = context_names.indexOf(mNote.getContext().name);		
+		int position = context_names.indexOf(mNote.getContext().getName());		
 		mContext.setSelection(position);
 		
 		

@@ -40,18 +40,18 @@ public class EditNoteActivityTest extends ActivityInstrumentationTestCase2<EditN
 		context1 = new Context();
 		//context1.(1L);
 		context1.kind = "Activity";
-		context1.name = "Ask an expert";
+		context1.setName("Ask an expert");
 		context1.save();
 		
 		context2 = new Context();
 //		context2.setuID(2L);
 		context2.kind = "Activity";
-		context2.name = "Take a picture";
+		context2.setName("Take a picture");
 		context2.save();		
 		
 		note = new Note();
 		//note.uID = 1L;
-		note.content = "Mock content";
+		note.setContent("Mock content");
 		note.context_id = context2.getId();
 		note.save();
 		
@@ -71,7 +71,7 @@ public class EditNoteActivityTest extends ActivityInstrumentationTestCase2<EditN
 	public void test_view_note(){		
 		onView(withId(R.id.note_content)).
 			check(matches(isDisplayed())).
-			check(matches(withText(note.content)));
+			check(matches(withText(note.getContent())));
 				
 		onView(withId(R.id.note_save)).
 			check(matches(not(isDisplayed())));
@@ -80,7 +80,7 @@ public class EditNoteActivityTest extends ActivityInstrumentationTestCase2<EditN
 			check(matches(not(isDisplayed())));
 		
 		onView(withId(R.id.note_context)).
-			check(matches(hasDescendant(withText(context2.name))));		
+			check(matches(hasDescendant(withText(context2.getName()))));		
 	}	
 	
 	@MediumTest
@@ -88,7 +88,7 @@ public class EditNoteActivityTest extends ActivityInstrumentationTestCase2<EditN
 		onView(withId(R.id.note_context)).
 			perform(click());
 		
-		onView(withText(context1.name)).
+		onView(withText(context1.getName())).
 			perform(click());
 		
 		Note note = Model.load(Note.class, 1L);
@@ -118,6 +118,6 @@ public class EditNoteActivityTest extends ActivityInstrumentationTestCase2<EditN
 				
 		Note updatedNote = Model.load(Note.class, 1L);
 		assertThat("content should have few more characters",
-				updatedNote.content, equalTo(note.content + "more"));
+				updatedNote.getContent(), equalTo(note.getContent() + "more"));
 	}
 }

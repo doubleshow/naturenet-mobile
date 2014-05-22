@@ -7,7 +7,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.squareup.picasso.Picasso;
 
-public class Media extends BaseModel{
+public class Media extends SyncableModel{
 
 //	@Expose
 	@Column(name="Note_ID", notNull=true)

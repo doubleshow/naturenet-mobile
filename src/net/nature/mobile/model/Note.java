@@ -9,8 +9,10 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import retrofit.RetrofitError;
 import retrofit.mime.TypedFile;
 import net.nature.mobile.rest.NatureNetAPI;
+import net.nature.mobile.rest.NatureNetRestAdapter;
 import net.nature.mobile.rest.NatureNetAPI.Result;
 import android.util.Log;
 
@@ -25,30 +27,56 @@ import com.google.gson.annotations.SerializedName;
 
 import static com.google.common.base.Preconditions.*;
 @Table(name="NOTE", id="tID")
-public class Note extends BaseModel {
+public class Note extends SyncableModel {
 
 	// Local
 
 	@Expose
 	@Column(name="content")
-	public String content = "";
+	private String content = "";
+
 
 	@Column(name="Context_ID", notNull=true)
 	public Long context_id;
 
 	@Column(name="Account_ID", notNull=true)
 	public Long account_id;
-	
+
 	@Expose
 	@Column(name="longitude")
 	public Double longitude;
-	
+
 	@Expose
 	@Column(name="latitude")
 	public Double latitude;
 
-	// Remote Json
 	
+	private void resolveRelationships(){
+		SyncableModel local_account = SyncableModel.findByUID(Account.class, getUId());			
+		account_id = local_account.getId();			
+		Context local_context = SyncableModel.findByUID(Context.class, getUId());			
+		context_id = local_context.getId();
+	}
+	
+	@Override
+	protected <T extends SyncableModel> T doDownload(NatureNetAPI api, long uID){
+		Note d =  api.getNote(uID).data;
+		d.resolveRelationships();
+		return (T) d;
+	}
+	
+	@Override
+	protected <T extends SyncableModel> T doUploadNew(NatureNetAPI api){
+		return (T) api.createNote(getAccount().getUsername(), "FieldNote", content, getContext().getName(), latitude, longitude).data;
+	}
+	
+	@Override
+	protected <T extends SyncableModel> T doUploadChanges(NatureNetAPI api){
+		return (T) api.updateNote(getUId(), getAccount().getUsername(), "FieldNote", content, getContext().getName(), latitude, longitude).data;
+	}	
+
+	// Remote Json
+
 	public boolean isGeoTagged(){
 		return longitude != null && longitude != 0 && latitude != null && latitude != 0;
 	}
@@ -62,7 +90,7 @@ public class Note extends BaseModel {
 	private Context context;
 
 	@Expose
-	private Media[] medias;
+	private Media[] medias;	
 
 	public List<Media> getMedias(){
 		return new Select().from(Media.class).where("note_id = ?", getId()).execute();
@@ -72,6 +100,16 @@ public class Note extends BaseModel {
 		return new Select().from(Media.class).where("note_id = ?", getId()).executeSingle();
 	}
 
+	public void sync1(){
+		if (state == STATE.DOWNLOADED){
+			SyncableModel existingLocalRecord = SyncableModel.findByUID(Note.class, getUId());
+			if (existingLocalRecord == null){
+				state = STATE.SYNCED;
+				save();
+			}
+		}
+	}
+
 	public void sync(){
 		// if it does not exist locally
 		if (!existsLocally()){
@@ -79,14 +117,14 @@ public class Note extends BaseModel {
 			if (account != null && context != null){
 
 				// resolve relationships
-				BaseModel local_account = BaseModel.find_by_uid(Account.class, account.getUId());			
+				SyncableModel local_account = SyncableModel.findByUID(Account.class, account.getUId());			
 				account_id = local_account.getId();			
 
-				Context local_context = BaseModel.find_by_uid(Context.class, context.getUId());			
+				Context local_context = SyncableModel.findByUID(Context.class, context.getUId());			
 				context_id = local_context.getId();			
 
 				save();
-				
+
 				//			
 				for (Media media : medias){	
 					media.setNote(this);					
@@ -100,16 +138,16 @@ public class Note extends BaseModel {
 			super.sync();
 		}
 	}
-	
+
 	protected void saveRemotely(NatureNetAPI api){
 		checkNotNull(api);
 		checkNotNull(getAccount());
 		checkNotNull(getContext());
-		
-		Result<Note> r = api.createNote(getAccount().getUsername(), "FieldNote",  content, getContext().name, latitude, longitude);
+
+		Result<Note> r = api.createNote(getAccount().getUsername(), "FieldNote",  getContent(), getContext().getName(), latitude, longitude);
 		setUId(r.data.getUId());
 		save();
-		
+
 		Map config = new HashMap();
 		config.put("cloud_name", "university-of-colorado");
 		config.put("api_key", "893246586645466");
@@ -122,30 +160,30 @@ public class Note extends BaseModel {
 			// Caused by: java.io.FileNotFoundException: /file:/storage/emulated/0/Pictures/JPEG_20140504_114444_559339952.jpg: open failed: ENOENT (No such file or directory)
 			String local = media.getLocal();
 			local = local.replaceAll("file:", "");
-			
+
 			JSONObject ret;
 			try {
 				ret = cloudinary.uploader().upload(new File(local), Cloudinary.emptyMap());
 				String public_id = ret.getString("public_id");
 				String url = ret.getString("url");
 				Log.d(TAG, "uploaded to cloudinary: " + ret);
-				
+
 				Result<Media> m = api.createMedia(getUId(), media.getTitle(), url);
 				media.setUId(m.data.getUId()); 
 				media.setURL(m.data.getURL());
 				media.save();
 				Log.d(TAG, "pushed " +  media);
-				
+
 			} catch (IOException e) {				
-				
+
 			} catch (JSONException e) {
-				
+
 			}
-			
-			
-//			
-//			TypedFile file = new TypedFile("image/jpeg", new File(local)); 
-			
+
+
+			//			
+			//			TypedFile file = new TypedFile("image/jpeg", new File(local)); 
+
 
 		}		
 	}
@@ -172,7 +210,7 @@ public class Note extends BaseModel {
 		return Objects.toStringHelper(this).
 				add("id", getId()).
 				add("uid", getUId()).
-				add("content", content).
+				add("content", getContent()).
 				add("lat/lng", latitude + "," + longitude).
 				add("account", getAccount()).
 				add("context", getContext()).
@@ -189,8 +227,46 @@ public class Note extends BaseModel {
 		checkNotNull(context);
 		context_id = context.getId();
 	}
-	
-	
+
+	public static Note download(long uid) {
+		NatureNetAPI api = NatureNetRestAdapter.get();
+		try{
+			Result<Note> r = api.getNote(uid);
+			r.data.state = STATE.DOWNLOADED;
+			return r.data;
+		}catch(RetrofitError r){
+			return null;
+		}
+	}
+
+	public static List<Note> findByAccount(Account account){
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static List<Note> loadFromRemoteForAccount(Account account) {
+		NatureNetAPI api = NatureNetRestAdapter.get();
+		Result<List<Note>> r = api.listNotes(account.getUsername());		
+		for (Note item : r.data){
+			if (item.isRemoteOnly());
+			item.save();
+		}
+		return r.data;
+	}
+
+	public Integer getSyncState() {
+		return state;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+
 
 	//	public int count(){
 	//		return new Select().from(Note.class).count();

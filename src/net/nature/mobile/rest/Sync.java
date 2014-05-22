@@ -10,7 +10,7 @@ import com.activeandroid.query.Select;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import net.nature.mobile.model.BaseModel;
+import net.nature.mobile.model.SyncableModel;
 import net.nature.mobile.model.Context;
 import net.nature.mobile.model.Media;
 import net.nature.mobile.model.Note;
@@ -79,7 +79,7 @@ public class Sync {
 
 	public void syncNotes(){
 		checkNotNull(api);	
-		if (BaseModel.count(Note.class) == 0){
+		if (SyncableModel.countLocal(Note.class) == 0){
 			Result<List<Note>> r = api.listNotes();
 			if (r.status_code == 200){
 				for (Note u : r.data){
@@ -98,7 +98,7 @@ public class Sync {
 
 	public void syncAccounts(){
 		checkNotNull(api);
-		if (BaseModel.count(Account.class) == 0){
+		if (SyncableModel.countLocal(Account.class) == 0){
 			Result<List<Account>> r = api.listAccounts();
 			if (r.status_code == 200){
 				for (Account u : r.data){
@@ -118,7 +118,7 @@ public class Sync {
 
 	public void syncContexts(){
 		checkNotNull(api);
-		if (BaseModel.count(Context.class) == 0){
+		if (SyncableModel.countLocal(Context.class) == 0){
 			Result<List<Context>> r = api.listContexts();
 			for (Context u : r.data){
 				sync(u);

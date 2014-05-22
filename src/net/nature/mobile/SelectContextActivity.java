@@ -89,7 +89,7 @@ public class SelectContextActivity extends Activity {
 			holder.context = contexts[position];
 	
 			Context context = contexts[position];
-			holder.textName.setText(context.name);
+			holder.textName.setText(context.getName());
 			holder.textDescription.setText(context.description);
 
 			return rowView;

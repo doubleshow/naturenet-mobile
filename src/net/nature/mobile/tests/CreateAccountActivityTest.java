@@ -6,7 +6,7 @@ import com.activeandroid.query.Select;
 import net.nature.mobile.CreateAccountActivity;
 import net.nature.mobile.R;
 import net.nature.mobile.model.Account;
-import net.nature.mobile.model.BaseModel;
+import net.nature.mobile.model.SyncableModel;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.suitebuilder.annotation.MediumTest;
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.*;
@@ -62,7 +62,7 @@ public class CreateAccountActivityTest extends ActivityInstrumentationTestCase2<
 	@MediumTest
 	public void test_username_already_taken_error(){
 		
-		int n = BaseModel.count(Account.class);
+		int n = SyncableModel.countLocal(Account.class);
 		
 		onView(withId(R.id.username))
 			.perform(typeText("tomyeh"));
@@ -80,7 +80,7 @@ public class CreateAccountActivityTest extends ActivityInstrumentationTestCase2<
 		onView(withId(R.id.sign_in_button))
 			.perform(click());
 
-		assertThat(BaseModel.count(Account.class), equalTo(n));
+		assertThat(SyncableModel.countLocal(Account.class), equalTo(n));
 	}
 
 }

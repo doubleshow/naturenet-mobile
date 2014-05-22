@@ -100,8 +100,8 @@ public class ListNoteActivity extends Activity {
 			
 			Note note = notes[position];
 			
-			holder.textContent.setText(note.content);
-			holder.textContext.setText(note.getContext().name);
+			holder.textContent.setText(note.getContent());
+			holder.textContext.setText(note.getContext().getName());
 
 			
 			Media media = notes[position].getMediaSingle();

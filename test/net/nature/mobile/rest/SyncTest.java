@@ -27,7 +27,7 @@ import net.nature.mobile.rest.Sync;
 import android.test.AndroidTestCase;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static net.nature.mobile.model.BaseModel.*;
+import static net.nature.mobile.model.SyncableModel.*;
 
 @RunWith(RobolectricTestRunner.class)
 public class SyncTest {
@@ -103,11 +103,11 @@ public class SyncTest {
 		
 		sync.syncAccounts();
 		
-		int count = count(Account.class); 
+		int count = countLocal(Account.class); 
 		
 		newAccount.save();
 		
-		assertThat(count(Account.class), equalTo(count + 1));
+		assertThat(countLocal(Account.class), equalTo(count + 1));
 		
 		sync.syncAccounts();
 		
@@ -134,7 +134,7 @@ public class SyncTest {
 		Context context1 = Model.load(Context.class, 1L);	
 		
 		Note newNote = new Note();
-		newNote.content = "this is a new note";		
+		newNote.setContent("this is a new note");		
 		newNote.setAccount(account);
 		newNote.setContext(context1);				
 		newNote.save();		
@@ -160,17 +160,17 @@ public class SyncTest {
 	public void testSyncAccounts(){		
 		
 		assertThat("after deleting all accounts, the number of account should be zero",
-				count(Account.class), equalTo(0));
+				countLocal(Account.class), equalTo(0));
 								
 		sync.syncAccounts();
 		
-		int countAfterFirstSync = count(Account.class);
+		int countAfterFirstSync = countLocal(Account.class);
 		
 		assertThat("after the first sync, the number of accounts should be at least 5",
 				countAfterFirstSync, greaterThan(5));
 				
 		sync.syncAccounts();
-		int countAfterSecondSync = count(Account.class);
+		int countAfterSecondSync = countLocal(Account.class);
 		
 		assertThat("after the second sync, the number of accounts should not change",
 				countAfterSecondSync, equalTo(countAfterFirstSync));
@@ -179,17 +179,17 @@ public class SyncTest {
 	@Test
 	public void testSyncContexts(){		
 		
-		assertThat(count(Context.class), equalTo(0));
+		assertThat(countLocal(Context.class), equalTo(0));
 								
 		sync.syncContexts();
 		
-		int countAfterFirstSync = count(Context.class);
+		int countAfterFirstSync = countLocal(Context.class);
 		
-		assertThat(count(Context.class), greaterThan(5));
+		assertThat(countLocal(Context.class), greaterThan(5));
 				
 		sync.syncContexts();
 		
-		assertThat(count(Context.class), equalTo(countAfterFirstSync));	
+		assertThat(countLocal(Context.class), equalTo(countAfterFirstSync));	
 	}
 	
 	@Test
