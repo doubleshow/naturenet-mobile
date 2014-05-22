@@ -2,6 +2,7 @@ package net.nature.mobile.model;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +57,23 @@ public class Note extends SyncableModel {
 		account_id = local_account.getId();			
 		Context local_context = SyncableModel.findByUID(Context.class, getUId());			
 		context_id = local_context.getId();
+				
+		for (Media media : medias){
+			media.state = STATE.DOWNLOADED;
+		}		
 	}
+	
+	protected void doCommitChildren(){
+		for (Media media : getMedias()){
+			media.setNote(this);
+			media.commit();
+		}				
+	}
+	protected void doSyncChildren(NatureNetAPI api){
+		for (Media media : getMedias()){
+			media.sync0();
+		}				
+	}	
 	
 	@Override
 	protected <T extends SyncableModel> T doDownload(NatureNetAPI api, long uID){
@@ -93,7 +110,11 @@ public class Note extends SyncableModel {
 	private Media[] medias;	
 
 	public List<Media> getMedias(){
-		return new Select().from(Media.class).where("note_id = ?", getId()).execute();
+		if (medias != null){
+			return Arrays.asList(medias);
+		}else{
+			return new Select().from(Media.class).where("note_id = ?", getId()).execute();
+		}
 	}
 
 	public Media getMediaSingle(){
@@ -254,16 +275,18 @@ public class Note extends SyncableModel {
 		return r.data;
 	}
 
-	public Integer getSyncState() {
-		return state;
-	}
-
 	public String getContent() {
 		return content;
 	}
 
 	public void setContent(String content) {
 		this.content = content;
+	}
+
+	public void addMedia(Media media) {
+		if (medias == null){
+			medias = new Media[]{media};
+		}
 	}
 
 

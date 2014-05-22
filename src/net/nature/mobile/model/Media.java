@@ -1,7 +1,12 @@
 package net.nature.mobile.model;
 
+import net.nature.mobile.rest.NatureNetAPI;
+import net.nature.mobile.rest.NatureNetAPI.Result;
+import android.util.Log;
+
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
+import com.activeandroid.query.Select;
 import com.google.common.base.Objects;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -9,7 +14,6 @@ import com.squareup.picasso.Picasso;
 
 public class Media extends SyncableModel{
 
-//	@Expose
 	@Column(name="Note_ID", notNull=true)
 	private Long note_id;
 	
@@ -37,10 +41,10 @@ public class Media extends SyncableModel{
 		return Objects.toStringHelper(this).
 				add("id", getId()).
 				add("uid", getUId()).
+				add("note_id", note_id).
 				add("title", getTitle()).
 				add("url", getURL()).
 				add("local", local).
-//				add("note_id", note_id).
 				toString();
 	}
 
@@ -71,4 +75,20 @@ public class Media extends SyncableModel{
 	public void setTitle(String title) {
 		this.title = title;
 	}
+	
+	@Override
+	protected <T extends SyncableModel> T doUploadNew(NatureNetAPI api){
+		if (getNote() != null){
+			System.out.println(getNote());
+			Result<Media> m = api.createMedia(getNote().getUId(), getTitle(), url);
+			setUId(m.data.getUId()); 
+			setURL(m.data.getURL());
+			save();
+		}
+		return (T) this;
+	}
+
+	Note getNote() {
+		return Model.load(Note.class,  note_id);
+	}	
 }

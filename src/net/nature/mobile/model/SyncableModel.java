@@ -43,7 +43,11 @@ public abstract class SyncableModel extends Model {
 		static public int DOWNLOADED = 5;
 	};
 
-	public void commit() {		
+	public Integer getSyncState() {
+		return state;
+	}	
+	
+	public void commit() {
 		if (state == STATE.NEW){
 			state = STATE.SAVED;
 			save();
@@ -59,7 +63,14 @@ public abstract class SyncableModel extends Model {
 				// compare time stamps to figure out who is newer
 				// if remote is newer, copy over, or the opposite
 			}
-		}
+		}		
+		doCommitChildren();
+	}
+
+	protected void doCommitChildren() {
+	}
+	
+	protected void doSyncChildren(NatureNetAPI api) {		
 	}
 
 	public void sync0(){
@@ -69,6 +80,8 @@ public abstract class SyncableModel extends Model {
 			state = STATE.SYNCED;
 			uID = m.getUId();
 			save();
+			
+			doSyncChildren(api);			
 		}else if (state == STATE.MODIFIED){
 			SyncableModel m = doUploadChanges(api);
 			state = STATE.SYNCED;
