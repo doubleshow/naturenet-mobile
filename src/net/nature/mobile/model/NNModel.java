@@ -24,9 +24,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public abstract class SyncableModel extends Model {
+public abstract class NNModel extends Model {
 
-	public SyncableModel(){
+	public NNModel(){
 		super();
 		uID = -1L;
 		created_at = new Date().getTime();
@@ -73,31 +73,31 @@ public abstract class SyncableModel extends Model {
 	protected void doSyncChildren(NatureNetAPI api) {		
 	}
 
-	public void sync0(){
+	public void push(){
 		NatureNetAPI api = NatureNetRestAdapter.get();
 		if (state == STATE.SAVED){
-			SyncableModel m = doUploadNew(api);
+			NNModel m = doUploadNew(api);
 			state = STATE.SYNCED;
 			uID = m.getUId();
 			save();
 			
 			doSyncChildren(api);			
 		}else if (state == STATE.MODIFIED){
-			SyncableModel m = doUploadChanges(api);
+			NNModel m = doUploadChanges(api);
 			state = STATE.SYNCED;
 			save();
 		}
 	}
 
-	protected <T extends SyncableModel> T doUploadNew(NatureNetAPI api){
+	protected <T extends NNModel> T doUploadNew(NatureNetAPI api){
 		return null;
 	}
 	
-	protected <T extends SyncableModel> T doUploadChanges(NatureNetAPI api){
+	protected <T extends NNModel> T doUploadChanges(NatureNetAPI api){
 		return null;
 	}	
 	
-	protected <T extends SyncableModel> T doDownload(NatureNetAPI api, long uID){
+	protected <T extends NNModel> T doDownload(NatureNetAPI api, long uID){
 		return null;
 	}
 
@@ -111,8 +111,19 @@ public abstract class SyncableModel extends Model {
 	//			return null;
 	//		}
 	//	}
+	
+	public static <T extends NNModel> T resolve(Class klass, long uID) {
+		T model = findByUID(klass, uID);
+		if (model == null){
+			model = download(klass, uID);
+			if (model != null){
+				model.commit();
+			}
+		}
+		return model;
+	}
 
-	public static <T extends SyncableModel> T download(Class klass, long uID) {
+	public static <T extends NNModel> T download(Class klass, long uID) {
 		try {
 			NatureNetAPI api = NatureNetRestAdapter.get();
 			try{
@@ -221,7 +232,7 @@ public abstract class SyncableModel extends Model {
 		return new Select().from(clazz).where("syncState = ?", state).count();
 	}
 
-	public static <T extends SyncableModel> T findByUID(Class clazz, Long uid) {
+	public static <T extends NNModel> T findByUID(Class clazz, Long uid) {
 		return new Select().from(clazz).where("uid = ?", uid).executeSingle();		
 	}
 

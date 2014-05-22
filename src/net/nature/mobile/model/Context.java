@@ -1,5 +1,7 @@
 package net.nature.mobile.model;
 
+import net.nature.mobile.rest.NatureNetAPI;
+
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
@@ -9,7 +11,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 @Table(name="CONTEXT", id="tID")
-public class Context extends SyncableModel {
+public class Context extends NNModel {
 	
 	@Expose
 	@Column(name="Description")
@@ -48,4 +50,9 @@ public class Context extends SyncableModel {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	@Override
+	protected <T extends NNModel> T doDownload(NatureNetAPI api, long uID){
+		return (T) api.getContext(uID).data;
+	}	
 }

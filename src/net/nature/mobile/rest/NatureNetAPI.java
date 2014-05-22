@@ -55,6 +55,9 @@ public interface NatureNetAPI {
 
 	@GET("/account/{username}")
 	Result<Account> getAccount(@Path("username") String username);
+	
+	@GET("/account/{id}?field=id")
+	Result<Account> getAccount(@Path("id") Long uid);	
 
 	@FormUrlEncoded
 	@POST("/account/new/{username}")
@@ -101,6 +104,9 @@ public interface NatureNetAPI {
 
 	@GET("/context/{id}")
 	Result<Context> getContext(@Path("id") Long id);
+
+	@GET("/media/{id}")
+	Result<Media> getMedia(@Path("id") long iD);
 
 
 }

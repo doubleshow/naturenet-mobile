@@ -20,7 +20,7 @@ import com.google.gson.annotations.SerializedName;
 import static com.google.common.base.Preconditions.*;
 
 @Table(name="ACCOUNT", id="tID")
-public class Account extends SyncableModel {
+public class Account extends NNModel {
 
 	@Expose
 	@Column(name="Name")
@@ -48,6 +48,12 @@ public class Account extends SyncableModel {
 				toString();
 	}
 
+	
+	@Override
+	protected <T extends NNModel> T doDownload(NatureNetAPI api, long uID){
+		return (T) api.getAccount(uID).data;
+	}
+	
 	//	public void sync1(){
 	//		NatureNetAPI api = NatureNetRestAdapter.get();
 	//		Result<Account> r = api.createAccount(username, name, password, email, "I consent");

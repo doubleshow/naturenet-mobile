@@ -28,7 +28,7 @@ import com.google.gson.annotations.SerializedName;
 
 import static com.google.common.base.Preconditions.*;
 @Table(name="NOTE", id="tID")
-public class Note extends SyncableModel {
+public class Note extends NNModel {
 
 	// Local
 
@@ -52,11 +52,15 @@ public class Note extends SyncableModel {
 	public Double latitude;
 
 	
-	private void resolveRelationships(){
-		SyncableModel local_account = SyncableModel.findByUID(Account.class, getUId());			
-		account_id = local_account.getId();			
-		Context local_context = SyncableModel.findByUID(Context.class, getUId());			
-		context_id = local_context.getId();
+	private void resolveDependencies(){
+		account = NNModel.resolve(Account.class, account.getUId());
+		context = NNModel.resolve(Context.class, context.getUId());		
+		
+//		SyncableModel.download(Account.class,  account.getUId());
+//		SyncableModel.download(Context.class,  context.getUId());
+					
+		account_id = account.getId();			
+		context_id = context.getId();
 				
 		for (Media media : medias){
 			media.state = STATE.DOWNLOADED;
@@ -71,24 +75,24 @@ public class Note extends SyncableModel {
 	}
 	protected void doSyncChildren(NatureNetAPI api){
 		for (Media media : getMedias()){
-			media.sync0();
+			media.push();
 		}				
 	}	
 	
 	@Override
-	protected <T extends SyncableModel> T doDownload(NatureNetAPI api, long uID){
+	protected <T extends NNModel> T doDownload(NatureNetAPI api, long uID){
 		Note d =  api.getNote(uID).data;
-		d.resolveRelationships();
+		d.resolveDependencies();
 		return (T) d;
 	}
 	
 	@Override
-	protected <T extends SyncableModel> T doUploadNew(NatureNetAPI api){
+	protected <T extends NNModel> T doUploadNew(NatureNetAPI api){
 		return (T) api.createNote(getAccount().getUsername(), "FieldNote", content, getContext().getName(), latitude, longitude).data;
 	}
 	
 	@Override
-	protected <T extends SyncableModel> T doUploadChanges(NatureNetAPI api){
+	protected <T extends NNModel> T doUploadChanges(NatureNetAPI api){
 		return (T) api.updateNote(getUId(), getAccount().getUsername(), "FieldNote", content, getContext().getName(), latitude, longitude).data;
 	}	
 
@@ -123,7 +127,7 @@ public class Note extends SyncableModel {
 
 	public void sync1(){
 		if (state == STATE.DOWNLOADED){
-			SyncableModel existingLocalRecord = SyncableModel.findByUID(Note.class, getUId());
+			NNModel existingLocalRecord = NNModel.findByUID(Note.class, getUId());
 			if (existingLocalRecord == null){
 				state = STATE.SYNCED;
 				save();
@@ -138,10 +142,10 @@ public class Note extends SyncableModel {
 			if (account != null && context != null){
 
 				// resolve relationships
-				SyncableModel local_account = SyncableModel.findByUID(Account.class, account.getUId());			
+				NNModel local_account = NNModel.findByUID(Account.class, account.getUId());			
 				account_id = local_account.getId();			
 
-				Context local_context = SyncableModel.findByUID(Context.class, context.getUId());			
+				Context local_context = NNModel.findByUID(Context.class, context.getUId());			
 				context_id = local_context.getId();			
 
 				save();

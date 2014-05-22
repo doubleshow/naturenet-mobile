@@ -7,8 +7,8 @@ import net.nature.mobile.model.Account;
 import net.nature.mobile.model.Context;
 import net.nature.mobile.model.Media;
 import net.nature.mobile.model.Note;
-import net.nature.mobile.model.SyncableModel;
-import net.nature.mobile.model.SyncableModel.STATE;
+import net.nature.mobile.model.NNModel;
+import net.nature.mobile.model.NNModel.STATE;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,17 +30,13 @@ public class NoteTest {
 	@Before
 	public void setUp(){
 		ShadowLog.stream = System.out;
-		account = Account.findByUsername("tomyeh");
-		
-		context = new Context();
-		context.setName("cu_tree");
-		context.setUId(1L);
-		context.save();
+		account = NNModel.resolve(Account.class,  1L);
+		context = NNModel.resolve(Context.class, 1L);
 		
 		newNote = createNewNote();
 		
 		media = new Media();
-		media.setURL("https://www.google.com/images/srpr/logo11w.png");
+		media.setLocal("test.png");
 		media.setTitle("this is a new media");		
 	}
 	
@@ -55,7 +51,7 @@ public class NoteTest {
 	
 	@Test
 	public void download(){
-		Note note = SyncableModel.download(Note.class, 1L);
+		Note note = NNModel.download(Note.class, 1L);
 		assertThat(note, notNullValue());	
 		assertThat(note.getUId(), equalTo(1L));
 		assertThat(note.getSyncState(), equalTo(Note.STATE.DOWNLOADED));
@@ -63,47 +59,47 @@ public class NoteTest {
 	
 	@Test
 	public void download_with_medias(){
-		Note note = SyncableModel.download(Note.class, 1L);
+		Note note = NNModel.download(Note.class, 1L);
 		List<Media> medias = note.getMedias();
 		
-		assertThat(medias.size(), equalTo(1));
+		assertThat(medias.size(), greaterThan(1));
 		for (Media media : medias){
 			assertThat(media.getSyncState(), equalTo(STATE.DOWNLOADED));
 		}
 		
-		assertThat(SyncableModel.countLocal(Media.class), equalTo(0));
+		assertThat(NNModel.countLocal(Media.class), equalTo(0));
 	}
 	
 	@Test
 	public void download_with_medias_and_commit(){
-		Note note = SyncableModel.download(Note.class, 1L);
+		Note note = NNModel.download(Note.class, 1L);
 		note.commit();
 		List<Media> medias = note.getMedias();
 				
 		for (Media media : medias){
 			assertThat(media.getSyncState(), equalTo(STATE.SYNCED));
 		}		
-		assertThat(SyncableModel.countLocal(Media.class), equalTo(1));
+		assertThat(NNModel.countLocal(Media.class), greaterThan(1));
 	}	
 	
 	@Test
 	public void download_and_commit(){
-		Note note = SyncableModel.download(Note.class, 1L);
+		Note note = NNModel.download(Note.class, 1L);
 		note.commit();
 		assertThat(note.getSyncState(), equalTo(Note.STATE.SYNCED));
 	}
 	
 	@Test
 	public void download_commit_and_redownload(){
-		Note note = SyncableModel.download(Note.class, 1L);
+		Note note = NNModel.download(Note.class, 1L);
 		note.commit();
-		assertThat(SyncableModel.countLocal(Note.class), equalTo(1));
+		assertThat(NNModel.countLocal(Note.class), equalTo(1));
 		
-		note = SyncableModel.download(Note.class, 1L);
+		note = NNModel.download(Note.class, 1L);
 		note.commit();
 		
 		// should still be the same local record (count is still one)
-		assertThat(SyncableModel.countLocal(Note.class), equalTo(1));
+		assertThat(NNModel.countLocal(Note.class), equalTo(1));
 	}
 	
 	@Test
@@ -113,12 +109,12 @@ public class NoteTest {
 	
 	@Test
 	public void create_new_and_save(){
-		assertThat(SyncableModel.countLocal(Note.class), equalTo(0));
+		assertThat(NNModel.countLocal(Note.class), equalTo(0));
 		
 		newNote.commit();
 		assertThat(newNote.getSyncState(), equalTo(Note.STATE.SAVED));
 		
-		assertThat(SyncableModel.countLocal(Note.class), equalTo(1));
+		assertThat(NNModel.countLocal(Note.class), equalTo(1));
 	}
 	
 	@Test
@@ -127,22 +123,22 @@ public class NoteTest {
 		createNewNote().commit();
 		createNewNote().commit();
 		
-		assertThat(SyncableModel.countLocal(Note.class), equalTo(3));
-		assertThat(SyncableModel.countLocal(Note.class, STATE.SAVED), equalTo(3));
-		assertThat(SyncableModel.countLocal(Note.class, STATE.SYNCED), equalTo(0));
+		assertThat(NNModel.countLocal(Note.class), equalTo(3));
+		assertThat(NNModel.countLocal(Note.class, STATE.SAVED), equalTo(3));
+		assertThat(NNModel.countLocal(Note.class, STATE.SYNCED), equalTo(0));
 	}
 	
 	@Test
 	public void create_new_and_sync(){
-		assertThat(SyncableModel.countLocal(Note.class, STATE.SYNCED), equalTo(0));
+		assertThat(NNModel.countLocal(Note.class, STATE.SYNCED), equalTo(0));
 		
 		newNote.commit();
-		assertThat(SyncableModel.countLocal(Note.class, STATE.SAVED), equalTo(1));
+		assertThat(NNModel.countLocal(Note.class, STATE.SAVED), equalTo(1));
 		
-		newNote.sync0();
-		assertThat(SyncableModel.countLocal(Note.class, STATE.SYNCED), equalTo(1));
-		assertThat(SyncableModel.countLocal(Note.class, STATE.SAVED), equalTo(0));
-		assertThat(SyncableModel.countLocal(Note.class), equalTo(1));		
+		newNote.push();
+		assertThat(NNModel.countLocal(Note.class, STATE.SYNCED), equalTo(1));
+		assertThat(NNModel.countLocal(Note.class, STATE.SAVED), equalTo(0));
+		assertThat(NNModel.countLocal(Note.class), equalTo(1));		
 	}
 	
 	@Test
@@ -150,29 +146,29 @@ public class NoteTest {
 		newNote.addMedia(media);
 		newNote.commit();
 		
-		assertThat(SyncableModel.countLocal(Note.class), equalTo(1));
-		assertThat(SyncableModel.countLocal(Note.class, STATE.SAVED), equalTo(1));
+		assertThat(NNModel.countLocal(Note.class), equalTo(1));
+		assertThat(NNModel.countLocal(Note.class, STATE.SAVED), equalTo(1));
 		
-		assertThat(SyncableModel.countLocal(Media.class), equalTo(1));
-		assertThat(SyncableModel.countLocal(Media.class, STATE.SAVED), equalTo(1));
+		assertThat(NNModel.countLocal(Media.class), equalTo(1));
+		assertThat(NNModel.countLocal(Media.class, STATE.SAVED), equalTo(1));
 	}
 	
 	@Test
 	public void create_new_with_media_and_sync(){		
 		newNote.addMedia(media);
 		newNote.commit();
-		newNote.sync0();
+		newNote.push();
 		
-		assertThat(SyncableModel.countLocal(Note.class), equalTo(1));
-		assertThat(SyncableModel.countLocal(Note.class, STATE.SYNCED), equalTo(1));
+		assertThat(NNModel.countLocal(Note.class), equalTo(1));
+		assertThat(NNModel.countLocal(Note.class, STATE.SYNCED), equalTo(1));
 		
-		assertThat(SyncableModel.countLocal(Media.class), equalTo(1));
-		assertThat(SyncableModel.countLocal(Media.class, STATE.SYNCED), equalTo(1));		
+		assertThat(NNModel.countLocal(Media.class), equalTo(1));
+		assertThat(NNModel.countLocal(Media.class, STATE.SYNCED), equalTo(1));		
 	}	
 	
 	@Test
 	public void download_modify(){
-		Note note = SyncableModel.download(Note.class, 1L);				
+		Note note = NNModel.download(Note.class, 1L);				
 		note.commit();
 		assertThat(note.getSyncState(), equalTo(Note.STATE.SYNCED));
 		
@@ -186,18 +182,18 @@ public class NoteTest {
 	
 	@Test
 	public void download_modify_and_sync(){
-		Note note = SyncableModel.download(Note.class, 1L);				
+		Note note = NNModel.download(Note.class, 1L);				
 		note.commit();
 			
 		String newContent = "new content" + new Date().toString();
 		note.setContent(newContent);
 		note.commit();
 		
-		note.sync0();
+		note.push();
 		
 		assertThat(note.getSyncState(), equalTo(Note.STATE.SYNCED));
 		
-		Note syncedNote = SyncableModel.download(Note.class, 1L);	
+		Note syncedNote = NNModel.download(Note.class, 1L);	
 		
 		assertThat(syncedNote.getContent(), equalTo(newContent));
 	}	
