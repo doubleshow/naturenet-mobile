@@ -120,12 +120,12 @@ public class Media extends NNModel{
 	
 	
 	@Override
-	protected <T extends NNModel> T doDownload(NatureNetAPI api, long uID){
+	protected <T extends NNModel> T doPullByUID(NatureNetAPI api, long uID){
 		return (T) api.getMedia(uID).data;
 	}	
 
 	@Override
-	protected <T extends NNModel> T doUploadNew(NatureNetAPI api){
+	protected <T extends NNModel> T doPushNew(NatureNetAPI api){
 		if (getNote() != null){			
 			String public_id = uploadToCloudinary();
 			if (public_id != null){

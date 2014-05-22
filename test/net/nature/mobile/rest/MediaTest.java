@@ -28,7 +28,7 @@ public class MediaTest {
 	@Before
 	public void setUp(){
 		ShadowLog.stream = System.out;
-		note = NNModel.resolve(Note.class,  1L);
+		note = NNModel.resolveByUID(Note.class,  1L);
 		
 		media = new Media();
 		media.setNote(note);
@@ -38,7 +38,7 @@ public class MediaTest {
 	
 	@Test
 	public void download_media(){
-		Media m = NNModel.download(Media.class,  1L);
+		Media m = NNModel.pullByUID(Media.class,  1L);
 		assertThat(m, notNullValue());
 	}
 	
@@ -53,7 +53,7 @@ public class MediaTest {
 		media.push();
 		assertThat(media.getSyncState(), equalTo(STATE.SYNCED));
 		
-		Media r = NNModel.download(Media.class,  media.getUId());
+		Media r = NNModel.pullByUID(Media.class,  media.getUId());
 		assertThat(r, notNullValue());
 	}
 		

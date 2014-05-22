@@ -30,8 +30,8 @@ public class NoteTest {
 	@Before
 	public void setUp(){
 		ShadowLog.stream = System.out;
-		account = NNModel.resolve(Account.class,  1L);
-		context = NNModel.resolve(Context.class, 1L);
+		account = NNModel.resolveByUID(Account.class, 1L);
+		context = NNModel.resolveByUID(Context.class, 1L);
 		
 		newNote = createNewNote();
 		
@@ -51,7 +51,7 @@ public class NoteTest {
 	
 	@Test
 	public void download(){
-		Note note = NNModel.download(Note.class, 1L);
+		Note note = NNModel.pullByUID(Note.class, 1L);
 		assertThat(note, notNullValue());	
 		assertThat(note.getUId(), equalTo(1L));
 		assertThat(note.getSyncState(), equalTo(Note.STATE.DOWNLOADED));
@@ -59,7 +59,7 @@ public class NoteTest {
 	
 	@Test
 	public void download_with_medias(){
-		Note note = NNModel.download(Note.class, 1L);
+		Note note = NNModel.pullByUID(Note.class, 1L);
 		List<Media> medias = note.getMedias();
 		
 		assertThat(medias.size(), greaterThan(1));
@@ -72,7 +72,7 @@ public class NoteTest {
 	
 	@Test
 	public void download_with_medias_and_commit(){
-		Note note = NNModel.download(Note.class, 1L);
+		Note note = NNModel.pullByUID(Note.class, 1L);
 		note.commit();
 		List<Media> medias = note.getMedias();
 				
@@ -84,18 +84,18 @@ public class NoteTest {
 	
 	@Test
 	public void download_and_commit(){
-		Note note = NNModel.download(Note.class, 1L);
+		Note note = NNModel.pullByUID(Note.class, 1L);
 		note.commit();
 		assertThat(note.getSyncState(), equalTo(Note.STATE.SYNCED));
 	}
 	
 	@Test
 	public void download_commit_and_redownload(){
-		Note note = NNModel.download(Note.class, 1L);
+		Note note = NNModel.pullByUID(Note.class, 1L);
 		note.commit();
 		assertThat(NNModel.countLocal(Note.class), equalTo(1));
 		
-		note = NNModel.download(Note.class, 1L);
+		note = NNModel.pullByUID(Note.class, 1L);
 		note.commit();
 		
 		// should still be the same local record (count is still one)
@@ -168,7 +168,7 @@ public class NoteTest {
 	
 	@Test
 	public void download_modify(){
-		Note note = NNModel.download(Note.class, 1L);				
+		Note note = NNModel.pullByUID(Note.class, 1L);				
 		note.commit();
 		assertThat(note.getSyncState(), equalTo(Note.STATE.SYNCED));
 		
@@ -182,7 +182,7 @@ public class NoteTest {
 	
 	@Test
 	public void download_modify_and_sync(){
-		Note note = NNModel.download(Note.class, 1L);				
+		Note note = NNModel.pullByUID(Note.class, 1L);				
 		note.commit();
 			
 		String newContent = "new content" + new Date().toString();
@@ -193,7 +193,7 @@ public class NoteTest {
 		
 		assertThat(note.getSyncState(), equalTo(Note.STATE.SYNCED));
 		
-		Note syncedNote = NNModel.download(Note.class, 1L);	
+		Note syncedNote = NNModel.pullByUID(Note.class, 1L);	
 		
 		assertThat(syncedNote.getContent(), equalTo(newContent));
 	}	

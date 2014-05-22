@@ -131,7 +131,7 @@ public class EditNoteActivity extends Activity {
 			public void onClick(View v) {
 				checkNotNull(mNote);
 				mNote.setContent(mContent.getText().toString());
-				mNote.save();
+				mNote.commit();
 				editFinished();
 			}
 		});
@@ -151,14 +151,13 @@ public class EditNoteActivity extends Activity {
 		int position = context_names.indexOf(mNote.getContext().getName());		
 		mContext.setSelection(position);
 		
-		
 		mContext.setOnItemSelectedListener(new OnItemSelectedListener() {
 		    @Override
 		    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
 		    	Context context = new Select().from(Context.class).where("name = ?", context_names.get(position)).executeSingle();
 		    	checkNotNull(context);
 		    	mNote.context_id = context.getId();
-				mNote.save();
+				mNote.commit();
 		    }
 
 		    @Override

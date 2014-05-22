@@ -52,19 +52,14 @@ public class Note extends NNModel {
 	public Double latitude;
 
 	
-	private void resolveDependencies(){
-		account = NNModel.resolve(Account.class, account.getUId());
-		context = NNModel.resolve(Context.class, context.getUId());		
-		
-//		SyncableModel.download(Account.class,  account.getUId());
-//		SyncableModel.download(Context.class,  context.getUId());
-					
+	protected void resolveDependencies(){
+		account = NNModel.resolveByUID(Account.class, account.getUId());
+		context = NNModel.resolveByUID(Context.class, context.getUId());				
 		account_id = account.getId();			
-		context_id = context.getId();
-				
+		context_id = context.getId();				
 		for (Media media : medias){
 			media.state = STATE.DOWNLOADED;
-		}		
+		}
 	}
 	
 	protected void doCommitChildren(){
@@ -73,26 +68,26 @@ public class Note extends NNModel {
 			media.commit();
 		}				
 	}
-	protected void doSyncChildren(NatureNetAPI api){
+	protected void doPushChildren(NatureNetAPI api){
 		for (Media media : getMedias()){
 			media.push();
 		}				
 	}	
 	
 	@Override
-	protected <T extends NNModel> T doDownload(NatureNetAPI api, long uID){
+	protected <T extends NNModel> T doPullByUID(NatureNetAPI api, long uID){
 		Note d =  api.getNote(uID).data;
 		d.resolveDependencies();
 		return (T) d;
 	}
 	
 	@Override
-	protected <T extends NNModel> T doUploadNew(NatureNetAPI api){
+	protected <T extends NNModel> T doPushNew(NatureNetAPI api){
 		return (T) api.createNote(getAccount().getUsername(), "FieldNote", content, getContext().getName(), latitude, longitude).data;
 	}
 	
 	@Override
-	protected <T extends NNModel> T doUploadChanges(NatureNetAPI api){
+	protected <T extends NNModel> T doPushChanges(NatureNetAPI api){
 		return (T) api.updateNote(getUId(), getAccount().getUsername(), "FieldNote", content, getContext().getName(), latitude, longitude).data;
 	}	
 
@@ -235,6 +230,7 @@ public class Note extends NNModel {
 		return Objects.toStringHelper(this).
 				add("id", getId()).
 				add("uid", getUId()).
+				add("state", getSyncState()).
 				add("content", getContent()).
 				add("lat/lng", latitude + "," + longitude).
 				add("account", getAccount()).

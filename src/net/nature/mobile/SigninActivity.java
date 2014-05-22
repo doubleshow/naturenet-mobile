@@ -2,6 +2,7 @@ package net.nature.mobile;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import net.nature.mobile.model.Account;
+import net.nature.mobile.model.NNModel;
 import net.nature.mobile.rest.NatureNetAPI;
 import net.nature.mobile.rest.NatureNetAPI.Result;
 import net.nature.mobile.rest.NatureNetRestAdapter;
@@ -196,14 +197,14 @@ public class SigninActivity extends Activity {
 
 		@Override
 		protected Boolean doInBackground(Void... params) {
-			// attempt to log in locally
-			mAccount = Account.findByUsername(mUsername);
+			mAccount = NNModel.resolveByName(Account.class,  mUsername);
+			System.out.println("logging"+mAccount);
 			// if the account does not exist
 			if (mAccount == null){
 				errorMessage = "Unable to find " + mUsername;	
 				return false;
 			}else{
-				new Sync().sync(mAccount);
+				mAccount.pullNotes();
 				return true;
 			}
 		}

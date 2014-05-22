@@ -23,11 +23,11 @@ import static com.google.common.base.Preconditions.*;
 public class Account extends NNModel {
 
 	@Expose
-	@Column(name="Name")
+	@Column(name="Fullname")
 	public String name;
-
+	
 	@Expose
-	@Column(name="Username")
+	@Column(name="Name")
 	private String username;
 
 	@Expose
@@ -50,31 +50,16 @@ public class Account extends NNModel {
 
 	
 	@Override
-	protected <T extends NNModel> T doDownload(NatureNetAPI api, long uID){
+	protected <T extends NNModel> T doPullByUID(NatureNetAPI api, long uID){
 		return (T) api.getAccount(uID).data;
 	}
 	
-	//	public void sync1(){
-	//		NatureNetAPI api = NatureNetRestAdapter.get();
-	//		Result<Account> r = api.createAccount(username, name, password, email, "I consent");
-	//		this.uID = r.data.getUId();
-	//		save();
-	//	}
-	//		
-	////		// if it does not exist locally
-	////		if (!existsLocally()){
-	////			save();
-	////			Log.d(TAG , "pulled " + this);
-	////		}else if (!existsRemotely()){
-	//			
-	////		NatureNetAPI api = NatureNetRestAdapter.get();
-	////		if (api != null){
-	////			saveRemotely(api);				
-	////		}
-	////			Log.d(TAG , "pushed " + this);
-	////		}
-	//	}
+	@Override
+	protected <T extends NNModel> T doPullByName(NatureNetAPI api, String name){
+		return (T) api.getAccount(name).data;
+	}	
 
+	@Deprecated
 	protected void saveRemotely(NatureNetAPI api) {
 		checkNotNull(api);
 		Result<Account> r = api.createAccount(getUsername(), name, "", email, "I consent");				
@@ -82,6 +67,7 @@ public class Account extends NNModel {
 		save();
 	}
 
+	@Deprecated
 	public void saveToRemote(){
 		if (existsRemotely()){
 			// TODO: Update existing	
@@ -93,7 +79,8 @@ public class Account extends NNModel {
 			save();
 		}
 	}
-
+	
+	@Deprecated
 	public static Account loadFromRemote(String username){		
 		NatureNetAPI api = NatureNetRestAdapter.get();
 		try{
@@ -114,7 +101,23 @@ public class Account extends NNModel {
 	public List<Note> notes() {
 		return new Select().from(Note.class).where("account_id = ?", getId()).execute();		
 	}
+	
+	public void pullNotes(){
+		NatureNetAPI api = NatureNetRestAdapter.get();
+		Result<List<Note>> r = api.listNotes(username);
+		for (Note u : r.data){
+			u.state = STATE.DOWNLOADED;
+			u.commit();
+		}
+	}
+	
+	public void pushNotes(){
+		for (Note n : getNotes()){
+			n.push();
+		}
+	}
 
+	@Deprecated
 	public static Account findByUsername(String username) {
 		Account a = findByUsernameLocally(username);
 		if (a != null){
@@ -124,6 +127,7 @@ public class Account extends NNModel {
 		}		
 	}
 	
+	@Deprecated
 	public static Account findByUsernameLocally(String username) {
 		return new Select().from(Account.class).where("Username = ?", username).executeSingle();
 	}
@@ -140,7 +144,7 @@ public class Account extends NNModel {
 		return new Select().from(Note.class).where("account_id = ?", getId()).execute();		
 	}
 
-
+	@Deprecated
 	public static Account find_by_uid(Long uid) {
 		return new Select().from(Account.class).where("uid = ?", uid).executeSingle();		
 	}

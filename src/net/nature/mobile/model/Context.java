@@ -52,7 +52,7 @@ public class Context extends NNModel {
 	}
 	
 	@Override
-	protected <T extends NNModel> T doDownload(NatureNetAPI api, long uID){
+	protected <T extends NNModel> T doPullByUID(NatureNetAPI api, long uID){
 		return (T) api.getContext(uID).data;
 	}	
 }

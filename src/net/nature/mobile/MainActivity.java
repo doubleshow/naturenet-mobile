@@ -328,12 +328,10 @@ implements LocationListener {
 	 */
 	public class SyncTask extends AsyncTask<Void, Void, Boolean> {
 		@Override
-		protected Boolean doInBackground(Void... params) {
-			
-			Sync sync = new Sync();
+		protected Boolean doInBackground(Void... params) {					
 			try {
 				checkNotNull(mAccount);
-				sync.sync(mAccount);
+				mAccount.pushNotes();
 			}catch (RetrofitError e){
 				e.printStackTrace();
 			}

@@ -47,18 +47,22 @@ public abstract class NNModel extends Model {
 		return state;
 	}	
 	
-	public void commit() {
-		if (state == STATE.NEW){
+	public void commit() {		
+		if (state == STATE.NEW || state == STATE.SAVED){
 			state = STATE.SAVED;
 			save();
-		}else if (state == STATE.SYNCED){
+			Log.d(TAG, "saved " + this);
+		}else if (state == STATE.SYNCED || state == STATE.MODIFIED){
 			state = STATE.MODIFIED;
-			save();			
+			save();	
+			Log.d(TAG, "saved " + this);			
 		}else if (state == STATE.DOWNLOADED){
+			resolveDependencies();
 			Model ret = (new Select()).from(getClass()).where("uid = ?", getUId()).executeSingle();
 			if (ret == null){
 				state = STATE.SYNCED;
 				save();
+				Log.d(TAG, "saved " + this);				
 			}else{
 				// compare time stamps to figure out who is newer
 				// if remote is newer, copy over, or the opposite
@@ -67,68 +71,101 @@ public abstract class NNModel extends Model {
 		doCommitChildren();
 	}
 
+	protected void resolveDependencies(){	
+	}
+	
 	protected void doCommitChildren() {
 	}
 	
-	protected void doSyncChildren(NatureNetAPI api) {		
+	protected void doPushChildren(NatureNetAPI api) {		
 	}
 
 	public void push(){
 		NatureNetAPI api = NatureNetRestAdapter.get();
 		if (state == STATE.SAVED){
-			NNModel m = doUploadNew(api);
+			NNModel m = doPushNew(api);
 			state = STATE.SYNCED;
 			uID = m.getUId();
 			save();
+			Log.d(TAG , "pushed (N) " + this);
 			
-			doSyncChildren(api);			
+			doPushChildren(api);		
 		}else if (state == STATE.MODIFIED){
-			NNModel m = doUploadChanges(api);
+			NNModel m = doPushChanges(api);
 			state = STATE.SYNCED;
-			save();
+			save();			
+			Log.d(TAG , "pushed (C) " + this);
 		}
 	}
 
-	protected <T extends NNModel> T doUploadNew(NatureNetAPI api){
+	protected <T extends NNModel> T doPushNew(NatureNetAPI api){
 		return null;
 	}
 	
-	protected <T extends NNModel> T doUploadChanges(NatureNetAPI api){
+	protected <T extends NNModel> T doPushChanges(NatureNetAPI api){
 		return null;
 	}	
 	
-	protected <T extends NNModel> T doDownload(NatureNetAPI api, long uID){
+	protected <T extends NNModel> T doPullByUID(NatureNetAPI api, long uID){
 		return null;
 	}
-
-	//	public <T extends SyncableModel> T download(){
-	//		
-	//		try{
-	//			r = doDownload(api);
-	//			data.syncState = STATE.DOWNLOADED;
-	//			return r.data;
-	//		}catch(RetrofitError r){
-	//			return null;
-	//		}
-	//	}
 	
-	public static <T extends NNModel> T resolve(Class klass, long uID) {
+	protected <T extends NNModel> T doPullByName(NatureNetAPI api, String name){
+		return null;
+	}	
+
+	public static <T extends NNModel> T resolveByUID(Class klass, long uID) {
 		T model = findByUID(klass, uID);
 		if (model == null){
-			model = download(klass, uID);
+			model = pullByUID(klass, uID);
 			if (model != null){
 				model.commit();
 			}
 		}
 		return model;
 	}
+	
+	public static <T extends NNModel> T resolveByName(Class klass, String name) {
+		T model = findByName(klass, name);
+		if (model == null){
+			model = pullByName(klass, name);
+			if (model != null){
+				model.commit();
+			}
+		}
+		return model;
+	}	
 
-	public static <T extends NNModel> T download(Class klass, long uID) {
+	public static <T extends NNModel> T pullByUID(Class klass, long uID) {
 		try {
 			NatureNetAPI api = NatureNetRestAdapter.get();
 			try{
 				T obj = (T) klass.getDeclaredConstructor().newInstance();
-				obj = obj.doDownload(api,uID);
+				obj = obj.doPullByUID(api,uID);
+				if (obj != null){
+					obj.state = STATE.DOWNLOADED;
+				}
+				Log.d(TAG, "pulled " + obj);
+				return obj;				
+			}catch(RetrofitError r){
+				return null;
+			}
+
+		} catch (IllegalArgumentException e) {
+		} catch (InstantiationException e) {
+		} catch (IllegalAccessException e) {
+		} catch (InvocationTargetException e) {
+		} catch (NoSuchMethodException e) {
+		}
+		return null;
+	}
+	
+	public static <T extends NNModel> T pullByName(Class klass, String name) {
+		try {
+			NatureNetAPI api = NatureNetRestAdapter.get();
+			try{
+				T obj = (T) klass.getDeclaredConstructor().newInstance();
+				obj = obj.doPullByName(api,name);
 				if (obj != null){
 					obj.state = STATE.DOWNLOADED;
 				}
@@ -144,16 +181,7 @@ public abstract class NNModel extends Model {
 		} catch (NoSuchMethodException e) {
 		}
 		return null;
-
-		//		NatureNetAPI api = NatureNetRestAdapter.get();
-		//		try{
-		//			doDownload(api);
-		//			r.data.syncState = STATE.DOWNLOADED;
-		//			return r.data;
-		//		}catch(RetrofitError r){
-		//			return null;
-		//		}
-	}	
+	}		
 
 	@Expose
 	@Column(name = "UID")
@@ -169,20 +197,24 @@ public abstract class NNModel extends Model {
 				add("id", getId()).
 				add("uid", uID).
 				add("created_at", getTimeCreated()).
+				add("state", state).
 				toString();
 	}
 
-	protected String TAG = "NatureNetModel";
-
+	static protected String TAG = "NatureNetModel";
+	
+	@Deprecated
 	public boolean isRemoteOnly(){
 		Model ret = (new Select()).from(getClass()).where("uid = ?", getUId()).executeSingle();
 		return ret == null;
 	}
 
+	@Deprecated
 	public boolean isLocalOnly() {
 		return uID == -1L;
 	}	
 
+	@Deprecated
 	public boolean existsLocally() {
 		Model ret = (new Select()).from(getClass()).where("uid = ?", getUId()).executeSingle();
 		// BUG: "exist()" does not work initially when database is empty
@@ -190,11 +222,12 @@ public abstract class NNModel extends Model {
 		return ret != null;
 	}
 
+	@Deprecated
 	public boolean existsRemotely(){
 		return uID > 0;
 	}
 
-
+	@Deprecated
 	public void sync(){
 		// if it does not exist locally
 		if (!existsLocally()){
@@ -210,7 +243,7 @@ public abstract class NNModel extends Model {
 	}
 
 
-
+	@Deprecated
 	protected void saveRemotely(NatureNetAPI api) {		
 	}
 
@@ -235,6 +268,10 @@ public abstract class NNModel extends Model {
 	public static <T extends NNModel> T findByUID(Class clazz, Long uid) {
 		return new Select().from(clazz).where("uid = ?", uid).executeSingle();		
 	}
+	
+	public static <T extends NNModel> T findByName(Class clazz, String name) {
+		return new Select().from(clazz).where("name = ?", name).executeSingle();		
+	}	
 
 	public Long getTimeCreated() {
 		return created_at;

@@ -131,18 +131,15 @@ public class CreateNoteActivity extends Activity {
 				note.context_id = mContext.getId();
 				note.longitude = mLongitude;
 				note.latitude = mLatitude;
-				note.save();
-				Log.d(TAG, "save " + note);
+				note.commit();
+				
 
 				Media media = new Media();
 				media.setNote(note);
 				media.setLocal(mCurrentPhotoPath);
-				media.save();
-				Log.d(TAG, "save " + media);
-
+				media.commit();
 
 				galleryAddPic();
-
 
 				Intent result = new Intent();
 				result.putExtra(Extras.OUTPUT_NOTE_ID, note.getId());
