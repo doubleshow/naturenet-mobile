@@ -11,23 +11,18 @@
     <string name="action_gallery">Gallery</string>
     <string name="title_activity_select_account">Select Account</string>
     <string name="title_activity_edit_note">Note</string>
-    
     <string name="prompt_note_content">Edit description.</string>
-    
     <string name="save">Save</string>
-    
     <string name="cancel">Cancel</string>
-    
     <string name="action_sync">Sync</string>
     <string name="title_activity_list_note">Notes</string>
     <string name="title_activity_signin">Sign in</string>
     <string name="title_activity_create_note">Create a New Note</string>
     <string name="title_activity_select_context">Select an Activity</string>
     <string name="action_signout">Sign out</string>
-    
-    
-    
+
     <!-- User interface labels and strings -->
+
 
     <!-- Address format -->
     <string name="address_output_string">%1$s %2$s %3$s</string>
@@ -37,10 +32,11 @@
 
     <!-- Menu title -->
 
+
     <!-- Labels -->
     <string name="latlng">Lat/Long:</string>
     <string name="address">Address:</string>
-    
+
     <!-- Messages -->
     <string name="connected">Client connected</string>
     <string name="connection_error_code_unknown">Unknown connection error code:  %1$d</string>
@@ -48,21 +44,15 @@
     <string name="disconnected">Client disconnected</string>
     <string name="get_address">Get Address</string>
     <string name="get_location">Get Location</string>
-    <string name="illegal_argument_exception">
-        Illegal arguments: Latitude %1$.8f Longitude %2$.8f
-    </string>
+    <string name="illegal_argument_exception">        Illegal arguments: Latitude %1$.8f Longitude %2$.8f</string>
     <string name="invalid_action">Invalid intent action %1$s</string>
     <string name="invalid_integer_id">Invalid integer request ID: %1$s</string>
     <string name="IO_Exception_getFromLocation">IO Exception in Geocoder.getFromLocation()</string>
     <string name="location_requested">Periodic updates requested</string>
     <string name="location_updated">Location updated</string>
     <string name="location_update_error">Location update failed</string>
-    <string name="location_update_error_detail">
-        Location update error. code %1$d message %2$s
-    </string>
-    <string name="location_update_missing_update">
-        Location update error. No incoming location.
-    </string>
+    <string name="location_update_error_detail">        Location update error. code %1$d message %2$s</string>
+    <string name="location_update_missing_update">        Location update error. No incoming location.</string>
     <string name="location_updates_stopped">Periodic updates stopped</string>
     <string name="log_new_location">New location: %1$s</string>
     <string name="no_address_found">No address found for location</string>
@@ -73,14 +63,31 @@
     <string name="no_resolution">Google Play services: unable to resolve connection error.</string>
     <string name="periodic_update_stop">Stopping periodic updates</string>
     <string name="play_services_available">Google Play services is available</string>
-    <string name="request_location_updates_in_progress">
-        Can\'t request location updates, previous request hasn\'t finished
-    </string>
+    <string name="request_location_updates_in_progress">        Can\'t request location updates, previous request hasn\'t finished</string>
     <string name="start_updates">Start Updates</string>
     <string name="stop_updates">Stop Updates</string>
     <string name="unknown">--Unknown--</string>
-    <string name="unknown_activity_request_code">
-        Received an unknown activity request code %1$d in onActivityResult.
-    </string>    
-
+    <string name="unknown_activity_request_code">        Received an unknown activity request code %1$d in onActivityResult.</string>
+    <string name="step1">You are invited to participate in NatureNet, a research project being conducted by the researchers listed on the bottom of the page
+[in consultation with Jim Kravitz, Director of Naturalist Programs at ACES]. In order for us to collect and study the way people are 
+using technology like NatureNet, we must have your consent. In simplest terms, we hope you will use a mobile device, multi-touch d
+isplay, and website to:
+\n\n
+&#8226; Take pictures and make observations about the natural world\n
+&#8226; Share those observations with other visitors\n
+&#8226; Share ideas you have about improving the design of our application\n
+&#8226; Comment on the observations and ideas of others.\n
+\n
+The researchers and other visitors will be able to look at your contributions and comments 
+via the tabletop or website, and we may ask you if you are willing to answer a few questions 
+(either on paper, by phone, or face to face) about your whole experience.  You may stop participating at any time.
+\n\n
+A longer version of this consent form is available [at the ACES front desk/from Prof Yeh/Maher/Preece], or you can indicate 
+your understanding and willingness to participate in our study by checking off the boxes on the next screen.</string>
+    <string name="step2">To participate in NatureNet we will need you to agree to a few things:\n</string>
+    <string name="step2_q1">(Required) I agree that any nature photos I take using the NatureNet application may be uploaded to the tabletop at ACES and/or a website now under development.</string>
+    <string name="step2_q2">(Required) I agree to allow any comments, observations, and profile information that I choose to share with others via the online application to be visible to others who use the application at the same time or after me.</string>
+    <string name="step2_q3">(Optional) I agree to be videotaped/audiotaped during my participation in this study.</string>
+    <string name="step2_q4">(Optional) I agree to complete a short questionnaire during or after my participation in this study.</string>
+    <string name="title_activity_consent">Consent</string>
 </resources>

@@ -1,0 +1,139 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="net.nature.mobile.CreateAccountActivity" >
+
+    <ScrollView
+        android:id="@+id/login_form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <LinearLayout
+            style="@style/LoginFormContainer"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="false"
+                android:textAppearance="?android:attr/textAppearanceMedium" 
+                android:text="@string/step2" />
+
+            <!-- <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+            
+            <CheckedTextView
+                android:id="@+id/checkedTextView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+                android:checked="false"
+                android:textAppearance="?android:attr/textAppearanceMedium" 
+                android:text="@string/step2_q1" />
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:background="#eee" />
+
+            <CheckedTextView
+                android:id="@+id/checkedTextView2"
+                android:layout_below="@+id/checkedTextView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+                android:checked="false"
+                android:textAppearance="?android:attr/textAppearanceMedium" 
+                android:text="@string/step2_q2" />
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:background="#eee" />
+
+            <CheckedTextView
+                android:id="@+id/checkedTextView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+                android:checked="false"
+                android:textAppearance="?android:attr/textAppearanceMedium" 
+                android:text="@string/step2_q3" />
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:background="#eee" />
+
+            <CheckedTextView
+                android:id="@+id/checkedTextView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+                android:checked="false"
+                android:textAppearance="?android:attr/textAppearanceMedium" 
+                android:text="@string/step2_q4" />
+            </RelativeLayout> -->
+
+            <CheckBox
+                android:id="@+id/checkBox1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"                
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/step2_q1"/>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:background="#eee" />
+            
+            <CheckBox
+                android:id="@+id/checkBox2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"                
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/step2_q2"/>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:background="#eee" />
+            
+            <CheckBox
+                android:id="@+id/checkBox3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"                
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/step2_q3"/>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:background="#eee" />
+            
+            <CheckBox
+                android:id="@+id/checkBox4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"                
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/step2_q4"/>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:background="#eee" />            
+            <Button
+                android:id="@+id/next_button"
+                style="@style/ButtonText"
+                android:enabled="false"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/btn_green"
+                android:paddingLeft="32dp"
+                android:paddingRight="32dp"
+                android:text="Next" />
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

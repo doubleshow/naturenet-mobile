@@ -102,7 +102,8 @@ implements LocationListener {
 		mButtonCreateAccount.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(getBaseContext(), CreateAccountActivity.class);
+//				Intent intent = new Intent(getBaseContext(), CreateAccountActivity.class);
+				Intent intent = new Intent(getBaseContext(), ConsentActivity.class);
 				startActivityForResult(intent, REQUEST_CREATE_ACCOUNT);
 			}        	
 		});

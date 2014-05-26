@@ -76,6 +76,10 @@
             android:label="@string/title_activity_select_account" >
         </activity>
         <activity
+            android:name="net.nature.mobile.ConsentActivity"
+            android:label="@string/title_activity_consent" >
+        </activity>        
+        <activity
             android:name="net.nature.mobile.SelectContextActivity"
             android:label="@string/title_activity_select_context" >
         </activity>
