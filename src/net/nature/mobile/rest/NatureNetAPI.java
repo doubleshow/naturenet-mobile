@@ -18,6 +18,7 @@ import net.nature.mobile.model.Context;
 import net.nature.mobile.model.Account;
 import net.nature.mobile.model.Media;
 import net.nature.mobile.model.Note;
+import net.nature.mobile.model.Site;
 import retrofit.ErrorHandler;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
@@ -107,6 +108,9 @@ public interface NatureNetAPI {
 
 	@GET("/media/{id}")
 	Result<Media> getMedia(@Path("id") long iD);
+
+	@GET("/site/{name}/long")
+	Result<Site> getSite(@Path("name") String name);
 
 
 }

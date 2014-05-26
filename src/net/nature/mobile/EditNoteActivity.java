@@ -9,11 +9,13 @@ import net.nature.mobile.model.Media;
 import net.nature.mobile.model.Note;
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -22,6 +24,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.activeandroid.Model;
 import com.activeandroid.query.Select;
@@ -33,6 +36,8 @@ public class EditNoteActivity extends Activity {
 	public static class Extras{
 		public static final String NOTE_ID = "note.id";
 	}
+
+	private static final String TAG = "EditNoteActivity";
 
 	private Button mSave;
 	private Button mCancel;
@@ -137,24 +142,22 @@ public class EditNoteActivity extends Activity {
 		});
 		
 		mContext = (Spinner) findViewById(R.id.note_context);
-		
+				
 		List<Context> contexts = new Select().from(Context.class).execute();
 		final List<String> context_names = Lists.newArrayList();
 		for (Context c : contexts){
 			context_names.add(c.getName());
 		}
 		
-		ArrayAdapter<CharSequence> adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, context_names.toArray());		        
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		mContext.setAdapter(adapter);
-		
-		int position = context_names.indexOf(mNote.getContext().getName());		
+		ContextAdapter adapter = new ContextAdapter(this, contexts);
+		mContext.setAdapter(adapter);		
+		int position = context_names.indexOf(mNote.getContext().getName());
+		Log.d(TAG, "position: " + position);
 		mContext.setSelection(position);
-		
 		mContext.setOnItemSelectedListener(new OnItemSelectedListener() {
 		    @Override
 		    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-		    	Context context = new Select().from(Context.class).where("name = ?", context_names.get(position)).executeSingle();
+		    	Context context = (Context) parentView.getItemAtPosition(position);		    	
 		    	checkNotNull(context);
 		    	mNote.context_id = context.getId();
 				mNote.commit();
@@ -162,11 +165,41 @@ public class EditNoteActivity extends Activity {
 
 		    @Override
 		    public void onNothingSelected(AdapterView<?> parentView) {
-		        // your code here
 		    }
 
 		});
 	}
+	
+
+    class ContextAdapter extends ArrayAdapter<Context> {
+
+        public ContextAdapter(android.content.Context context, List<Context> objects) {
+            super(context, android.R.layout.simple_list_item_2, objects);
+        }
+
+        @Override //don't override if you don't want the default spinner to be a two line view
+        public View getView(int position, View convertView, ViewGroup parent) {
+            return initView(position, convertView);
+        }
+
+        @Override
+        public View getDropDownView(int position, View convertView,
+                                    ViewGroup parent) {
+            return initView(position, convertView);
+        }
+
+        private View initView(int position, View convertView) {
+            if(convertView == null)
+                convertView = View.inflate(getContext(),
+                                           R.layout.item_context_short,
+                                           null);
+            TextView tvText1 = (TextView)convertView.findViewById(R.id.context_name);
+            tvText1.setText(getItem(position).title);
+            TextView tvText2 = (TextView)convertView.findViewById(R.id.site_name);
+            tvText2.setText(getItem(position).getSite().name);
+            return convertView;
+        }
+    }
 	
 	private void editFinished(){
 		

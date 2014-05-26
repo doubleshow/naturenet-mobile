@@ -8,9 +8,10 @@ import java.util.List;
 import net.nature.mobile.model.Account;
 import net.nature.mobile.model.Context;
 import net.nature.mobile.model.Media;
+import net.nature.mobile.model.NNModel;
 import net.nature.mobile.model.Note;
 import net.nature.mobile.model.Session;
-import net.nature.mobile.rest.Sync;
+import net.nature.mobile.model.Site;
 import retrofit.RetrofitError;
 import android.app.Activity;
 import android.content.Intent;
@@ -25,6 +26,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.activeandroid.Model;
 import com.google.android.gms.location.LocationListener;
@@ -54,10 +56,53 @@ implements LocationListener {
 	private View mButtonSelectContext;
 	private MapFragment mMapFragment;
 	private Location mCurrentLocation;
+	private MyTask download;
+
+
+	private class MyTask extends AsyncTask<Void, Integer, Boolean> {
+
+		@Override
+		protected Boolean doInBackground(Void... params) {	    
+			if (NNModel.countLocal(Site.class) == 0){
+				NNModel.resolveByName(Site.class,  "aces");
+				NNModel.resolveByName(Site.class,  "cu");
+				NNModel.resolveByName(Site.class,  "umd");
+				NNModel.resolveByName(Site.class,  "uncc");
+			}						
+			return NNModel.countLocal(Site.class) == 4;
+		}
+
+		@Override
+		protected void onPostExecute(Boolean result) {
+			if (result){
+				doCreate();
+			}else{
+//				Toast.makeText(getApplicationContext(),
+//						"Unable to load data from the server. Please check your internet connection.", Toast.LENGTH_LONG).show();
+//				finish();
+				setContentView(R.layout.activity_retry);
+				findViewById(R.id.buttonRetry).setOnClickListener(new OnClickListener(){
+					@Override
+					public void onClick(View v) {
+						setContentView(R.layout.activity_loading);
+						download = new MyTask();
+						download.execute((Void) null);
+					}					
+				});
+			}
+		}
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+		super.onCreate(savedInstanceState);	
+		setContentView(R.layout.activity_loading);
+		download = new MyTask();
+		download.execute((Void) null);
+		
+	}
+	
+	private void doCreate(){
 		setContentView(R.layout.activity_main);
 
 		mButtonCreateNote = (Button) findViewById(R.id.main_button_create_note);
@@ -70,13 +115,12 @@ implements LocationListener {
 
 		mContextName = (TextView) findViewById(R.id.main_context);
 		mButtonSelectContext = (View) findViewById(R.id.main_button_select_activity);
-
+		
 		mAccount = Session.getAccount();
 		Log.d("main", ""+mAccount);
 		if (mAccount == null){
 			Intent intent = new Intent(getBaseContext(), SelectAccountActivity.class);
 			startActivityForResult(intent, REQUEST_SELECT_ACCOUNT);
-			return;
 		}else{        	
 			onSignedIn(mAccount);
 		}
@@ -165,7 +209,7 @@ implements LocationListener {
 	private void onContextSelected(Context context){
 		checkNotNull(context);
 		mContext = context;
-		mContextName.setText(context.getName());
+		mContextName.setText(context.title);
 	}
 
 	private void launchEditNoteActivity(Long note_id){
