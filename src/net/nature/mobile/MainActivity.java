@@ -33,25 +33,18 @@ import com.squareup.picasso.Picasso;
 public class MainActivity extends Activity 
 implements LocationListener {
 
-	private static final int REQUEST_CREATE_ACCOUNT = 2;
-	private static final int REQUEST_SIGNIN = 1;
 	private static final int REQUEST_CREATE_NOTE = 3;
 	private static final int REQUEST_EDIT_NOTE = 4;
 	private static final int REQUEST_SELECT_CONTEXT = 5;
+	private static final int REQUEST_SELECT_ACCOUNT = 6;
 
-	static final String EXTRA_MESSAGE = "net.nature.mobile.MESSAGE";
 	private static final String TAG = "MainActivity";
-
 
 	private SyncTask mSyncTask;
 	private Account mAccount;
 	private Context mContext;
 
-	private Button mButtonSignin;
 	private TextView mUsername;
-	private Button mButtonCreateAccount;
-	private View mUserContainer;
-	private View mSigninContainer;
 	private View mButtonGallery;
 	private ImageView mLastImage1st;
 	private ImageView mLastImage2nd;
@@ -67,12 +60,8 @@ implements LocationListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		mSigninContainer = findViewById(R.id.main_signin_container);        
-		mButtonSignin = (Button) findViewById(R.id.main_signin);
-		mButtonCreateAccount = (Button) findViewById(R.id.main_create_account);
 		mButtonCreateNote = (Button) findViewById(R.id.main_button_create_note);
 
-		mUserContainer = findViewById(R.id.main_user_container);
 		mUsername = (TextView) findViewById(R.id.main_username);
 		mButtonGallery = (View) findViewById(R.id.main_image_right_arrow);
 		mLastImage1st = (ImageView) findViewById(R.id.main_image_last_1st);
@@ -85,28 +74,12 @@ implements LocationListener {
 		mAccount = Session.getAccount();
 		Log.d("main", ""+mAccount);
 		if (mAccount == null){
-			mUserContainer.setVisibility(View.INVISIBLE);
-			mSigninContainer.setVisibility(View.VISIBLE);
+			Intent intent = new Intent(getBaseContext(), SelectAccountActivity.class);
+			startActivityForResult(intent, REQUEST_SELECT_ACCOUNT);
+			return;
 		}else{        	
 			onSignedIn(mAccount);
 		}
-
-		mButtonSignin.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent(getBaseContext(), SigninActivity.class);
-				startActivityForResult(intent, REQUEST_SIGNIN);
-			}        	
-		});
-
-		mButtonCreateAccount.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-//				Intent intent = new Intent(getBaseContext(), CreateAccountActivity.class);
-				Intent intent = new Intent(getBaseContext(), ConsentActivity.class);
-				startActivityForResult(intent, REQUEST_CREATE_ACCOUNT);
-			}        	
-		});
 
 		mButtonGallery.setOnClickListener(new OnClickListener(){
 			@Override
@@ -159,12 +132,14 @@ implements LocationListener {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == REQUEST_SIGNIN || requestCode == REQUEST_CREATE_ACCOUNT) {
+		if (requestCode == REQUEST_SELECT_ACCOUNT){
 			if (resultCode == RESULT_OK) {
 				Long account_id = data.getLongExtra(SigninActivity.EXTRA_ACCOUNT_ID,-1);
 				Account account = Model.load(Account.class,  account_id);				
 				checkNotNull(account);
-				onSignedIn(account);		
+				onSignedIn(account);
+			}else {
+				finish();
 			}
 		}else if (requestCode == REQUEST_CREATE_NOTE){
 			if (resultCode == RESULT_OK) {	    	
@@ -216,8 +191,6 @@ implements LocationListener {
 		checkNotNull(account);		
 		Session.signIn(account);
 		mAccount = account;
-		mUserContainer.setVisibility(View.VISIBLE);
-		mSigninContainer.setVisibility(View.INVISIBLE);
 		mUsername.setText(account.getUsername());
 
 		// select the default  context
@@ -310,10 +283,10 @@ implements LocationListener {
 
 	private void doSignout() {
 		mAccount = null;
-		mContext = null;
-		mSigninContainer.setVisibility(View.VISIBLE);
-		mUserContainer.setVisibility(View.INVISIBLE);
+		mContext = null;		
 		Session.signOut();
+		Intent intent = new Intent(getBaseContext(), SelectAccountActivity.class);
+		startActivityForResult(intent, REQUEST_SELECT_ACCOUNT);
 	}
 
 	private void doSync() {

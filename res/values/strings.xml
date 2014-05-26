@@ -9,7 +9,7 @@
     <string name="title_activity_display_message">My Message</string>
     <string name="action_camera">Camera</string>
     <string name="action_gallery">Gallery</string>
-    <string name="title_activity_select_account">Select Account</string>
+    <string name="title_activity_select_account">Welcome to NatureNet</string>
     <string name="title_activity_edit_note">Note</string>
     <string name="prompt_note_content">Edit description.</string>
     <string name="save">Save</string>

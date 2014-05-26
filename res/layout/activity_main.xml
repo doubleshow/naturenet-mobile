@@ -155,7 +155,7 @@
             android:text="Create a New Note" />
     </LinearLayout>
 
-    <RelativeLayout
+   <!--  <RelativeLayout
         android:id="@+id/main_signin_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
@@ -177,6 +177,6 @@
             android:layout_alignParentTop="true"
             android:background="@drawable/btn_green"
             android:text="Create Account" />
-    </RelativeLayout>
+    </RelativeLayout> -->
 
 </RelativeLayout>
