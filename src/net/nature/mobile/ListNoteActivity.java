@@ -6,6 +6,7 @@ import net.nature.mobile.ListNoteActivity.UserArrayAdapter.ViewHolder;
 import net.nature.mobile.model.Account;
 import net.nature.mobile.model.Media;
 import net.nature.mobile.model.Note;
+import net.nature.mobile.model.Site;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +26,7 @@ import android.widget.TextView;
 
 import com.activeandroid.Model;
 import com.activeandroid.query.Select;
+import com.google.common.collect.Lists;
 import com.squareup.picasso.Picasso;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -32,6 +34,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class ListNoteActivity extends Activity {
 
 	static public final String EXTRA_ACCOUNT_ID = "account.id";
+	static public final String EXTRA_SITE_ID = "site.id";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +45,11 @@ public class ListNoteActivity extends Activity {
 		Account mAccount = Model.load(Account.class, account_id);
 		checkNotNull(mAccount);
 		
-		List<Note> notes = mAccount.getNotesOrderedByRecency();
+		Long site_id = getIntent().getExtras().getLong(EXTRA_SITE_ID);
+		Site mSite = Model.load(Site.class, site_id);
+		checkNotNull(mSite);
+		
+		List<Note> notes = mAccount.getNotesOrderedByRecencyAtSite(mSite);
 		
 		final ListView listview = new ListView(this);
 		Note[] values = notes.toArray(new Note[]{});

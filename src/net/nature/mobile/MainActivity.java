@@ -5,6 +5,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
 
+import net.nature.mobile.EditNoteActivity.ContextAdapter;
 import net.nature.mobile.model.Account;
 import net.nature.mobile.model.Context;
 import net.nature.mobile.model.Media;
@@ -23,10 +24,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemSelectedListener;
 
 import com.activeandroid.Model;
 import com.google.android.gms.location.LocationListener;
@@ -57,6 +61,9 @@ implements LocationListener {
 	private MapFragment mMapFragment;
 	private Location mCurrentLocation;
 	private MyTask download;
+	private Site mSite;
+	private Spinner mContextSpinner;
+	private ContextAdapter mContextAdapter;
 
 
 	private class MyTask extends AsyncTask<Void, Integer, Boolean> {
@@ -113,25 +120,48 @@ implements LocationListener {
 		mLastImage2nd = (ImageView) findViewById(R.id.main_image_last_2nd);
 		mLastImage3rd = (ImageView) findViewById(R.id.main_image_last_3rd);
 
-		mContextName = (TextView) findViewById(R.id.main_context);
-		mButtonSelectContext = (View) findViewById(R.id.main_button_select_activity);
+//		mContextName = (TextView) findViewById(R.id.main_context);
+//		mButtonSelectContext = (View) findViewById(R.id.main_button_select_activity);
 		
+		//
+		// Context Spinner
+		//
+		mContextSpinner = (Spinner) findViewById(R.id.note_context);
+		mContextSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+		    @Override
+		    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+		    	Context context = (Context) parentView.getItemAtPosition(position);		    	
+		    	checkNotNull(context);
+		    	mContext = context;
+		    }
+
+		    @Override
+		    public void onNothingSelected(AdapterView<?> parentView) {
+		    }
+		});
+
+
 		mAccount = Session.getAccount();
+		mSite = Session.getSite();
+		
 		Log.d("main", ""+mAccount);
-		if (mAccount == null){
+		if (mAccount == null || mSite == null){
 			Intent intent = new Intent(getBaseContext(), SelectAccountActivity.class);
 			startActivityForResult(intent, REQUEST_SELECT_ACCOUNT);
 		}else{        	
-			onSignedIn(mAccount);
+			onSignedIn(mAccount, mSite);
 		}
+		
+		
 
 		mButtonGallery.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(getBaseContext(), ListNoteActivity.class);
 				intent.putExtra(ListNoteActivity.EXTRA_ACCOUNT_ID, mAccount.getId());
+				intent.putExtra(ListNoteActivity.EXTRA_SITE_ID, mSite.getId());
 				startActivity(intent);
-			}        	
+			}
 		});
 
 		mButtonCreateNote.setOnClickListener(new OnClickListener(){
@@ -150,27 +180,30 @@ implements LocationListener {
 			}        	
 		});
 
-		mButtonSelectContext.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				checkNotNull(mContext);
+//		mButtonSelectContext.setOnClickListener(new OnClickListener(){
+//			@Override
+//			public void onClick(View v) {
+//				checkNotNull(mContext);
+//				Intent intent = new Intent(getBaseContext(), SelectContextActivity.class);				
+//				intent.putExtra(SelectContextActivity.EXTRA_INPUT_CONTEXT_ID, mContext.getId());
+//				startActivityForResult(intent, REQUEST_SELECT_CONTEXT);
+//			}        	
+//		});
 
-				Intent intent = new Intent(getBaseContext(), SelectContextActivity.class);				
-				intent.putExtra(SelectContextActivity.EXTRA_INPUT_CONTEXT_ID, mContext.getId());
-				startActivityForResult(intent, REQUEST_SELECT_CONTEXT);
-			}        	
-		});
 
-		if (mContext == null){
-
-		}else{
-			onContextSelected(mContext);
-		}
 
 
 		mMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
 
 
+		
+		if (mContext == null){
+
+		}else{
+			onContextSelected(mContext);
+		}
+		
+		
 	}
 
 
@@ -179,9 +212,13 @@ implements LocationListener {
 		if (requestCode == REQUEST_SELECT_ACCOUNT){
 			if (resultCode == RESULT_OK) {
 				Long account_id = data.getLongExtra(SigninActivity.EXTRA_ACCOUNT_ID,-1);
-				Account account = Model.load(Account.class,  account_id);				
+				Account account = Model.load(Account.class,  account_id);
+				String site_name = data.getStringExtra(SelectAccountActivity.EXTRA_SITE_NAME);
+				Site site = NNModel.findByName(Site.class, site_name.toLowerCase());
+				
 				checkNotNull(account);
-				onSignedIn(account);
+				checkNotNull(site);
+				onSignedIn(account,site);
 			}else {
 				finish();
 			}
@@ -208,8 +245,12 @@ implements LocationListener {
 
 	private void onContextSelected(Context context){
 		checkNotNull(context);
-		mContext = context;
-		mContextName.setText(context.title);
+		int position = mContextAdapter.getPositionByName(context.getName());			
+		mContextSpinner.setSelection(position);
+		
+		
+//		mContext = context;
+//		mContextName.setText(context.title);
 	}
 
 	private void launchEditNoteActivity(Long note_id){
@@ -231,16 +272,17 @@ implements LocationListener {
 		}
 	}
 
-	private void onSignedIn(Account account){
+	private void onSignedIn(Account account, Site site){
 		checkNotNull(account);		
-		Session.signIn(account);
+		Session.signIn(account,site);
 		mAccount = account;
+		mSite = site;
 		mUsername.setText(account.getUsername());
-
-		// select the default  context
-		Context context = Model.load(Context.class, 1L);
-		onContextSelected(context);
-
+		
+		mContextAdapter = new ContextAdapter(this, mSite);
+		mContextSpinner.setAdapter(mContextAdapter);
+		mContextSpinner.setSelection(1);
+		
 		loadRecentNotes(account);
 	}
 

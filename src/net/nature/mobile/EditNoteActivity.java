@@ -7,6 +7,7 @@ import java.util.List;
 import net.nature.mobile.model.Context;
 import net.nature.mobile.model.Media;
 import net.nature.mobile.model.Note;
+import net.nature.mobile.model.Site;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -53,12 +54,6 @@ public class EditNoteActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit_note);
 
-		//		if (savedInstanceState == null) {
-		////			getFragmentManager().beginTransaction()
-		////					.add(R.id.container, new PlaceholderFragment()).commit();
-		//			
-		//			
-		//		}	
 		mImage = (ImageView) findViewById(R.id.note_image);
 		mContent = (EditText) findViewById(R.id.note_content);
 		
@@ -142,17 +137,12 @@ public class EditNoteActivity extends Activity {
 		});
 		
 		mContext = (Spinner) findViewById(R.id.note_context);
-				
-		List<Context> contexts = new Select().from(Context.class).execute();
-		final List<String> context_names = Lists.newArrayList();
-		for (Context c : contexts){
-			context_names.add(c.getName());
-		}
+			
 		
-		ContextAdapter adapter = new ContextAdapter(this, contexts);
-		mContext.setAdapter(adapter);		
-		int position = context_names.indexOf(mNote.getContext().getName());
-		Log.d(TAG, "position: " + position);
+		ContextAdapter adapter = new ContextAdapter(this);
+		mContext.setAdapter(adapter);
+		int position = adapter.getPositionByName(mNote.getContext().getName());
+		Log.d(TAG,"position: " + position);		
 		mContext.setSelection(position);
 		mContext.setOnItemSelectedListener(new OnItemSelectedListener() {
 		    @Override
@@ -171,11 +161,31 @@ public class EditNoteActivity extends Activity {
 	}
 	
 
-    class ContextAdapter extends ArrayAdapter<Context> {
+    static class ContextAdapter extends ArrayAdapter<Context> {
+    	
+    	private List<Context> contexts;
 
-        public ContextAdapter(android.content.Context context, List<Context> objects) {
-            super(context, android.R.layout.simple_list_item_2, objects);
+		public int getPositionByName(String name){    	
+    		final List<String> context_names = Lists.newArrayList();
+    		for (Context c : contexts){
+    			context_names.add(c.getName());
+    		}
+    		return context_names.indexOf(name);
+    	}
+
+        public ContextAdapter(android.content.Context context){
+            super(context, android.R.layout.simple_list_item_2);//, objects);
+            contexts = new Select().from(Context.class).execute();
+            addAll(contexts);
+//            contexts = objects;
         }
+        
+        public ContextAdapter(android.content.Context context, Site site){
+            super(context, android.R.layout.simple_list_item_2);            
+            contexts = site.getContexts();
+            addAll(contexts);
+        }
+        
 
         @Override //don't override if you don't want the default spinner to be a two line view
         public View getView(int position, View convertView, ViewGroup parent) {

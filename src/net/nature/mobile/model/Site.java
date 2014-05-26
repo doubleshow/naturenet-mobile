@@ -25,6 +25,10 @@ public class Site extends NNModel{
 	@Expose
 	@Column(name="Description")
 	public String description;
+
+	@Expose
+	@Column(name="Kind")
+	public String kind;
 	
 	@Expose
 	private Context contexts[];

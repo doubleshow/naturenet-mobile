@@ -14,6 +14,7 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -138,6 +139,18 @@ public class Account extends NNModel {
 
 	public List<Note> getNotesOrderedByRecency() {
 		return new Select().from(Note.class).where("account_id = ?", getId()).orderBy("tid DESC").execute();		
+	}
+	
+	public List<Note> getNotesOrderedByRecencyAtSite(Site site) {
+		List<Note> allNotes = new Select().from(Note.class).where("account_id = ?", getId()).orderBy("tid DESC").execute();
+		List<Note> filteredNotes = Lists.newArrayList();
+		// Filter Notes by Site
+		for (Note note : allNotes){
+			if (note.getContext().site_id == site.getId()){
+				filteredNotes.add(note);
+			}
+		}		
+		return filteredNotes;
 	}
 
 	public List<Note> getNotes() {

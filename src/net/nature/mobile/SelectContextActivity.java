@@ -35,7 +35,7 @@ public class SelectContextActivity extends FragmentActivity {
 	
 	static final String EXTRA_INPUT_CONTEXT_ID = "context.id";
 	static final String EXTRA_OUTPUT_CONTEXT_ID = "context.id";
-	private MyPagerAdapter adapterViewPager;
+	private SitePagerAdapter adapterViewPager;
 	private MyTask download;
 
 	@Override
@@ -62,25 +62,27 @@ public class SelectContextActivity extends FragmentActivity {
 	    protected void onPostExecute(List<String> result) {
 	    	setContentView(R.layout.activity_select_context);
 			ViewPager vpPager = (ViewPager) findViewById(R.id.vpPager);
-			adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
+			adapterViewPager = new SitePagerAdapter(getSupportFragmentManager());
 			vpPager.setAdapter(adapterViewPager);
 			vpPager.invalidate();
 		}
 	    
 	}
 
-	public static class FirstFragment extends Fragment {
+	public static class SiteFragment extends Fragment {
 		// Store instance variables
-		private String title;
+		
+		private static final String SITE_NAME = "site.name";
+		String title;
 		private int page;
 		private Site site;
 
 		// newInstance constructor for creating fragment with arguments
-		public static FirstFragment newInstance(int page, String title) {
-			FirstFragment fragmentFirst = new FirstFragment();
+		public static SiteFragment newInstance(int page, String title) {
+			SiteFragment fragmentFirst = new SiteFragment();
 			Bundle args = new Bundle();
 			args.putInt("someInt", page);
-			args.putString("someTitle", title);
+			args.putString(SITE_NAME, title);
 			fragmentFirst.setArguments(args);
 			return fragmentFirst;
 		}
@@ -90,12 +92,9 @@ public class SelectContextActivity extends FragmentActivity {
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
 			page = getArguments().getInt("someInt", 0);
-			title = getArguments().getString("someTitle");
-			
-			
+			title = getArguments().getString(SITE_NAME);
 			site = NNModel.findByName(Site.class, title.toLowerCase());
-			
-			//	        site = getArguments().getString("someTitle");
+			Log.d(TAG,"site:" + site);
 		}
 
 		// Inflate the view for the fragment based on layout XML
@@ -128,14 +127,18 @@ public class SelectContextActivity extends FragmentActivity {
 			});
 			return view;
 		}
+
+		public String getSiteName() {
+			return getArguments().getString(SITE_NAME);
+		}
 	}
 	
 	
 
-	public static class MyPagerAdapter extends FragmentPagerAdapter {
+	public static class SitePagerAdapter extends FragmentPagerAdapter {
 		private static int NUM_ITEMS = 4;
 
-		public MyPagerAdapter(FragmentManager fragmentManager) {
+		public SitePagerAdapter(FragmentManager fragmentManager) {
 			super(fragmentManager);
 		}
 
@@ -150,13 +153,13 @@ public class SelectContextActivity extends FragmentActivity {
 		public Fragment getItem(int position) {
 			switch (position) {
 			case 0: // Fragment # 0 - This will show FirstFragment
-				return FirstFragment.newInstance(0, "ACES");
+				return SiteFragment.newInstance(0, "ACES");
 			case 1: // Fragment # 0 - This will show FirstFragment different title
-				return FirstFragment.newInstance(1, "CU");
+				return SiteFragment.newInstance(1, "CU");
 			case 2: // Fragment # 1 - This will show SecondFragment
-				return FirstFragment.newInstance(2, "UMD");
+				return SiteFragment.newInstance(2, "UMD");
 			case 3: // Fragment # 1 - This will show SecondFragment
-				return FirstFragment.newInstance(3, "UNCC");				
+				return SiteFragment.newInstance(3, "UNCC");				
 			default:
 				return null;
 			}

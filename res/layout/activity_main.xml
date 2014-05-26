@@ -56,7 +56,7 @@
             android:id="@+id/label_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Your Current Location"
+            android:text="My Location"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <fragment
@@ -70,10 +70,10 @@
             android:id="@+id/label_activity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Your Current Activity"
+            android:text="My Current Activity"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
-        <RelativeLayout
+<!--         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
 
@@ -92,13 +92,19 @@
                 android:layout_alignParentTop="true"
                 android:src="@drawable/ic_ellipsis"
                 android:visibility="visible" />
-        </RelativeLayout>
+        </RelativeLayout> -->
+
+        <Spinner
+            android:id="@+id/note_context"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/note_content" />
 
         <TextView
             android:id="@+id/label_notes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Your Notes"
+            android:text="My Observation Notes"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <LinearLayout
@@ -149,7 +155,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/btn_green"
             android:drawableLeft="@drawable/ic_camera"
-            android:text="Create a New Note" />
+            android:text="Make a New Observation" />
     </LinearLayout>
 
     <!--
