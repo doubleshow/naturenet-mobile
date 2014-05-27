@@ -111,20 +111,20 @@ public class SelectContextActivity extends FragmentActivity {
 			ContextArrayAdapter adapter = new ContextArrayAdapter(getActivity(),values);	
 			listview.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 			listview.setAdapter(adapter);
-			listview.setOnItemClickListener(new OnItemClickListener(){
-
-				@Override
-				public void onItemClick(AdapterView<?> arg0, View v, int arg2,
-						long arg3) {
-					ContextArrayAdapter.ViewHolder holder = (ContextArrayAdapter.ViewHolder) v.getTag();
-					Context context = holder.context;
-
-					Intent result = new Intent();
-					result.putExtra(EXTRA_OUTPUT_CONTEXT_ID, context.getId());
-					getActivity().setResult(Activity.RESULT_OK, result);
-					getActivity().finish();
-				}
-			});
+//			listview.setOnItemClickListener(new OnItemClickListener(){
+//
+//				@Override
+//				public void onItemClick(AdapterView<?> arg0, View v, int arg2,
+//						long arg3) {
+//					ContextArrayAdapter.ViewHolder holder = (ContextArrayAdapter.ViewHolder) v.getTag();
+//					Context context = holder.context;
+//
+//					Intent result = new Intent();
+//					result.putExtra(EXTRA_OUTPUT_CONTEXT_ID, context.getId());
+//					getActivity().setResult(Activity.RESULT_OK, result);
+//					getActivity().finish();
+//				}
+//			});
 			return view;
 		}
 

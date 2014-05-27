@@ -62,6 +62,11 @@ public class Site extends NNModel{
 		}
 	}
 	
+	public List<Context> getActivities(){
+		return new Select().from(Context.class).where("site_id = ? and kind = ?", getId(), "Activity").execute();		
+	}
+		
+	
 	public String toString(){
 		return Objects.toStringHelper(this).
 				add("id", getId()).

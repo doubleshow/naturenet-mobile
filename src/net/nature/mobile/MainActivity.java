@@ -5,7 +5,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
 
-import net.nature.mobile.EditNoteActivity.ContextAdapter;
+import net.nature.mobile.EditNoteActivity.SiteActivitiesAdapter;
 import net.nature.mobile.model.Account;
 import net.nature.mobile.model.Context;
 import net.nature.mobile.model.Media;
@@ -63,7 +63,7 @@ implements LocationListener {
 	private MyTask download;
 	private Site mSite;
 	private Spinner mContextSpinner;
-	private ContextAdapter mContextAdapter;
+	private SiteActivitiesAdapter mContextAdapter;
 
 
 	private class MyTask extends AsyncTask<Void, Integer, Boolean> {
@@ -256,6 +256,7 @@ implements LocationListener {
 	private void launchEditNoteActivity(Long note_id){
 		Intent intent = new Intent(getBaseContext(), EditNoteActivity.class);
 		intent.putExtra(EditNoteActivity.Extras.NOTE_ID, note_id);
+		intent.putExtra(EditNoteActivity.EXTRA_SITE_ID, mSite.getId());
 		startActivityForResult(intent, REQUEST_EDIT_NOTE);
 	}
 
@@ -279,7 +280,7 @@ implements LocationListener {
 		mSite = site;
 		mUsername.setText(account.getUsername());
 		
-		mContextAdapter = new ContextAdapter(this, mSite);
+		mContextAdapter = new SiteActivitiesAdapter(this, mSite);
 		mContextSpinner.setAdapter(mContextAdapter);
 		mContextSpinner.setSelection(1);
 		

@@ -35,6 +35,7 @@ public class ListNoteActivity extends Activity {
 
 	static public final String EXTRA_ACCOUNT_ID = "account.id";
 	static public final String EXTRA_SITE_ID = "site.id";
+	private Site mSite;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +47,7 @@ public class ListNoteActivity extends Activity {
 		checkNotNull(mAccount);
 		
 		Long site_id = getIntent().getExtras().getLong(EXTRA_SITE_ID);
-		Site mSite = Model.load(Site.class, site_id);
+		mSite = Model.load(Site.class, site_id);
 		checkNotNull(mSite);
 		
 		List<Note> notes = mAccount.getNotesOrderedByRecencyAtSite(mSite);
@@ -65,7 +66,8 @@ public class ListNoteActivity extends Activity {
 			public void onItemClick(AdapterView<?> arg0, View v, int arg2, long arg3) {
 				ViewHolder holder = (UserArrayAdapter.ViewHolder) v.getTag();
 				Intent intent = new Intent(getBaseContext(), EditNoteActivity.class);
-				intent.putExtra(EditNoteActivity.Extras.NOTE_ID, holder.note.getId());				
+				intent.putExtra(EditNoteActivity.Extras.NOTE_ID, holder.note.getId());	
+				intent.putExtra(EditNoteActivity.EXTRA_SITE_ID, mSite.getId());
 				startActivity(intent);
 			}
 		});

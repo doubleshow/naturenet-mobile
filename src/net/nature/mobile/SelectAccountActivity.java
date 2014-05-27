@@ -24,7 +24,7 @@ public class SelectAccountActivity extends FragmentActivity {
 	
 	private Button mButtonSignin;
 	private Button mButtonCreateAccount;
-	private String siteName;
+	private String mSiteName;
 		
 	private SitePagerAdapter adapterViewPager;
 	private ViewPager vpPager;
@@ -54,6 +54,8 @@ public class SelectAccountActivity extends FragmentActivity {
 			}        	
 		});	
 		
+		// Default site name
+		mSiteName = "aces";
 		
 		vpPager = (ViewPager) findViewById(R.id.vpPager);
 		adapterViewPager = new SitePagerAdapter(getSupportFragmentManager());
@@ -68,8 +70,8 @@ public class SelectAccountActivity extends FragmentActivity {
 			}
 			@Override
 			public void onPageSelected(int i) {
-				siteName = ((SiteFragment) adapterViewPager.getItem(i)).getSiteName();	
-				Log.d(TAG, "onPageSelected: " + siteName);
+				mSiteName = ((SiteFragment) adapterViewPager.getItem(i)).getSiteName();	
+				Log.d(TAG, "onPageSelected: " + mSiteName);
 			}			
 		});
 		vpPager.setCurrentItem(0);
@@ -79,10 +81,10 @@ public class SelectAccountActivity extends FragmentActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == REQUEST_SIGNIN || requestCode == REQUEST_CREATE_ACCOUNT) {
 			if (resultCode == RESULT_OK) {									
-				data.putExtra(EXTRA_SITE_NAME, siteName);
+				data.putExtra(EXTRA_SITE_NAME, mSiteName);
 				setResult(RESULT_OK, data);
 				finish();
-				Toast.makeText(getApplicationContext(), siteName, Toast.LENGTH_LONG).show();
+				Toast.makeText(getApplicationContext(), mSiteName, Toast.LENGTH_LONG).show();
 			}
 		}
 	}

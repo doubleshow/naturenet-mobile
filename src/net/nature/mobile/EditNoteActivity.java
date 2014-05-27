@@ -40,6 +40,8 @@ public class EditNoteActivity extends Activity {
 
 	private static final String TAG = "EditNoteActivity";
 
+	public static final String EXTRA_SITE_ID = "site.id";
+
 	private Button mSave;
 	private Button mCancel;
 	private ImageView mImage;
@@ -49,10 +51,16 @@ public class EditNoteActivity extends Activity {
 	private View mButtonBar;
 	private MapFragment mMap;
 
+	private Site mSite;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit_note);
+				
+		Long site_id = getIntent().getExtras().getLong(EXTRA_SITE_ID);
+		mSite = Model.load(Site.class, site_id);
+		checkNotNull(mSite);		
 
 		mImage = (ImageView) findViewById(R.id.note_image);
 		mContent = (EditText) findViewById(R.id.note_content);
@@ -139,7 +147,7 @@ public class EditNoteActivity extends Activity {
 		mContext = (Spinner) findViewById(R.id.note_context);
 			
 		
-		ContextAdapter adapter = new ContextAdapter(this);
+		SiteActivitiesAdapter adapter = new SiteActivitiesAdapter(this, mSite);
 		mContext.setAdapter(adapter);
 		int position = adapter.getPositionByName(mNote.getContext().getName());
 		Log.d(TAG,"position: " + position);		
@@ -161,29 +169,28 @@ public class EditNoteActivity extends Activity {
 	}
 	
 
-    static class ContextAdapter extends ArrayAdapter<Context> {
+    static class SiteActivitiesAdapter extends ArrayAdapter<Context> {
     	
-    	private List<Context> contexts;
+    	private List<Context> activities;
 
 		public int getPositionByName(String name){    	
     		final List<String> context_names = Lists.newArrayList();
-    		for (Context c : contexts){
+    		for (Context c : activities){
     			context_names.add(c.getName());
     		}
     		return context_names.indexOf(name);
     	}
 
-        public ContextAdapter(android.content.Context context){
-            super(context, android.R.layout.simple_list_item_2);//, objects);
-            contexts = new Select().from(Context.class).execute();
-            addAll(contexts);
-//            contexts = objects;
-        }
+//        public ContextAdapter(android.content.Context context){
+//            super(context, android.R.layout.simple_list_item_2);//, objects);
+//            contexts = new Select().from(Context.class).execute();
+//            addAll(contexts);
+//        }
         
-        public ContextAdapter(android.content.Context context, Site site){
+        public SiteActivitiesAdapter(android.content.Context context, Site site){
             super(context, android.R.layout.simple_list_item_2);            
-            contexts = site.getContexts();
-            addAll(contexts);
+            activities = site.getActivities();
+            addAll(activities);
         }
         
 
