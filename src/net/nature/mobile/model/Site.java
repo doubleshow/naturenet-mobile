@@ -31,6 +31,10 @@ public class Site extends NNModel{
 	public String kind;
 	
 	@Expose
+	@Column(name="Image_URL")
+	private String image_url;	
+	
+	@Expose
 	private Context contexts[];
 	
 	
@@ -73,6 +77,15 @@ public class Site extends NNModel{
 				add("uid", getUId()).
 				add("name", name).
 				add("description", description).
+				add("image_url", image_url).
 				toString();
+	}
+
+	public String getImageURL() {
+		return image_url;
+	}
+
+	public void setImageURL(String image_url) {
+		this.image_url = image_url;
 	}	
 }

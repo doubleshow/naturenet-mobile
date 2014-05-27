@@ -84,7 +84,6 @@ public class SelectAccountActivity extends FragmentActivity {
 				data.putExtra(EXTRA_SITE_NAME, mSiteName);
 				setResult(RESULT_OK, data);
 				finish();
-				Toast.makeText(getApplicationContext(), mSiteName, Toast.LENGTH_LONG).show();
 			}
 		}
 	}

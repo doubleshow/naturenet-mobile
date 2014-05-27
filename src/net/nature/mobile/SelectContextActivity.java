@@ -28,6 +28,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.activeandroid.query.Select;
+import com.squareup.picasso.Picasso;
 
 public class SelectContextActivity extends FragmentActivity {
 
@@ -103,28 +104,9 @@ public class SelectContextActivity extends FragmentActivity {
 			View view = inflater.inflate(R.layout.fragment_site, container, false);
 			TextView tvLabel = (TextView) view.findViewById(R.id.textViewDescription);
 			tvLabel.setText(site.description);
-
-			ListView listview = (ListView) view.findViewById(R.id.listView);
 			
-			List<Context> items = site.getContexts();
-			Context[] values = items.toArray(new Context[]{});
-			ContextArrayAdapter adapter = new ContextArrayAdapter(getActivity(),values);	
-			listview.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-			listview.setAdapter(adapter);
-//			listview.setOnItemClickListener(new OnItemClickListener(){
-//
-//				@Override
-//				public void onItemClick(AdapterView<?> arg0, View v, int arg2,
-//						long arg3) {
-//					ContextArrayAdapter.ViewHolder holder = (ContextArrayAdapter.ViewHolder) v.getTag();
-//					Context context = holder.context;
-//
-//					Intent result = new Intent();
-//					result.putExtra(EXTRA_OUTPUT_CONTEXT_ID, context.getId());
-//					getActivity().setResult(Activity.RESULT_OK, result);
-//					getActivity().finish();
-//				}
-//			});
+			ImageView image = (ImageView) view.findViewById(R.id.imageView);
+			Picasso.with(getActivity()).load(site.getImageURL()).resize(600, 300).centerCrop().into(image);
 			return view;
 		}
 

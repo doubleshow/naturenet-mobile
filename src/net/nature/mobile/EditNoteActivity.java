@@ -214,6 +214,8 @@ public class EditNoteActivity extends Activity {
             tvText1.setText(getItem(position).title);
             TextView tvText2 = (TextView)convertView.findViewById(R.id.site_name);
             tvText2.setText(getItem(position).getSite().name);
+            TextView tvText3 = (TextView)convertView.findViewById(R.id.context_description);
+            tvText3.setText(getItem(position).description);            
             return convertView;
         }
     }
