@@ -118,7 +118,7 @@ public class MapFragment extends Fragment {
 		if (mMarker == null){
 			// define marker style (image, size, color)
 			Bitmap pointMarker = UnscaledBitmapLoader.decodeResource(getResources(), R.drawable.ic_camera);
-			MarkerStyle markerStyle = MarkerStyle.builder().setBitmap(pointMarker).setSize(1.0f).setColor(Color.WHITE).build();
+			MarkerStyle markerStyle = MarkerStyle.builder().setBitmap(pointMarker).setSize(0.5f).setColor(Color.WHITE).build();
 			// define label what is shown when you click on marker
 			Label markerLabel = new DefaultLabel("Here");//, "Here is a marker");
 			//

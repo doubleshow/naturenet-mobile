@@ -247,10 +247,6 @@ implements LocationListener {
 		checkNotNull(context);
 		int position = mContextAdapter.getPositionByName(context.getName());			
 		mContextSpinner.setSelection(position);
-		
-		
-//		mContext = context;
-//		mContextName.setText(context.title);
 	}
 
 	private void launchEditNoteActivity(Long note_id){
@@ -282,7 +278,7 @@ implements LocationListener {
 		
 		mContextAdapter = new SiteActivitiesAdapter(this, mSite);
 		mContextSpinner.setAdapter(mContextAdapter);
-		mContextSpinner.setSelection(1);
+		mContextSpinner.setSelection(0);
 		
 		loadRecentNotes(account);
 	}

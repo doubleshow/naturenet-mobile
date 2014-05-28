@@ -4,7 +4,7 @@
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
-    <string name="prompt_password">3-digit PIN</string>
+    <string name="prompt_password">4-digit PIN</string>
     <string name="prompt_name">Full Name</string>
     <string name="prompt_username">Username</string>
     <string name="action_sign_in_register">Create</string>
