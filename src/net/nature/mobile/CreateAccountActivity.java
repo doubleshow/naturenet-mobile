@@ -40,6 +40,8 @@ public class CreateAccountActivity extends Activity {
 	public static final String EXTRA_EMAIL = "com.example.android.authenticatordemo.extra.EMAIL";
 	public static final String EXTRA_NAME = "com.example.android.authenticatordemo.extra.NAME";
 
+	private static final String EXTRA_CONSENT = "consent.text";
+
 	/**
 	 * Keep track of the login task to ensure we can cancel it if requested.
 	 */
@@ -60,6 +62,8 @@ public class CreateAccountActivity extends Activity {
 	private View mLoginStatusView;
 	private TextView mLoginStatusMessageView;
 
+	private String mConsentText;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -76,6 +80,8 @@ public class CreateAccountActivity extends Activity {
 		mEmail = getIntent().getStringExtra(EXTRA_EMAIL);
 		mEmailView = (EditText) findViewById(R.id.email);
 		mEmailView.setText(mEmail);
+		
+		mConsentText = getIntent().getStringExtra(EXTRA_CONSENT);		
 
 		mPasswordView = (EditText) findViewById(R.id.password);
 		mPasswordView
@@ -246,7 +252,7 @@ public class CreateAccountActivity extends Activity {
 			api = NatureNetRestAdapter.get();
 			try{
 				
-				Result<Account> r = api.createAccount(mUsername,  mName, mPassword, mEmail, "I consent");
+				Result<Account> r = api.createAccount(mUsername,  mName, mPassword, mEmail, mConsentText);
 
 				// register the new account here.
 				mAccount = new Account();

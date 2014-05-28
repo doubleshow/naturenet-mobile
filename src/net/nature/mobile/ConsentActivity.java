@@ -3,6 +3,7 @@ package net.nature.mobile;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.activeandroid.Model;
+import com.google.common.collect.Lists;
 
 import retrofit.RetrofitError;
 import net.nature.mobile.model.Account;
@@ -19,6 +20,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
@@ -69,10 +71,14 @@ public class ConsentActivity extends Activity {
 
 	protected static final int REQUEST_NEXT_PAGE = 0;
 	private static final int REQUEST_CREATE_ACCOUNT = 1;
+	protected static final String TAG = "ConsentActivity";
 	private CheckBox checkbox1;
 	private CheckBox checkbox2;
 	private int page;
 	private Button next;
+	private String consentText;
+	private CheckBox checkbox3;
+	private CheckBox checkbox4;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +86,7 @@ public class ConsentActivity extends Activity {
 
 
 		page = getIntent().getIntExtra("page", 1);
+		consentText = getIntent().getStringExtra("consent.text");
 
 		if (page == 1){
 			setContentView(R.layout.activity_consent_page1);	
@@ -89,6 +96,8 @@ public class ConsentActivity extends Activity {
 
 			checkbox1 = (CheckBox) findViewById(R.id.checkBox1);
 			checkbox2 = (CheckBox) findViewById(R.id.checkBox2);
+			checkbox3 = (CheckBox) findViewById(R.id.checkBox3);
+			checkbox4 = (CheckBox) findViewById(R.id.checkBox4);			
 
 			OnClickListener setNextButton = new OnClickListener(){
 				@Override
@@ -101,7 +110,8 @@ public class ConsentActivity extends Activity {
 			checkbox2.setOnClickListener(setNextButton);
 		}else if (page == 3){
 //			Intent intent = new Intent(getBaseContext(), CreateAccountActivity.class);
-			Intent intent = new Intent(getBaseContext(), CreateAccountActivity.class);			
+			Intent intent = new Intent(getBaseContext(), CreateAccountActivity.class);
+			intent.putExtra("consent.text", consentText);
 			startActivityForResult(intent, REQUEST_CREATE_ACCOUNT);
 			return;
 		}		
@@ -112,6 +122,16 @@ public class ConsentActivity extends Activity {
 			public void onClick(View v) {
 				Intent intent = new Intent(getBaseContext(), ConsentActivity.class);
 				intent.putExtra("page", page + 1);
+				if (page == 2){
+					consentText = "";
+					for (CheckBox ch : Lists.newArrayList(checkbox1,checkbox2,checkbox3,checkbox4)){
+						if (ch.isChecked()){
+							consentText += ch.getText().toString();
+						}
+					}
+					intent.putExtra("consent.text", consentText);
+					Log.d(TAG,"consentText=" + consentText);
+				}
 				startActivityForResult(intent, REQUEST_NEXT_PAGE);
 			}
 		});
