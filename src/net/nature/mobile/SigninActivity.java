@@ -126,7 +126,7 @@ public class SigninActivity extends Activity {
 			mPasswordView.setError(getString(R.string.error_field_required));
 			focusView = mPasswordView;
 			cancel = true;
-		} else if (mPassword.length() < 3) {
+		} else if (mPassword.length() != 4 && TextUtils.isDigitsOnly(mPassword)) {
 			mPasswordView.setError(getString(R.string.error_invalid_password));
 			focusView = mPasswordView;
 			cancel = true;
