@@ -45,6 +45,7 @@ public class CreateNoteActivity extends Activity {
 		public static final String INPUT_LONGITUDE = "longitude";
 		public static final String INPUT_LATITUDE = "latitude";
 		public static final String OUTPUT_NOTE_ID = "note.id";
+		public static final String INPUT_LANDMARK_ID = "context.landmark.id";
 	}
 
 	private static final int REQUEST_IMAGE_CAPTURE = 0;
@@ -53,10 +54,14 @@ public class CreateNoteActivity extends Activity {
 
 	private Account mAccount;
 	private Context mContext;
+	private Context mLandmark;
+	
 	private Double mLatitude;
 	private Double mLongitude;
 
 	private String mCurrentPhotoPath;
+
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -69,11 +74,13 @@ public class CreateNoteActivity extends Activity {
 
 		Long account_id = bundle.getLong(Extras.INPUT_ACCOUNT_ID);
 		Long context_id = bundle.getLong(Extras.INPUT_CONTEXT_ID);
+		Long landmark_id = bundle.getLong(Extras.INPUT_LANDMARK_ID);
 		checkNotNull(account_id);
 		checkNotNull(context_id);
 		
-		mAccount = Model.load(Account.class, account_id);
-		mContext = Model.load(Context.class, context_id);
+		mAccount  = Model.load(Account.class, account_id);
+		mContext  = Model.load(Context.class, context_id);
+		mLandmark = Model.load(Context.class, landmark_id);
 		checkNotNull(mAccount);
 		checkNotNull(mContext);
 		
@@ -131,8 +138,9 @@ public class CreateNoteActivity extends Activity {
 				note.setContext(mContext);
 				note.setLongitude(mLongitude);
 				note.setLatitude(mLatitude);
-				note.commit();
+				note.commit();				
 				
+				note.setLandmarkFeedback(mLandmark);
 
 				Media media = new Media();
 				media.setNote(note);

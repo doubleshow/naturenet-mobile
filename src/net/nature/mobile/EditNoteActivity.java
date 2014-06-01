@@ -2,6 +2,7 @@ package net.nature.mobile;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.Date;
 import java.util.List;
 
 import net.nature.mobile.model.Context;
@@ -9,8 +10,10 @@ import net.nature.mobile.model.Feedback;
 import net.nature.mobile.model.Media;
 import net.nature.mobile.model.Note;
 import net.nature.mobile.model.Site;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -63,8 +66,8 @@ public class EditNoteActivity extends Activity {
 				
 		Long site_id = getIntent().getExtras().getLong(EXTRA_SITE_ID);
 		mSite = Model.load(Site.class, site_id);
-		checkNotNull(mSite);		
-
+		checkNotNull(mSite);
+		
 		mImage = (ImageView) findViewById(R.id.note_image);
 		mContent = (EditText) findViewById(R.id.note_content);
 		
@@ -82,6 +85,30 @@ public class EditNoteActivity extends Activity {
 
 		mNote = Model.load(Note.class, id);
 		checkNotNull(mNote);
+		
+		
+		
+		// Title 
+		Date now = new Date();
+		String str = DateUtils.getRelativeDateTimeString(
+
+		        this, // Suppose you are in an activity or other Context subclass
+
+		        mNote.getTimeCreated(), // The time to display
+
+		        DateUtils.MINUTE_IN_MILLIS, // The resolution. This will display only 
+		                                        // minutes (no "3 seconds ago") 
+
+
+		        DateUtils.WEEK_IN_MILLIS, // The maximum resolution at which the time will switch 
+		                         // to default date instead of spans. This will not 
+		                         // display "3 weeks ago" but a full date instead
+
+		        0).toString();
+		ActionBar ab = getActionBar();
+	    ab.setTitle("Observation " + str); 
+
+		
  		
 		//
 		// Note Image

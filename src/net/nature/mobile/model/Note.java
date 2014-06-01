@@ -195,18 +195,20 @@ public class Note extends NNModel {
 	}
 
 	public void setLandmarkFeedback(Context context) {
-		Feedback f = getLandmarkFeedback();
-		if (f == null){
-			f = new Feedback();
-			f.setAccount(getAccount());
-			f.setTarget(this);
-			f.setKind("Landmark");
+		if (context != null){
+			Feedback f = getLandmarkFeedback();
+			if (f == null){
+				f = new Feedback();
+				f.setAccount(getAccount());
+				f.setTarget(this);
+				f.setKind("Landmark");
+			}
+			f.setContent(context.getName());
+			f.commit();
 		}
-		f.setContent(context.getName());
-		f.commit();
 	}
 	
 	public Feedback getLandmarkFeedback(){
-		return (new Select()).from(Feedback.class).where("target_model = ? and target_id = ?", "Note", this.getId()).executeSingle();		
+		return (new Select()).from(Feedback.class).where("kind = ? and target_model = ? and target_id = ?", "Landmark", "Note", this.getId()).executeSingle();		
 	}
 }

@@ -50,6 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:text="Username"
+            android:visibility="gone"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <TextView
@@ -70,7 +71,7 @@
             android:id="@+id/label_activity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="My Current Activity"
+            android:text="Activity I am doing"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
 <!--         <RelativeLayout
@@ -101,10 +102,23 @@
             android:layout_below="@+id/note_content" />
 
         <TextView
+            android:id="@+id/TextView01"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Landmark I am nearby"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+        
+        <Spinner
+            android:id="@+id/note_landmark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/note_context" />        
+
+        <TextView
             android:id="@+id/label_notes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="My Observation Notes"
+            android:text="Observations I've made"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <LinearLayout

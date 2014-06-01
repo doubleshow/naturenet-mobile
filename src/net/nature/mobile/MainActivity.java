@@ -6,6 +6,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.List;
 
 import net.nature.mobile.EditNoteActivity.SiteActivitiesAdapter;
+import net.nature.mobile.EditNoteActivity.SiteLandmarkAdapter;
 import net.nature.mobile.model.Account;
 import net.nature.mobile.model.Context;
 import net.nature.mobile.model.Media;
@@ -14,6 +15,7 @@ import net.nature.mobile.model.Note;
 import net.nature.mobile.model.Session;
 import net.nature.mobile.model.Site;
 import retrofit.RetrofitError;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.location.Location;
@@ -64,6 +66,9 @@ implements LocationListener {
 	private Site mSite;
 	private Spinner mContextSpinner;
 	private SiteActivitiesAdapter mContextAdapter;
+	private Spinner mLandmarkSpinner;
+	protected Context mLandmark;
+	private SiteLandmarkAdapter mLandmarkAdapter;
 
 
 	private class MyTask extends AsyncTask<Void, Integer, Boolean> {
@@ -139,6 +144,21 @@ implements LocationListener {
 		    public void onNothingSelected(AdapterView<?> parentView) {
 		    }
 		});
+		
+		// Landmark Spinner
+		mLandmarkSpinner = (Spinner) findViewById(R.id.note_landmark);
+		mLandmarkSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+		    @Override
+		    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+		    	Context context = (Context) parentView.getItemAtPosition(position);		    	
+		    	checkNotNull(context);
+		    	mLandmark = context;
+		    }
+
+		    @Override
+		    public void onNothingSelected(AdapterView<?> parentView) {
+		    }
+		});
 
 
 		mAccount = Session.getAccount();
@@ -172,6 +192,7 @@ implements LocationListener {
 				Intent intent = new Intent(getBaseContext(), CreateNoteActivity.class);
 				intent.putExtra(CreateNoteActivity.Extras.INPUT_ACCOUNT_ID, mAccount.getId());
 				intent.putExtra(CreateNoteActivity.Extras.INPUT_CONTEXT_ID, mContext.getId());
+				intent.putExtra(CreateNoteActivity.Extras.INPUT_LANDMARK_ID, mLandmark.getId());
 				if (mCurrentLocation != null){
 					intent.putExtra(CreateNoteActivity.Extras.INPUT_LONGITUDE,  mCurrentLocation.getLongitude());
 					intent.putExtra(CreateNoteActivity.Extras.INPUT_LATITUDE,  mCurrentLocation.getLatitude());
@@ -274,11 +295,20 @@ implements LocationListener {
 		Session.signIn(account,site);
 		mAccount = account;
 		mSite = site;
+		
+		ActionBar ab = getActionBar();
+	    ab.setTitle(account.getUsername()); 
+	  
 		mUsername.setText(account.getUsername());
 		
 		mContextAdapter = new SiteActivitiesAdapter(this, mSite);
 		mContextSpinner.setAdapter(mContextAdapter);
 		mContextSpinner.setSelection(0);
+
+		mLandmarkAdapter = new SiteLandmarkAdapter(this, mSite);
+		mLandmarkSpinner.setAdapter(mLandmarkAdapter);
+		mLandmarkSpinner.setSelection(0);
+		
 		
 		loadRecentNotes(account);
 	}
