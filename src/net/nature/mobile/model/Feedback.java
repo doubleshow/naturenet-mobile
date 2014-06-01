@@ -57,7 +57,7 @@ public class Feedback extends NNModel{
 	@Column(name="Kind")
 	private String kind;
 
-	@Column(name="account_id")
+	@Column(name="account_id", notNull=true)
 	private Long account_id;
 	
 //	public String getPath(){
@@ -72,6 +72,7 @@ public class Feedback extends NNModel{
 		return Objects.toStringHelper(this).
 				add("id", getId()).
 				add("uid", getUId()).
+				add("account_id", account_id).
 				add("target_model", target_model).
 				add("target_id", target_id).
 				add("kind", getKind()).

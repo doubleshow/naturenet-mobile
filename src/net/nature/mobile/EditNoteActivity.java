@@ -5,6 +5,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.List;
 
 import net.nature.mobile.model.Context;
+import net.nature.mobile.model.Feedback;
 import net.nature.mobile.model.Media;
 import net.nature.mobile.model.Note;
 import net.nature.mobile.model.Site;
@@ -178,6 +179,29 @@ public class EditNoteActivity extends Activity {
 		mLandmark = (Spinner) findViewById(R.id.note_landmark);
 		SiteLandmarkAdapter landmarkAdapter = new SiteLandmarkAdapter(this, mSite);
 		mLandmark.setAdapter(landmarkAdapter);
+		
+		
+		Feedback landmarkFeedback = mNote.getLandmarkFeedback();
+		if (landmarkFeedback == null){
+			position = 0;
+		}else{
+			position = landmarkAdapter.getPositionByName(landmarkFeedback.getContent());
+		}
+		mLandmark.setSelection(position);
+		Log.d(TAG,"position: " + position);	
+		mLandmark.setOnItemSelectedListener(new OnItemSelectedListener() {		
+		    @Override
+		    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+		    	Context context = (Context) parentView.getItemAtPosition(position);		    	
+		    	checkNotNull(context);
+		    	mNote.setLandmarkFeedback(context);
+				mNote.commit();
+		    }
+		    @Override
+		    public void onNothingSelected(AdapterView<?> parentView) {
+		    }
+
+		});
 	}
 	
     static class SiteLandmarkAdapter extends ArrayAdapter<Context> {

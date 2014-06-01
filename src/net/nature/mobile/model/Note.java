@@ -193,4 +193,20 @@ public class Note extends NNModel {
 	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
+
+	public void setLandmarkFeedback(Context context) {
+		Feedback f = getLandmarkFeedback();
+		if (f == null){
+			f = new Feedback();
+			f.setAccount(getAccount());
+			f.setTarget(this);
+			f.setKind("Landmark");
+		}
+		f.setContent(context.getName());
+		f.commit();
+	}
+	
+	public Feedback getLandmarkFeedback(){
+		return (new Select()).from(Feedback.class).where("target_model = ? and target_id = ?", "Note", this.getId()).executeSingle();		
+	}
 }

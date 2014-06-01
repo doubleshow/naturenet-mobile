@@ -389,6 +389,7 @@ implements LocationListener {
 			try {
 				checkNotNull(mAccount);
 				mAccount.pushNotes();
+				mAccount.pushFeedbacks();
 			}catch (RetrofitError e){
 				e.printStackTrace();
 			}

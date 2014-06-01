@@ -80,6 +80,13 @@ public class Account extends NNModel {
 			n.push();
 		}
 	}
+	
+	public void pushFeedbacks() {
+		for (Feedback n : getFeedbacks()){
+			n.push();
+		}
+	}
+
 
 	public List<Note> getRecentNotes(int n) {
 		return new Select().from(Note.class).where("account_id = ?", getId()).orderBy("tid DESC").limit(n).execute();		
@@ -103,6 +110,10 @@ public class Account extends NNModel {
 
 	public List<Note> getNotes() {
 		return new Select().from(Note.class).where("account_id = ?", getId()).execute();		
+	}
+	
+	public List<Feedback> getFeedbacks(){
+		return new Select().from(Feedback.class).where("account_id = ?", getId()).execute();
 	}
 
 	public String getEmail() {
@@ -136,5 +147,7 @@ public class Account extends NNModel {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+
 
 }
