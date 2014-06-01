@@ -150,21 +150,4 @@ public class Feedback extends NNModel{
 		target_model = model.getClass().getSimpleName();
 	}	
 
-//	@Override
-//	protected <T extends NNModel> T doPushNew(NatureNetAPI api){
-//		if (getNote() != null){			
-//			String public_id = uploadToCloudinary();
-//			if (public_id != null){
-//				Result<Feedback> m = api.createMedia(getNote().getUId(), getTitle(), public_id);
-//				setUId(m.data.getUId()); 
-//				setURL(m.data.getURL());
-//				save();
-//			}
-//		}
-//		return (T) this;
-//	}
-
-//	Note getNote() {
-//		return Model.load(Note.class,  note_id);
-//	}	
 }

@@ -108,13 +108,7 @@ public class Media extends NNModel{
 			String public_id = ret.getString("public_id");
 			String url = ret.getString("url");
 			Log.d(TAG, "uploaded to cloudinary: " + ret);
-			return public_id;
-			
-//			Result<Media> m = api.createMedia(getUId(), media.getTitle(), url);
-//			media.setUId(m.data.getUId()); 
-//			media.setURL(m.data.getURL());
-//			media.save();
-//			Log.d(TAG, "pushed " +  media);
+			return public_id;		
 		} catch (IOException e) {				
 
 		} catch (JSONException e) {

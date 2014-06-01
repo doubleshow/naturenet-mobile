@@ -124,95 +124,6 @@ public class Note extends NNModel {
 		return new Select().from(Media.class).where("note_id = ?", getId()).executeSingle();
 	}
 
-	public void sync1(){
-		if (state == STATE.DOWNLOADED){
-			NNModel existingLocalRecord = NNModel.findByUID(Note.class, getUId());
-			if (existingLocalRecord == null){
-				state = STATE.SYNCED;
-				save();
-			}
-		}
-	}
-
-	public void sync(){
-		// if it does not exist locally
-		if (!existsLocally()){
-
-			if (account != null && context != null){
-
-				// resolve relationships
-				NNModel local_account = NNModel.findByUID(Account.class, account.getUId());			
-				account_id = local_account.getId();			
-
-				Context local_context = NNModel.findByUID(Context.class, context.getUId());			
-				context_id = local_context.getId();			
-
-				save();
-
-				//			
-				for (Media media : medias){	
-					media.setNote(this);					
-					media.save();
-					Log.d(TAG, "pulled " +  media);
-				}
-
-				Log.d(TAG, "pulled " + this);
-			}
-		}else{			
-			super.sync();
-		}
-	}
-
-	protected void saveRemotely(NatureNetAPI api){
-		checkNotNull(api);
-		checkNotNull(getAccount());
-		checkNotNull(getContext());
-
-		Result<Note> r = api.createNote(getAccount().getUsername(), "FieldNote",  getContent(), getContext().getName(), latitude, longitude);
-		setUId(r.data.getUId());
-		save();
-
-		Map config = new HashMap();
-		config.put("cloud_name", "university-of-colorado");
-		config.put("api_key", "893246586645466");
-		config.put("api_secret", "8Liy-YcDCvHZpokYZ8z3cUxCtyk");
-		Cloudinary cloudinary = new Cloudinary(config);
-
-
-		for (Media media : getMedias()){
-			// Hack to get around this problem
-			// Caused by: java.io.FileNotFoundException: /file:/storage/emulated/0/Pictures/JPEG_20140504_114444_559339952.jpg: open failed: ENOENT (No such file or directory)
-			String local = media.getLocal();
-			local = local.replaceAll("file:", "");
-
-			JSONObject ret;
-			try {
-				ret = cloudinary.uploader().upload(new File(local), Cloudinary.emptyMap());
-				String public_id = ret.getString("public_id");
-				String url = ret.getString("url");
-				Log.d(TAG, "uploaded to cloudinary: " + ret);
-
-				Result<Media> m = api.createMedia(getUId(), media.getTitle(), url);
-				media.setUId(m.data.getUId()); 
-				media.setURL(m.data.getURL());
-				media.save();
-				Log.d(TAG, "pushed " +  media);
-
-			} catch (IOException e) {				
-
-			} catch (JSONException e) {
-
-			}
-
-
-			//			
-			//			TypedFile file = new TypedFile("image/jpeg", new File(local)); 
-
-
-		}		
-	}
-
-
 	public Context getContext() {
 		if (context == null && context_id != null){
 			return Model.load(Context.class, context_id);
@@ -253,32 +164,6 @@ public class Note extends NNModel {
 		context_id = context.getId();
 	}
 
-	public static Note download(long uid) {
-		NatureNetAPI api = NatureNetRestAdapter.get();
-		try{
-			Result<Note> r = api.getNote(uid);
-			r.data.state = STATE.DOWNLOADED;
-			return r.data;
-		}catch(RetrofitError r){
-			return null;
-		}
-	}
-
-	public static List<Note> findByAccount(Account account){
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public static List<Note> loadFromRemoteForAccount(Account account) {
-		NatureNetAPI api = NatureNetRestAdapter.get();
-		Result<List<Note>> r = api.listNotes(account.getUsername());		
-		for (Note item : r.data){
-			if (item.isRemoteOnly());
-			item.save();
-		}
-		return r.data;
-	}
-
 	public String getContent() {
 		return content;
 	}
@@ -292,10 +177,4 @@ public class Note extends NNModel {
 			medias = new Media[]{media};
 		}
 	}
-
-
-
-	//	public int count(){
-	//		return new Select().from(Note.class).count();
-	//	}
 }

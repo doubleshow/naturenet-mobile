@@ -26,7 +26,6 @@ import net.nature.mobile.model.Media;
 import net.nature.mobile.model.Note;
 import net.nature.mobile.rest.NatureNetAPI;
 import net.nature.mobile.rest.NoteJson;
-import net.nature.mobile.rest.Sync;
 import net.nature.mobile.rest.NatureNetAPI.Result;
 import retrofit.ErrorHandler;
 import retrofit.RestAdapter;

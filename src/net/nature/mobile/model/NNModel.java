@@ -1,26 +1,17 @@
 package net.nature.mobile.model;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
 import net.nature.mobile.rest.NatureNetAPI;
 import net.nature.mobile.rest.NatureNetRestAdapter;
-import net.nature.mobile.rest.NatureNetAPI.Result;
-import retrofit.ErrorHandler;
-import retrofit.RestAdapter;
 import retrofit.RetrofitError;
-import retrofit.client.Response;
-import retrofit.converter.GsonConverter;
-import retrofit.mime.TypedByteArray;
 import android.util.Log;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.query.Select;
 import com.google.common.base.Objects;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -205,52 +196,6 @@ public abstract class NNModel extends Model {
 	}
 
 	static protected String TAG = "NatureNetModel";
-
-	@Deprecated
-	public boolean isRemoteOnly(){
-		Model ret = (new Select()).from(getClass()).where("uid = ?", getUId()).executeSingle();
-		return ret == null;
-	}
-
-	@Deprecated
-	public boolean isLocalOnly() {
-		return uID == -1L;
-	}	
-
-	@Deprecated
-	public boolean existsLocally() {
-		Model ret = (new Select()).from(getClass()).where("uid = ?", getUId()).executeSingle();
-		// BUG: "exist()" does not work initially when database is empty
-		//		new Select().from(getClass()).where("tid = ?", getId()).exist();		
-		return ret != null;
-	}
-
-	@Deprecated
-	public boolean existsRemotely(){
-		return uID > 0;
-	}
-
-	@Deprecated
-	public void sync(){
-		// if it does not exist locally
-		if (!existsLocally()){
-			save();
-			Log.d(TAG , "pulled " + this);
-		}else if (!existsRemotely()){			
-			NatureNetAPI api = NatureNetRestAdapter.get();
-			if (api != null){
-				saveRemotely(api);				
-			}
-			Log.d(TAG , "pushed " + this);
-		}
-	}
-
-
-	@Deprecated
-	protected void saveRemotely(NatureNetAPI api) {		
-	}
-
-
 
 	public void setUId(Long uid){
 		uID = uid;

@@ -6,7 +6,6 @@ import net.nature.mobile.model.NNModel;
 import net.nature.mobile.rest.NatureNetAPI;
 import net.nature.mobile.rest.NatureNetAPI.Result;
 import net.nature.mobile.rest.NatureNetRestAdapter;
-import net.nature.mobile.rest.Sync;
 import retrofit.RetrofitError;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
