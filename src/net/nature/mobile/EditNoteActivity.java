@@ -356,4 +356,9 @@ public class EditNoteActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	@Override
+	public boolean onNavigateUp() {
+	    onBackPressed();
+	    return true;
+	}
 }

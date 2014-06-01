@@ -57,9 +57,7 @@ implements LocationListener {
 	private ImageView mLastImage1st;
 	private ImageView mLastImage2nd;
 	private ImageView mLastImage3rd;
-	private TextView mContextName;
 	private Button mButtonCreateNote;
-	private View mButtonSelectContext;
 	private MapFragment mMapFragment;
 	private Location mCurrentLocation;
 	private MyTask download;
@@ -89,9 +87,6 @@ implements LocationListener {
 			if (result){
 				doCreate();
 			}else{
-//				Toast.makeText(getApplicationContext(),
-//						"Unable to load data from the server. Please check your internet connection.", Toast.LENGTH_LONG).show();
-//				finish();
 				setContentView(R.layout.activity_retry);
 				findViewById(R.id.buttonRetry).setOnClickListener(new OnClickListener(){
 					@Override
@@ -109,11 +104,13 @@ implements LocationListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);	
 		setContentView(R.layout.activity_loading);
+
+		// Probably initialize members with default values for a new instance
 		download = new MyTask();
 		download.execute((Void) null);
-		
+
 	}
-	
+
 	private void doCreate(){
 		setContentView(R.layout.activity_main);
 
@@ -125,45 +122,45 @@ implements LocationListener {
 		mLastImage2nd = (ImageView) findViewById(R.id.main_image_last_2nd);
 		mLastImage3rd = (ImageView) findViewById(R.id.main_image_last_3rd);
 
-//		mContextName = (TextView) findViewById(R.id.main_context);
-//		mButtonSelectContext = (View) findViewById(R.id.main_button_select_activity);
-		
+		//		mContextName = (TextView) findViewById(R.id.main_context);
+		//		mButtonSelectContext = (View) findViewById(R.id.main_button_select_activity);
+
 		//
 		// Context Spinner
 		//
 		mContextSpinner = (Spinner) findViewById(R.id.note_context);
 		mContextSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-		    @Override
-		    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-		    	Context context = (Context) parentView.getItemAtPosition(position);		    	
-		    	checkNotNull(context);
-		    	mContext = context;
-		    }
+			@Override
+			public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+				Context context = (Context) parentView.getItemAtPosition(position);		    	
+				checkNotNull(context);
+				mContext = context;
+			}
 
-		    @Override
-		    public void onNothingSelected(AdapterView<?> parentView) {
-		    }
+			@Override
+			public void onNothingSelected(AdapterView<?> parentView) {
+			}
 		});
-		
+
 		// Landmark Spinner
 		mLandmarkSpinner = (Spinner) findViewById(R.id.note_landmark);
 		mLandmarkSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-		    @Override
-		    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-		    	Context context = (Context) parentView.getItemAtPosition(position);		    	
-		    	checkNotNull(context);
-		    	mLandmark = context;
-		    }
+			@Override
+			public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+				Context context = (Context) parentView.getItemAtPosition(position);		    	
+				checkNotNull(context);
+				mLandmark = context;
+			}
 
-		    @Override
-		    public void onNothingSelected(AdapterView<?> parentView) {
-		    }
+			@Override
+			public void onNothingSelected(AdapterView<?> parentView) {
+			}
 		});
 
 
 		mAccount = Session.getAccount();
 		mSite = Session.getSite();
-		
+
 		Log.d("main", ""+mAccount);
 		if (mAccount == null || mSite == null){
 			Intent intent = new Intent(getBaseContext(), SelectAccountActivity.class);
@@ -171,8 +168,8 @@ implements LocationListener {
 		}else{        	
 			onSignedIn(mAccount, mSite);
 		}
-		
-		
+
+
 
 		mButtonGallery.setOnClickListener(new OnClickListener(){
 			@Override
@@ -201,15 +198,15 @@ implements LocationListener {
 			}        	
 		});
 
-//		mButtonSelectContext.setOnClickListener(new OnClickListener(){
-//			@Override
-//			public void onClick(View v) {
-//				checkNotNull(mContext);
-//				Intent intent = new Intent(getBaseContext(), SelectContextActivity.class);				
-//				intent.putExtra(SelectContextActivity.EXTRA_INPUT_CONTEXT_ID, mContext.getId());
-//				startActivityForResult(intent, REQUEST_SELECT_CONTEXT);
-//			}        	
-//		});
+		//		mButtonSelectContext.setOnClickListener(new OnClickListener(){
+		//			@Override
+		//			public void onClick(View v) {
+		//				checkNotNull(mContext);
+		//				Intent intent = new Intent(getBaseContext(), SelectContextActivity.class);				
+		//				intent.putExtra(SelectContextActivity.EXTRA_INPUT_CONTEXT_ID, mContext.getId());
+		//				startActivityForResult(intent, REQUEST_SELECT_CONTEXT);
+		//			}        	
+		//		});
 
 
 
@@ -217,14 +214,14 @@ implements LocationListener {
 		mMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
 
 
-		
+
 		if (mContext == null){
 
 		}else{
 			onContextSelected(mContext);
 		}
-		
-		
+
+
 	}
 
 
@@ -236,7 +233,7 @@ implements LocationListener {
 				Account account = Model.load(Account.class,  account_id);
 				String site_name = data.getStringExtra(SelectAccountActivity.EXTRA_SITE_NAME);
 				Site site = NNModel.findByName(Site.class, site_name.toLowerCase());
-				
+
 				checkNotNull(account);
 				checkNotNull(site);
 				onSignedIn(account,site);
@@ -295,21 +292,22 @@ implements LocationListener {
 		Session.signIn(account,site);
 		mAccount = account;
 		mSite = site;
-		
+
 		ActionBar ab = getActionBar();
-	    ab.setTitle(account.getUsername()); 
-	  
+		ab.setTitle(account.getUsername()); 
+
 		mUsername.setText(account.getUsername());
-		
+
 		mContextAdapter = new SiteActivitiesAdapter(this, mSite);
 		mContextSpinner.setAdapter(mContextAdapter);
 		mContextSpinner.setSelection(0);
 
 		mLandmarkAdapter = new SiteLandmarkAdapter(this, mSite);
 		mLandmarkSpinner.setAdapter(mLandmarkAdapter);
-		mLandmarkSpinner.setSelection(0);
-		
-		
+
+		mLandmarkSpinner.setSelection(0);	
+
+
 		loadRecentNotes(account);
 	}
 
