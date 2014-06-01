@@ -62,7 +62,7 @@ public class NoteTest {
 		Note note = NNModel.pullByUID(Note.class, 1L);
 		List<Media> medias = note.getMedias();
 		
-		assertThat(medias.size(), greaterThan(1));
+		assertThat(medias.size(), greaterThan(0));
 		for (Media media : medias){
 			assertThat(media.getSyncState(), equalTo(STATE.DOWNLOADED));
 		}
@@ -79,7 +79,7 @@ public class NoteTest {
 		for (Media media : medias){
 			assertThat(media.getSyncState(), equalTo(STATE.SYNCED));
 		}		
-		assertThat(NNModel.countLocal(Media.class), greaterThan(1));
+		assertThat(NNModel.countLocal(Media.class), greaterThan(0));
 	}	
 	
 	@Test

@@ -257,7 +257,7 @@ public class CreateAccountActivity extends Activity {
 				// register the new account here.
 				mAccount = new Account();
 				mAccount.setUsername(mUsername);
-				mAccount.name = mName;		
+				mAccount.setName(mName);		
 				mAccount.setUId(r.data.getUId());
 				mAccount.save();
 				

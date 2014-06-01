@@ -25,11 +25,11 @@ public class Context extends NNModel {
 	
 	@Expose
 	@Column(name="Description")
-	public String description;
+	private String description;
 
 	@Expose
 	@Column(name="Kind")
-	public String kind;
+	private String kind;
 
 	@Expose
 	@Column(name="Name")
@@ -37,23 +37,23 @@ public class Context extends NNModel {
 
 	@Expose
 	@Column(name="Site_ID")
-	public Long site_id;
+	private Long site_id;
 
 	@Expose
 	@Column(name="Title")
-	public String title;
+	private String title;
 	
 	@Expose
 	@Column(name="Extras")
-	public String extras;
+	private String extras;
 
 	public String toString(){
 		return Objects.toStringHelper(this).
 				add("id", getId()).
 				add("uid", getUId()).
 				add("name", getName()).
-				add("description", title).	
-				add("description", description).				
+				add("description", getTitle()).	
+				add("description", getDescription()).				
 				add("site_id" , site_id).
 				add("extras" , extras).
 				toString();
@@ -82,13 +82,36 @@ public class Context extends NNModel {
 	}
 
 	public void setSite(Site site){
-		this.site_id = site.getId();		
+		site_id = site.getId();		
 	}
-
 
 	@Override
 	protected <T extends NNModel> T doPullByUID(NatureNetAPI api, long uID){
 		return (T) api.getContext(uID).data;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getKind() {
+		return kind;
+	}
+
+	public void setKind(String kind) {
+		this.kind = kind;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 }

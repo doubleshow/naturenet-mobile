@@ -127,10 +127,10 @@ public class CreateNoteActivity extends Activity {
 
 			if (resultCode == RESULT_OK){
 				Note note = new Note();
-				note.account_id = mAccount.getId();
-				note.context_id = mContext.getId();
-				note.longitude = mLongitude;
-				note.latitude = mLatitude;
+				note.setAccount(mAccount);
+				note.setContext(mContext);
+				note.setLongitude(mLongitude);
+				note.setLatitude(mLatitude);
 				note.commit();
 				
 

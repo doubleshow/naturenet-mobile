@@ -23,7 +23,7 @@ public class Account extends NNModel {
 
 	@Expose
 	@Column(name="Fullname")
-	public String name;
+	private String name;
 
 	@Expose
 	@Column(name="Name")
@@ -42,7 +42,7 @@ public class Account extends NNModel {
 				addValue(super.toString()).				
 				//				add("base", super.toString()).
 				add("username", getUsername()).
-				add("name", name).
+				add("name", getName()).
 				add("email", getEmail()).
 				toString();
 	}
@@ -94,7 +94,7 @@ public class Account extends NNModel {
 		List<Note> filteredNotes = Lists.newArrayList();
 		// Filter Notes by Site
 		for (Note note : allNotes){
-			if (note.getContext().site_id == site.getId()){
+			if (note.getContext().getSite().getId() == site.getId()){
 				filteredNotes.add(note);
 			}
 		}		
@@ -127,6 +127,14 @@ public class Account extends NNModel {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

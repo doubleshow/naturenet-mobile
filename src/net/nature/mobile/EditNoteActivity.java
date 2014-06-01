@@ -115,7 +115,7 @@ public class EditNoteActivity extends Activity {
 		
 		// Note Map 	
 		if (mNote.isGeoTagged()){
-			mMap.setCurrentLocationCameraMarker(mNote.latitude, mNote.longitude, true);
+			mMap.setCurrentLocationCameraMarker(mNote.getLatitude(), mNote.getLongitude(), true);
 		}else{
 			mMap.getView().setVisibility(View.INVISIBLE);
 		}
@@ -162,7 +162,7 @@ public class EditNoteActivity extends Activity {
 		    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
 		    	Context context = (Context) parentView.getItemAtPosition(position);		    	
 		    	checkNotNull(context);
-		    	mNote.context_id = context.getId();
+		    	mNote.setContext(context);
 				mNote.commit();
 		    }
 
@@ -216,9 +216,9 @@ public class EditNoteActivity extends Activity {
                                            R.layout.item_landmark_short,
                                            null);
             TextView tvText1 = (TextView)convertView.findViewById(R.id.context_name);
-            tvText1.setText(getItem(position).title);
+            tvText1.setText(getItem(position).getTitle());
             TextView tvText2 = (TextView)convertView.findViewById(R.id.site_name);
-            tvText2.setText(getItem(position).getSite().name);
+            tvText2.setText(getItem(position).getSite().getName());
             return convertView;
         }
     }	
@@ -260,11 +260,11 @@ public class EditNoteActivity extends Activity {
                                            R.layout.item_context_short,
                                            null);
             TextView tvText1 = (TextView)convertView.findViewById(R.id.context_name);
-            tvText1.setText(getItem(position).title);
+            tvText1.setText(getItem(position).getTitle());
             TextView tvText2 = (TextView)convertView.findViewById(R.id.site_name);
-            tvText2.setText(getItem(position).getSite().name);
+            tvText2.setText(getItem(position).getSite().getName());
             TextView tvText3 = (TextView)convertView.findViewById(R.id.context_description);
-            tvText3.setText(getItem(position).description);            
+            tvText3.setText(getItem(position).getDescription());            
             return convertView;
         }
     }

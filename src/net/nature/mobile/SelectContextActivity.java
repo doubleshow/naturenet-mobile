@@ -96,7 +96,7 @@ public class SelectContextActivity extends FragmentActivity {
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			View view = inflater.inflate(R.layout.fragment_site, container, false);
 			TextView tvLabel = (TextView) view.findViewById(R.id.textViewDescription);
-			tvLabel.setText(site.description);
+			tvLabel.setText(site.getDescription());
 			
 			ImageView image = (ImageView) view.findViewById(R.id.imageView);
 			Picasso.with(getActivity()).load(site.getImageURL()).resize(600, 300).centerCrop().into(image);
@@ -194,8 +194,8 @@ public class SelectContextActivity extends FragmentActivity {
 			holder.context = contexts[position];
 
 			Context context = contexts[position];
-			holder.textName.setText(context.title);
-			holder.textDescription.setText(context.description);
+			holder.textName.setText(context.getTitle());
+			holder.textDescription.setText(context.getDescription());
 
 			return rowView;
 		}

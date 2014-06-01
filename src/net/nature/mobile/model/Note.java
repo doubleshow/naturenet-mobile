@@ -43,18 +43,18 @@ public class Note extends NNModel {
 
 
 	@Column(name="Context_ID", notNull=true)
-	public Long context_id;
+	private Long context_id;
 
 	@Column(name="Account_ID", notNull=true)
-	public Long account_id;
+	private Long account_id;
 
 	@Expose
 	@Column(name="longitude")
-	public Double longitude;
+	private Double longitude;
 
 	@Expose
 	@Column(name="latitude")
-	public Double latitude;
+	private Double latitude;
 		
 	protected void resolveDependencies(){
 		account = NNModel.resolveByUID(Account.class, account.getUId());
@@ -87,18 +87,18 @@ public class Note extends NNModel {
 	
 	@Override
 	protected <T extends NNModel> T doPushNew(NatureNetAPI api){
-		return (T) api.createNote(getAccount().getUsername(), "FieldNote", content, getContext().getName(), latitude, longitude).data;
+		return (T) api.createNote(getAccount().getUsername(), "FieldNote", content, getContext().getName(), getLatitude(), getLongitude()).data;
 	}
 	
 	@Override
 	protected <T extends NNModel> T doPushChanges(NatureNetAPI api){
-		return (T) api.updateNote(getUId(), getAccount().getUsername(), "FieldNote", content, getContext().getName(), latitude, longitude).data;
+		return (T) api.updateNote(getUId(), getAccount().getUsername(), "FieldNote", content, getContext().getName(), getLatitude(), getLongitude()).data;
 	}	
 
 	// Remote Json
 
 	public boolean isGeoTagged(){
-		return longitude != null && longitude != 0 && latitude != null && latitude != 0;
+		return getLongitude() != null && getLongitude() != 0 && getLatitude() != null && getLatitude() != 0;
 	}
 
 	@Expose
@@ -147,7 +147,7 @@ public class Note extends NNModel {
 				add("uid", getUId()).
 				add("state", getSyncState()).
 				add("content", getContent()).
-				add("lat/lng", latitude + "," + longitude).
+				add("lat/lng", getLatitude() + "," + getLongitude()).
 				add("account", getAccount()).
 				add("context", getContext()).
 				//add("medias", getMedias()).
@@ -176,5 +176,21 @@ public class Note extends NNModel {
 		if (medias == null){
 			medias = new Media[]{media};
 		}
+	}
+
+	public Double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
+	}
+
+	public Double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
 	}
 }

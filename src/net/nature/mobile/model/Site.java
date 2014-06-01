@@ -25,15 +25,15 @@ public class Site extends NNModel{
 	
 	@Expose
 	@Column(name="Name")
-	public String name;
+	private String name;
 	
 	@Expose
 	@Column(name="Description")
-	public String description;
+	private String description;
 
 	@Expose
 	@Column(name="Kind")
-	public String kind;
+	private String kind;
 	
 	@Expose
 	@Column(name="Image_URL")
@@ -83,9 +83,9 @@ public class Site extends NNModel{
 		return Objects.toStringHelper(this).
 				add("id", getId()).
 				add("uid", getUId()).
-				add("name", name).
-				add("description", description).
-				add("image_url", image_url).
+				add("name", getName()).
+				add("description", getDescription()).
+				add("image_url", getImageURL()).
 				toString();
 	}
 
@@ -95,5 +95,29 @@ public class Site extends NNModel{
 
 	public void setImageURL(String image_url) {
 		this.image_url = image_url;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getKind() {
+		return kind;
+	}
+
+	public void setKind(String kind) {
+		this.kind = kind;
 	}	
 }

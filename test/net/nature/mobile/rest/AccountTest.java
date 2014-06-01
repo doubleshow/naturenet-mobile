@@ -25,7 +25,7 @@ public class AccountTest {
 		ShadowLog.stream = System.out;
 		newAccount = new Account();
 		newAccount.setUsername("n" + (new Date()).getTime());
-		newAccount.name = "first last";
+		newAccount.setName("first last");
 		newAccount.setEmail("new@email.com");		
 	}
 	

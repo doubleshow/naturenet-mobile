@@ -39,20 +39,19 @@ public class EditNoteActivityTest extends ActivityInstrumentationTestCase2<EditN
 		
 		context1 = new Context();
 		//context1.(1L);
-		context1.kind = "Activity";
+		context1.setKind("Activity");
 		context1.setName("Ask an expert");
 		context1.save();
 		
 		context2 = new Context();
 //		context2.setuID(2L);
-		context2.kind = "Activity";
+		context2.setKind("Activity");
 		context2.setName("Take a picture");
 		context2.save();		
 		
 		note = new Note();
-		//note.uID = 1L;
 		note.setContent("Mock content");
-		note.context_id = context2.getId();
+		note.setContext(context2);
 		note.save();
 		
 		media = new Media();
@@ -93,7 +92,7 @@ public class EditNoteActivityTest extends ActivityInstrumentationTestCase2<EditN
 		
 		Note note = Model.load(Note.class, 1L);
 		assertThat("context should change to 1", 
-				note.context_id, equalTo(context1.getUId()));
+				note.getContext().getUId(), equalTo(context1.getUId()));
 	}
 	
 	@MediumTest
