@@ -53,6 +53,8 @@ public class EditNoteActivity extends Activity {
 
 	private Site mSite;
 
+	private Spinner mLandmark;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -144,8 +146,11 @@ public class EditNoteActivity extends Activity {
 			}
 		});
 		
-		mContext = (Spinner) findViewById(R.id.note_context);
-			
+		//
+		// Note context
+		//
+		
+		mContext = (Spinner) findViewById(R.id.note_context);			
 		
 		SiteActivitiesAdapter adapter = new SiteActivitiesAdapter(this, mSite);
 		mContext.setAdapter(adapter);
@@ -166,7 +171,57 @@ public class EditNoteActivity extends Activity {
 		    }
 
 		});
+		
+		//
+		// Note landmark
+		//		
+		mLandmark = (Spinner) findViewById(R.id.note_landmark);
+		SiteLandmarkAdapter landmarkAdapter = new SiteLandmarkAdapter(this, mSite);
+		mLandmark.setAdapter(landmarkAdapter);
 	}
+	
+    static class SiteLandmarkAdapter extends ArrayAdapter<Context> {
+    	
+    	private List<Context> activities;
+
+		public int getPositionByName(String name){    	
+    		final List<String> context_names = Lists.newArrayList();
+    		for (Context c : activities){
+    			context_names.add(c.getName());
+    		}
+    		return context_names.indexOf(name);
+    	}
+
+        public SiteLandmarkAdapter(android.content.Context context, Site site){
+            super(context, android.R.layout.simple_list_item_2);            
+            activities = site.getLandmarks();
+            addAll(activities);
+        }
+        
+
+        @Override //don't override if you don't want the default spinner to be a two line view
+        public View getView(int position, View convertView, ViewGroup parent) {
+            return initView(position, convertView);
+        }
+
+        @Override
+        public View getDropDownView(int position, View convertView,
+                                    ViewGroup parent) {
+            return initView(position, convertView);
+        }
+
+        private View initView(int position, View convertView) {
+            if(convertView == null)
+                convertView = View.inflate(getContext(),
+                                           R.layout.item_landmark_short,
+                                           null);
+            TextView tvText1 = (TextView)convertView.findViewById(R.id.context_name);
+            tvText1.setText(getItem(position).title);
+            TextView tvText2 = (TextView)convertView.findViewById(R.id.site_name);
+            tvText2.setText(getItem(position).getSite().name);
+            return convertView;
+        }
+    }	
 	
 
     static class SiteActivitiesAdapter extends ArrayAdapter<Context> {
@@ -181,12 +236,6 @@ public class EditNoteActivity extends Activity {
     		return context_names.indexOf(name);
     	}
 
-//        public ContextAdapter(android.content.Context context){
-//            super(context, android.R.layout.simple_list_item_2);//, objects);
-//            contexts = new Select().from(Context.class).execute();
-//            addAll(contexts);
-//        }
-        
         public SiteActivitiesAdapter(android.content.Context context, Site site){
             super(context, android.R.layout.simple_list_item_2);            
             activities = site.getActivities();

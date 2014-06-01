@@ -23,6 +23,11 @@ import com.squareup.picasso.Picasso;
 
 public class Media extends NNModel{
 
+	@Override
+	protected String getModelName() {
+		return "Media";
+	}
+	
 	@Column(name="Note_ID", notNull=true)
 	private Long note_id;
 

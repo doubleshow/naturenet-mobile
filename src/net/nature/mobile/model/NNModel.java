@@ -32,6 +32,8 @@ public abstract class NNModel extends Model {
 		created_at = new Date().getTime();
 		state = STATE.NEW;
 	}
+	
+	abstract protected String getModelName();
 
 	@Column(name="syncState")
 	public Integer state;	
@@ -46,7 +48,7 @@ public abstract class NNModel extends Model {
 	public Integer getSyncState() {
 		return state;
 	}	
-	
+
 	public void commit() {		
 		if (state == STATE.NEW || state == STATE.SAVED){
 			state = STATE.SAVED;
@@ -73,10 +75,10 @@ public abstract class NNModel extends Model {
 
 	protected void resolveDependencies(){	
 	}
-	
+
 	protected void doCommitChildren() {
 	}
-	
+
 	protected void doPushChildren(NatureNetAPI api) {		
 	}
 
@@ -84,12 +86,13 @@ public abstract class NNModel extends Model {
 		NatureNetAPI api = NatureNetRestAdapter.get();
 		if (state == STATE.SAVED){
 			NNModel m = doPushNew(api);
-			state = STATE.SYNCED;
-			uID = m.getUId();
-			save();
-			Log.d(TAG , "pushed (N) " + this);
-			
-			doPushChildren(api);		
+			if (m != null){
+				state = STATE.SYNCED;
+				uID = m.getUId();
+				save();
+				Log.d(TAG , "pushed (N) " + this);
+				doPushChildren(api);
+			}
 		}else if (state == STATE.MODIFIED){
 			NNModel m = doPushChanges(api);
 			state = STATE.SYNCED;
@@ -101,15 +104,15 @@ public abstract class NNModel extends Model {
 	protected <T extends NNModel> T doPushNew(NatureNetAPI api){
 		return null;
 	}
-	
+
 	protected <T extends NNModel> T doPushChanges(NatureNetAPI api){
 		return null;
 	}	
-	
+
 	protected <T extends NNModel> T doPullByUID(NatureNetAPI api, long uID){
 		return null;
 	}
-	
+
 	protected <T extends NNModel> T doPullByName(NatureNetAPI api, String name){
 		return null;
 	}	
@@ -124,7 +127,7 @@ public abstract class NNModel extends Model {
 		}
 		return model;
 	}
-	
+
 	public static <T extends NNModel> T resolveByName(Class klass, String name) {
 		T model = findByName(klass, name);
 		if (model == null){
@@ -159,7 +162,7 @@ public abstract class NNModel extends Model {
 		}
 		return null;
 	}
-	
+
 	public static <T extends NNModel> T pullByName(Class klass, String name) {
 		try {
 			NatureNetAPI api = NatureNetRestAdapter.get();
@@ -167,7 +170,7 @@ public abstract class NNModel extends Model {
 				T obj = (T) klass.getDeclaredConstructor().newInstance();
 				obj = obj.doPullByName(api,name);
 				if (obj != null){
-					obj.state = STATE.DOWNLOADED;
+					obj.state = STATE.DOWNLOADED; 
 				}
 				return obj;				
 			}catch(RetrofitError r){
@@ -202,7 +205,7 @@ public abstract class NNModel extends Model {
 	}
 
 	static protected String TAG = "NatureNetModel";
-	
+
 	@Deprecated
 	public boolean isRemoteOnly(){
 		Model ret = (new Select()).from(getClass()).where("uid = ?", getUId()).executeSingle();
@@ -268,7 +271,7 @@ public abstract class NNModel extends Model {
 	public static <T extends NNModel> T findByUID(Class clazz, Long uid) {
 		return new Select().from(clazz).where("uid = ?", uid).executeSingle();		
 	}
-	
+
 	public static <T extends NNModel> T findByName(Class clazz, String name) {
 		return new Select().from(clazz).where("name = ?", name).executeSingle();		
 	}	

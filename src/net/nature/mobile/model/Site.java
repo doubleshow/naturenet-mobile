@@ -18,6 +18,11 @@ import com.google.gson.annotations.Expose;
 @Table(name="SITE", id="tID")
 public class Site extends NNModel{
 
+	@Override
+	protected String getModelName() {
+		return "Site";
+	}
+	
 	@Expose
 	@Column(name="Name")
 	public String name;
@@ -69,7 +74,10 @@ public class Site extends NNModel{
 	public List<Context> getActivities(){
 		return new Select().from(Context.class).where("site_id = ? and kind = ?", getId(), "Activity").execute();		
 	}
-		
+	
+	public List<Context> getLandmarks(){
+		return new Select().from(Context.class).where("site_id = ? and kind = ?", getId(), "Landmark").execute();
+	}
 	
 	public String toString(){
 		return Objects.toStringHelper(this).

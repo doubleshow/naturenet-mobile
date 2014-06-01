@@ -45,11 +45,31 @@
                     android:scrollbars="vertical" >
                 </EditText>
 
+                <TextView
+                    android:id="@+id/textView1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Relevant activity (touch to modify)"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+
                 <Spinner
                     android:id="@+id/note_context"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/note_content" />
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nearest landmark (touch to modify)"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+
+                <Spinner
+                    android:id="@+id/note_landmark"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/note_context" />
 
                 <fragment
                     android:id="@+id/note_map"

@@ -1,5 +1,8 @@
 package net.nature.mobile.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import net.nature.mobile.rest.NatureNetAPI;
 
 import com.activeandroid.Model;
@@ -7,12 +10,19 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.google.common.base.Objects;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 @Table(name="CONTEXT", id="tID")
 public class Context extends NNModel {
 
+	@Override
+	protected String getModelName() {
+		return "Context";
+	}
+	
 	@Expose
 	@Column(name="Description")
 	public String description;
@@ -32,6 +42,10 @@ public class Context extends NNModel {
 	@Expose
 	@Column(name="Title")
 	public String title;
+	
+	@Expose
+	@Column(name="Extras")
+	public String extras;
 
 	public String toString(){
 		return Objects.toStringHelper(this).
@@ -41,9 +55,15 @@ public class Context extends NNModel {
 				add("description", title).	
 				add("description", description).				
 				add("site_id" , site_id).
+				add("extras" , extras).
 				toString();
 	}
-
+	
+	public Map getExtras(){
+		Gson gson = new GsonBuilder().create();
+        Map p = gson.fromJson(extras, Map.class);
+        return Objects.firstNonNull(p, new HashMap());
+	}
 
 	public Site getSite() {
 		return Model.load(Site.class, site_id);

@@ -16,9 +16,11 @@ import com.google.gson.annotations.Expose;
 
 import net.nature.mobile.model.Context;
 import net.nature.mobile.model.Account;
+import net.nature.mobile.model.Feedback;
 import net.nature.mobile.model.Media;
 import net.nature.mobile.model.Note;
 import net.nature.mobile.model.Site;
+import net.nature.mobile.rest.NatureNetAPI.Result;
 import retrofit.ErrorHandler;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
@@ -112,6 +114,16 @@ public interface NatureNetAPI {
 	@GET("/site/{name}/long")
 	Result<Site> getSite(@Path("name") String name);
 
+	@GET("/feedback/{id}")
+	Result<Feedback> getFeedback(@Path("id") long uid);
 
+	@FormUrlEncoded
+	@POST("/feedback/new/{kind}/for/{model}/{id}/by/{username}")
+	Result<Feedback> createFeedback(@Path("kind") String kind,
+			@Path("model") String  model, @Path("id") Long id, @Path("username") String username, @Field("content") String content);
+
+	@FormUrlEncoded
+	@POST("/feedback/{id}/update")
+	Result<Feedback> updateFeedback(@Path("id") Long id, @Field("username") String username, @Field("content") String content);
 }
 

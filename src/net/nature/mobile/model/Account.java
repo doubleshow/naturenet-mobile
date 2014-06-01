@@ -22,11 +22,16 @@ import static com.google.common.base.Preconditions.*;
 
 @Table(name="ACCOUNT", id="tID")
 public class Account extends NNModel {
+	
+	@Override
+	protected String getModelName() {
+		return "Account";
+	}	
 
 	@Expose
 	@Column(name="Fullname")
 	public String name;
-	
+
 	@Expose
 	@Column(name="Name")
 	private String username;
@@ -49,12 +54,12 @@ public class Account extends NNModel {
 				toString();
 	}
 
-	
+
 	@Override
 	protected <T extends NNModel> T doPullByUID(NatureNetAPI api, long uID){
 		return (T) api.getAccount(uID).data;
 	}
-	
+
 	@Override
 	protected <T extends NNModel> T doPullByName(NatureNetAPI api, String name){
 		return (T) api.getAccount(name).data;
@@ -80,7 +85,7 @@ public class Account extends NNModel {
 			save();
 		}
 	}
-	
+
 	@Deprecated
 	public static Account loadFromRemote(String username){		
 		NatureNetAPI api = NatureNetRestAdapter.get();
@@ -102,7 +107,7 @@ public class Account extends NNModel {
 	public List<Note> notes() {
 		return new Select().from(Note.class).where("account_id = ?", getId()).execute();		
 	}
-	
+
 	public void pullNotes(){
 		NatureNetAPI api = NatureNetRestAdapter.get();
 		Result<List<Note>> r = api.listNotes(username);
@@ -111,7 +116,7 @@ public class Account extends NNModel {
 			u.commit();
 		}
 	}
-	
+
 	public void pushNotes(){
 		for (Note n : getNotes()){
 			n.push();
@@ -127,7 +132,7 @@ public class Account extends NNModel {
 			return loadFromRemote(username);
 		}		
 	}
-	
+
 	@Deprecated
 	public static Account findByUsernameLocally(String username) {
 		return new Select().from(Account.class).where("Username = ?", username).executeSingle();
@@ -140,7 +145,7 @@ public class Account extends NNModel {
 	public List<Note> getNotesOrderedByRecency() {
 		return new Select().from(Note.class).where("account_id = ?", getId()).orderBy("tid DESC").execute();		
 	}
-	
+
 	public List<Note> getNotesOrderedByRecencyAtSite(Site site) {
 		List<Note> allNotes = new Select().from(Note.class).where("account_id = ?", getId()).orderBy("tid DESC").execute();
 		List<Note> filteredNotes = Lists.newArrayList();
@@ -185,6 +190,5 @@ public class Account extends NNModel {
 	public void setUsername(String username) {
 		this.username = username;
 	}
-
 
 }

@@ -29,7 +29,12 @@ import com.google.gson.annotations.SerializedName;
 import static com.google.common.base.Preconditions.*;
 @Table(name="NOTE", id="tID")
 public class Note extends NNModel {
-
+	
+	@Override
+	protected String getModelName() {
+		return "Note";
+	}
+	
 	// Local
 
 	@Expose
@@ -50,8 +55,7 @@ public class Note extends NNModel {
 	@Expose
 	@Column(name="latitude")
 	public Double latitude;
-
-	
+		
 	protected void resolveDependencies(){
 		account = NNModel.resolveByUID(Account.class, account.getUId());
 		context = NNModel.resolveByUID(Context.class, context.getUId());				
