@@ -80,12 +80,20 @@ public class Feedback extends NNModel{
 				toString();
 	}
 	
+	
+	protected void resolveDependencies(){
+		if (account != null){
+			account = resolveByUID(Account.class, account.uID);	
+			account_id = account.getId();
+		}
+	}
+	
 	@Override
 	protected <T extends NNModel> T doPullByUID(NatureNetAPI api, long uID){
 		Feedback fb =  api.getFeedback(uID).data;
 		
-		Account account = resolveByUID(Account.class, fb.account.uID);
-		fb.account_id = account.getId();
+//		Account account = resolveByUID(Account.class, fb.account.uID);
+		fb.resolveDependencies();
 		
 		if (fb.target.model.equalsIgnoreCase("Note")){
 			Note note = resolveByUID(Note.class, fb.target.id);
@@ -150,7 +158,7 @@ public class Feedback extends NNModel{
 	public void setTarget(NNModel model) {
 		targetModel = model;
 		target_id = model.getId();
-		target_model = model.getClass().getSimpleName();
+		target_model = model.getModelName();
 	}	
 
 }

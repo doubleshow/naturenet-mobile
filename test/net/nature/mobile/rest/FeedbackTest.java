@@ -26,7 +26,7 @@ public class FeedbackTest {
 	@Before
 	public void setUp(){
 		Note note = NNModel.resolveByUID(Note.class, 1L);
-		Account account  = NNModel.resolveByUID(Account.class, 2L);
+		Account account  = NNModel.resolveByUID(Account.class, 1L);
 		
 		newFeedback = new Feedback();
 		newFeedback.setContent("new content of a feedback");

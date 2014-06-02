@@ -64,13 +64,21 @@ public class Note extends NNModel {
 		for (Media media : medias){
 			media.state = STATE.DOWNLOADED;
 		}
+		for (Feedback feedback : feedbacks){
+			feedback.state = STATE.DOWNLOADED;
+		}
 	}
 	
 	protected void doCommitChildren(){
 		for (Media media : getMedias()){
 			media.setNote(this);
 			media.commit();
-		}				
+		}
+		for (Feedback feedback : getFeedbacks()){
+			feedback.setTarget(this);
+			feedback.resolveDependencies();
+			feedback.commit();
+		}						
 	}
 	protected void doPushChildren(NatureNetAPI api){
 		for (Media media : getMedias()){
@@ -112,6 +120,10 @@ public class Note extends NNModel {
 	@Expose
 	private Media[] medias;	
 
+	@Expose
+	private Feedback[] feedbacks;	
+
+	
 	public List<Media> getMedias(){
 		if (medias != null){
 			return Arrays.asList(medias);
@@ -119,6 +131,14 @@ public class Note extends NNModel {
 			return new Select().from(Media.class).where("note_id = ?", getId()).execute();
 		}
 	}
+	
+	public List<Feedback> getFeedbacks(){
+		if (feedbacks != null){
+			return Arrays.asList(feedbacks);
+		}else{
+			return new Select().from(Feedback.class).where("target_model = ? and target_id = ?", "Note", getId()).execute();
+		}
+	}	
 
 	public Media getMediaSingle(){
 		return new Select().from(Media.class).where("note_id = ?", getId()).executeSingle();
