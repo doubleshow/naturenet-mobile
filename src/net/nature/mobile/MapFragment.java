@@ -8,6 +8,7 @@ import com.nutiteq.components.Range;
 import com.nutiteq.geometry.Marker;
 import com.nutiteq.projections.EPSG3857;
 import com.nutiteq.rasterdatasources.HTTPRasterDataSource;
+import com.nutiteq.rasterdatasources.PackagedRasterDataSource;
 import com.nutiteq.rasterdatasources.RasterDataSource;
 import com.nutiteq.rasterlayers.RasterLayer;
 import com.nutiteq.style.MarkerStyle;
@@ -50,7 +51,15 @@ public class MapFragment extends Fragment {
 		// Define base layer. Here we use MapQuest open tiles which are free to use
 		// Almost all online maps use EPSG3857 projection.
 		// We use online data source for the tiles and the URL is given as template. 
+//		RasterDataSource dataSource = new PackagedRasterDataSource(new EPSG3857(), 0, 19, "home_{zoom}_{x}_{y}", getActivity().getApplicationContext());
+//		RasterLayer mapLayer = new RasterLayer(dataSource, 16);
+		
 		RasterDataSource dataSource = new HTTPRasterDataSource(new EPSG3857(), 0, 19, "http://otile1.mqcdn.com/tiles/1.0.0/osm/{zoom}/{x}/{y}.png");
+//		MBTilesRasterDataSource dataSource = new MBTilesRasterDataSource(new EPSG3857(), 14, 19, "/sdcard/home.mbtiles", false, this);
+		
+		
+
+		
 		RasterLayer mapLayer = new RasterLayer(dataSource, 0);
 		mMapView.getLayers().setBaseLayer(mapLayer);
 
@@ -59,11 +68,11 @@ public class MapFragment extends Fragment {
 
 		// Set allowed zoom range and bounding box. 
 		// Bounding box must be in layer projection units, so conversion is needed.
-		mMapView.getConstraints().setZoomRange(new Range(14, 19));
+		mMapView.getConstraints().setZoomRange(new Range(19, 19));
 
 		mMapView.setMapRotation(0f);
 		// zoom - 0 = world, like on most web maps
-		mMapView.setZoom(18.0f);
+		mMapView.setZoom(19.0f);
 				
 		mMarkerLayer = new MarkerLayer(mapLayer.getProjection());
 		mMapView.getLayers().addLayer(mMarkerLayer);

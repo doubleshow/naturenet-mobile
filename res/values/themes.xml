@@ -24,5 +24,14 @@
         <item name="android:shadowDy">1</item>
         <item name="android:shadowRadius">2</item>
     </style>
-
+	
+	<color name="q_green">#53933f</color>
+	<style name="section_heading" parent="@android:style/TextAppearance.Small"> 
+	    <item name="android:textSize">14sp</item> 
+        <item name="android:textColor">@color/q_green</item> 
+        <item name="android:textStyle">bold</item>
+        <item name="android:typeface">sans</item>
+        <item name="android:layout_marginLeft">5dp</item>
+    </style>
+    
 </resources>

@@ -1,201 +1,118 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".MainActivity" >
-
-    <!--
-    <TextView
-        android:id="@+id/view_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TextView" />
+    android:orientation="vertical" >
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/main_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Large Text"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:text="Username"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:visibility="gone" />
 
-    <EditText
-        android:layout_width="0dp"
-        android:id="@+id/edit_message"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        android:hint="@string/edit_message" />
-    
- 	<Button
- 	    android:id="@+id/button_send"
+    <TextView
+        android:id="@+id/label_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/button_send" 
-        android:onClick="sendMessage"/>
-    -->
+        android:text="My Location"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:visibility="gone" />
 
-    <LinearLayout
-        android:id="@+id/main_user_container"
+    <fragment
+        android:id="@+id/map"
+        android:name="net.nature.mobile.MapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical" >
+        android:layout_height="wrap_content" />
 
-        <TextView
-            android:id="@+id/main_username"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:text="Username"
-            android:visibility="gone"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+    <TextView
+        android:id="@+id/TextView01"
+        style="@style/section_heading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Landmark I am at" />
 
-        <TextView
-            android:id="@+id/label_location"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="My Location"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+    <Spinner
+        android:id="@+id/note_landmark"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
-        <fragment
-            android:id="@+id/map"
-            android:name="net.nature.mobile.MapFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.03" />
+    <fragment
+        android:id="@+id/location"
+        android:name="net.nature.mobile.LocationFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/label_activity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Activity I am doing"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+    <TextView
+        android:id="@+id/label_activity"
+        style="@style/section_heading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Activity I am doing" />
 
-<!--         <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-
-            <TextView
-                android:id="@+id/main_context"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Context"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-
-            <ImageButton
-                android:id="@+id/main_button_select_activity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:src="@drawable/ic_ellipsis"
-                android:visibility="visible" />
-        </RelativeLayout> -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
 
         <Spinner
             android:id="@+id/note_context"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/note_content" />
-
-        <TextView
-            android:id="@+id/TextView01"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Landmark I am nearby"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-        
-        <Spinner
-            android:id="@+id/note_landmark"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/note_context" />        
-
-        <TextView
-            android:id="@+id/label_notes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Observations I've made"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-
-        <LinearLayout
-            android:id="@+id/linearLayout1"
-            android:layout_width="match_parent"
-            android:layout_height="100dp" >
-
-            <ImageView
-                android:id="@+id/main_image_last_1st"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:src="@drawable/ic_place_holder" />
-
-            <ImageView
-                android:id="@+id/main_image_last_2nd"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:src="@drawable/ic_place_holder" />
-
-            <ImageView
-                android:id="@+id/main_image_last_3rd"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:src="@drawable/ic_place_holder" />
-
-            <ImageView
-                android:id="@+id/main_image_right_arrow"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.2"
-                android:src="@drawable/arrow_right" />
-        </LinearLayout>
-
-        <fragment
-            android:id="@+id/location"
-            android:name="net.nature.mobile.LocationFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone" />
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/main_button_create_note" />
 
         <Button
             android:id="@+id/main_button_create_note"
             style="@style/ButtonText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/btn_green"
-            android:drawableLeft="@drawable/ic_camera"
-            android:text="Make a New Observation" />
-    </LinearLayout>
-
-    <!--
-    <RelativeLayout
-        android:id="@+id/main_signin_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <Button
-            android:id="@+id/main_signin"
-            style="@style/ButtonText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/btn_green"
-            android:text="Sign in" />
-
-        <Button
-            android:id="@+id/main_create_account"
-            style="@style/ButtonText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
             android:background="@drawable/btn_green"
-            android:text="Create Account" />
+            android:drawableLeft="@drawable/ic_add_photo" />
     </RelativeLayout>
-    -->
 
-</RelativeLayout>
+    <TextView
+        android:id="@+id/label_notes"
+        style="@style/section_heading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Observations I&apos;ve made" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/main_image_last_1st"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/ic_place_holder" />
+
+        <ImageView
+            android:id="@+id/main_image_last_2nd"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/ic_place_holder" />
+
+        <ImageView
+            android:id="@+id/main_image_last_3rd"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/ic_place_holder" />
+
+        <ImageView
+            android:id="@+id/main_image_right_arrow"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.2"
+            android:src="@drawable/arrow_right" />
+    </LinearLayout>
+
+</LinearLayout>

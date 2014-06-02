@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="14"
+        android:minSdkVersion="17"
         android:targetSdkVersion="18" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -16,6 +16,7 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
 
     <application
         android:name="com.activeandroid.app.Application"
@@ -79,7 +80,7 @@
         </activity>
         <activity
             android:name="net.nature.mobile.ConsentActivity"
-            android:label="@string/title_activity_consent" 
+            android:label="@string/title_activity_consent"
             android:screenOrientation="portrait" >
         </activity>
         <activity

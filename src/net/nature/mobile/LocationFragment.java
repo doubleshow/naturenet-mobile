@@ -6,8 +6,11 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Debug;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +28,11 @@ public class LocationFragment extends Fragment implements
 LocationListener,
 GooglePlayServicesClient.ConnectionCallbacks,
 GooglePlayServicesClient.OnConnectionFailedListener {
+	
+	private static final String PROVIDER = "flp";
+	private static final double LAT = 39.195324;
+	private static final double LNG = -106.821227;
+	private static final float ACCURACY = 3.0f;
 
 
 	private LocationClient mLocationClient;
@@ -41,21 +49,21 @@ GooglePlayServicesClient.OnConnectionFailedListener {
 	private TextView mConnectionState;
 	private TextView mConnectionStatus;
 	private TextView mLatLng;
-	
+
 	private LocationListener mLocationListenerActivity;
 
 
 	@Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mLocationListenerActivity = (LocationListener) activity;
-        } catch (ClassCastException e) {
-            //throw new ClassCastException(activity.toString() + " must implement LocationListener");
-        	mLocationListenerActivity = null;
-        }
-    }
-	
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		try {
+			mLocationListenerActivity = (LocationListener) activity;
+		} catch (ClassCastException e) {
+			//throw new ClassCastException(activity.toString() + " must implement LocationListener");
+			mLocationListenerActivity = null;
+		}
+	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -97,8 +105,29 @@ GooglePlayServicesClient.OnConnectionFailedListener {
 		 */
 		mLocationClient = new LocationClient(getActivity(), this, this);
 
+
+
+
 		return view;
 	}
+
+
+
+	/*
+	 * From input arguments, create a single Location with provider set to
+	 * "flp"
+	 */
+	public Location createLocation(double lat, double lng, float accuracy) {
+		// Create a new Location
+		Location newLocation = new Location(PROVIDER);
+		newLocation.setLatitude(lat);
+		newLocation.setLongitude(lng);
+		newLocation.setAccuracy(accuracy);
+		return newLocation;
+	}
+
+	// Example of creating a new Location from test data
+	Location testLocation = createLocation(LAT, LNG, ACCURACY);	
 
 	/*
 	 * Called when the Activity is no longer visible at all.
@@ -181,8 +210,13 @@ GooglePlayServicesClient.OnConnectionFailedListener {
 			// In debug mode, log the status
 			Log.d(LocationUtils.APPTAG, getString(R.string.play_services_available));
 
+
+
 			// Continue
 			return true;
+
+
+
 			// Google Play services was not available for some reason
 		} else {
 			// Display an error dialog
@@ -236,9 +270,26 @@ GooglePlayServicesClient.OnConnectionFailedListener {
 		mConnectionStatus.setText(R.string.connected);
 
 		if (mLocationClient != null && mLocationClient.getLastLocation() != null && mLocationListenerActivity != null){
-			mLocationListenerActivity.onLocationChanged(mLocationClient.getLastLocation());
+			//			
+
+			if (Debug.isDebuggerConnected()){
+				testLocation.setProvider(mLocationClient.getLastLocation().getProvider());
+				mLocationListenerActivity.onLocationChanged(testLocation);
+			}else{
+				mLocationListenerActivity.onLocationChanged(mLocationClient.getLastLocation());
+			}
+//			PackageInfo packageInfo = getActivity().getPackageManager().getPackageInfo();
+//					int flags = packageInfo.applicationInfo.flags; 
+//			if ((flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
+//				// development mode
+//			} else {
+//				// release mode
+//			}
+
+			//			mLocationClient.setMockLocation(testLocation);
+			
 		}	
-		
+
 		if (mUpdatesRequested) {
 			startPeriodicUpdates();
 		}
@@ -332,9 +383,12 @@ GooglePlayServicesClient.OnConnectionFailedListener {
 
 		// In the UI, set the latitude and longitude to the value received
 		mLatLng.setText(LocationUtils.getLatLng(getActivity(), location));
-						
-		if (mLocationListenerActivity != null)
-			mLocationListenerActivity.onLocationChanged(location);
+
+		if (mLocationListenerActivity != null){
+			testLocation.setProvider(location.getProvider());
+			mLocationListenerActivity.onLocationChanged(testLocation);
+			//			mLocationListenerActivity.onLocationChanged(location);
+		}
 	}
 
 	/**
