@@ -130,9 +130,9 @@ implements LocationListener {
 		mMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
 		mContextSpinner = (Spinner) findViewById(R.id.note_context);
 		mLandmarkSpinner = (Spinner) findViewById(R.id.note_landmark);
-		
-		
-		
+
+
+
 		//
 		// Context Spinner
 		//		
@@ -286,13 +286,13 @@ implements LocationListener {
 			launchEditNoteActivity(note_id);
 		}
 	}
-	
-	
+
+
 
 	private void onSignedIn(Account account, Site site){
 		checkNotNull(account);
 		checkNotNull(site);
-		
+
 		Session.signIn(account,site);
 		mAccount = account;
 		mSite = site;
@@ -301,8 +301,8 @@ implements LocationListener {
 		ActionBar ab = getActionBar();
 		ab.setTitle(account.getUsername() + " @ " + site.getName().toUpperCase()); 
 
-//		mUsername.setText(account.getUsername());
-		
+		//		mUsername.setText(account.getUsername());
+
 		// depends on site
 
 		mContextAdapter = new SiteActivitiesAdapter(this, mSite);
@@ -312,6 +312,8 @@ implements LocationListener {
 		mLandmarkAdapter = new SiteLandmarkAdapter(this, mSite);
 		mLandmarkSpinner.setAdapter(mLandmarkAdapter);
 		mLandmarkSpinner.setSelection(0);
+
+		mMapFragment.setSite(mSite);
 		
 		for (Context landmark : site.getLandmarks()){
 			Double longitude = (Double) landmark.getExtras().get("longitude");
@@ -319,6 +321,8 @@ implements LocationListener {
 			if (longitude != null && latitude != null)
 				mMapFragment.addLandmarkMarker(latitude, longitude, landmark.getTitle());
 		}
+		
+		
 
 		loadRecentNotes(account);
 	}
@@ -434,63 +438,60 @@ implements LocationListener {
 				e.printStackTrace();
 			}
 
-
-
-
-			InputStream input = null;
-			OutputStream output = null;
-			HttpURLConnection connection = null;
-			try {
-				URL url = new URL("https://dl.dropboxusercontent.com/u/5104407/home.mbtiles");
-				connection = (HttpURLConnection) url.openConnection();
-				connection.connect();
-
-				// expect HTTP 200 OK, so we don't mistakenly save error report
-				// instead of the file
-				if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-					return false;//"Server returned HTTP " + connection.getResponseCode()
-//							+ " " + connection.getResponseMessage();
-				}
-
-				// this will be useful to display download percentage
-				// might be -1: server did not report the length
-				int fileLength = connection.getContentLength();
-
-				// download the file
-				input = connection.getInputStream();
-				output = new FileOutputStream("/sdcard/home.mbtiles");
-
-				byte data[] = new byte[4096];
-				long total = 0;
-				int count;
-				while ((count = input.read(data)) != -1) {
-					// allow canceling with back button
-					if (isCancelled()) {
-						input.close();
-						return null;
-					}
-					total += count;
-					// publishing the progress....
-					//		                if (fileLength > 0) // only if total length is known
-					//		                    publishProgress((int) (total * 100 / fileLength));
-					output.write(data, 0, count);
-					Log.d(TAG,"downloaded " + total + " bytes");
-				}
-			} catch (Exception e) {
-				return true;//e.toString();
-			} finally {
-				try {
-					if (output != null)
-						output.close();
-					if (input != null)
-						input.close();
-				} catch (IOException ignored) {
-				}
-
-				if (connection != null)
-					connection.disconnect();
-			}
-//			return null;
+			//			InputStream input = null;
+			//			OutputStream output = null;
+			//			HttpURLConnection connection = null;
+			//			try {
+			//				URL url = new URL("https://dl.dropboxusercontent.com/u/5104407/home.mbtiles");
+			//				connection = (HttpURLConnection) url.openConnection();
+			//				connection.connect();
+			//
+			//				// expect HTTP 200 OK, so we don't mistakenly save error report
+			//				// instead of the file
+			//				if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+			//					return false;//"Server returned HTTP " + connection.getResponseCode()
+			////							+ " " + connection.getResponseMessage();
+			//				}
+			//
+			//				// this will be useful to display download percentage
+			//				// might be -1: server did not report the length
+			//				int fileLength = connection.getContentLength();
+			//
+			//				// download the file
+			//				input = connection.getInputStream();
+			//				output = new FileOutputStream("/sdcard/home.mbtiles");
+			//
+			//				byte data[] = new byte[4096];
+			//				long total = 0;
+			//				int count;
+			//				while ((count = input.read(data)) != -1) {
+			//					// allow canceling with back button
+			//					if (isCancelled()) {
+			//						input.close();
+			//						return null;
+			//					}
+			//					total += count;
+			//					// publishing the progress....
+			//					//		                if (fileLength > 0) // only if total length is known
+			//					//		                    publishProgress((int) (total * 100 / fileLength));
+			//					output.write(data, 0, count);
+			//					Log.d(TAG,"downloaded " + total + " bytes");
+			//				}
+			//			} catch (Exception e) {
+			//				return true;//e.toString();
+			//			} finally {
+			//				try {
+			//					if (output != null)
+			//						output.close();
+			//					if (input != null)
+			//						input.close();
+			//				} catch (IOException ignored) {
+			//				}
+			//
+			//				if (connection != null)
+			//					connection.disconnect();
+			//			}
+			////			return null;
 
 
 			return true;
@@ -509,16 +510,34 @@ implements LocationListener {
 		}
 	}
 
+	private static final String PROVIDER = "flp";
+	private static final double LAT = 39.195324;
+	private static final double LNG = -106.821839;
+	private static final float ACCURACY = 3.0f;
+	/*
+	 * From input arguments, create a single Location with provider set to
+	 * "flp"
+	 */
+	public Location createLocation(double lat, double lng, float accuracy) {
+		// Create a new Location
+		Location newLocation = new Location(PROVIDER);
+		newLocation.setLatitude(lat);
+		newLocation.setLongitude(lng);
+		newLocation.setAccuracy(accuracy);
+		return newLocation;
+	}
+
+	// Example of creating a new Location from test data
+	Location testLocation = createLocation(LAT, LNG, ACCURACY);	
+
 	@Override
 	public void onLocationChanged(Location location) {
 		Log.d(TAG, "location update :" + location);
 		mCurrentLocation = location;
 		mMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
 		if (mMapFragment != null){
+//			mMapFragment.setCurrentLocation(testLocation);
 			mMapFragment.setCurrentLocation(location);
-			
-//			mMapFragment
-			
 		}
 
 	}
