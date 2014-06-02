@@ -133,6 +133,8 @@ public class Feedback extends NNModel{
 	public NNModel getTarget(){
 		if (target_model.equalsIgnoreCase("Note")){
 			return Model.load(Note.class, target_id);
+		}else if (target_model.equalsIgnoreCase("Account")){
+			return Model.load(Account.class, target_id);
 		}
 		return null;
 	}

@@ -90,12 +90,12 @@ your understanding and willingness to participate in our study by checking off t
     <string name="step2_q3">(Optional) I agree to be videotaped/audiotaped during my participation in this study.</string>
     <string name="step2_q4">(Optional) I agree to complete a short questionnaire during or after my participation in this study.</string>
     <string name="title_activity_consent">Consent</string>
-    
-    
-    
-    
-    
-    
+
+    <string name="survey_instruction">Thank you for using NatureNet! \n\n Which statement(s) below
+        do you agree?</string>
+    <string name="survey_q1">I liked using NatureNet.</string>
+    <string name="survey_q2">I would use NatureNet again.</string>
+    <string name="survey_q3">I would recommend NatureNet to someone else.</string>
 
     <string name="manage_mock_testing_banner">Manage mock location testing</string>
     <string name="one_run_button_text">Run once</string>
@@ -129,5 +129,6 @@ your understanding and willingness to participate in our study by checking off t
     <string name="invalid_broadcast_code">Received invalid broadcast code.</string>
     <string name="test_interrupted">Continuous testing interrupted by user.</string>
     <string name="no_service">The test service is not running</string>
-    <string name="stop_service">Sent request to stop testing</string>    
+    <string name="stop_service">Sent request to stop testing</string>
+    <string name="title_activity_survey_activity">Survey</string>    
 </resources>

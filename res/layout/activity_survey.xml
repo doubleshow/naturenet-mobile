@@ -1,0 +1,76 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="net.nature.mobile.CreateAccountActivity" >
+
+    <ScrollView
+        android:id="@+id/login_form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+       <LinearLayout
+            style="@style/LoginFormContainer"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="false"
+                android:textAppearance="?android:attr/textAppearanceMedium" 
+                android:text="@string/survey_instruction" />
+
+         
+            <CheckBox
+                android:id="@+id/checkBox1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"                
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/survey_q1"/>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:background="#eee" />
+            
+            <CheckBox
+                android:id="@+id/checkBox2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"                
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/survey_q2"/>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:background="#eee" />
+            
+            <CheckBox
+                android:id="@+id/checkBox3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"                
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/survey_q3"/>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:background="#eee" />
+            
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:background="#eee" />            
+            <Button
+                android:id="@+id/next_button"
+                style="@style/ButtonText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/btn_green"
+                android:paddingLeft="32dp"
+                android:paddingRight="32dp"
+                android:text="Sign out" />
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

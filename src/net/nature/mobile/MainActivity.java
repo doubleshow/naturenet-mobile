@@ -15,6 +15,7 @@ import net.nature.mobile.EditNoteActivity.SiteActivitiesAdapter;
 import net.nature.mobile.EditNoteActivity.SiteLandmarkAdapter;
 import net.nature.mobile.model.Account;
 import net.nature.mobile.model.Context;
+import net.nature.mobile.model.Feedback;
 import net.nature.mobile.model.Media;
 import net.nature.mobile.model.NNModel;
 import net.nature.mobile.model.Note;
@@ -51,8 +52,9 @@ implements LocationListener {
 	private static final int REQUEST_EDIT_NOTE = 4;
 	private static final int REQUEST_SELECT_CONTEXT = 5;
 	private static final int REQUEST_SELECT_ACCOUNT = 6;
-
-	private static final String TAG = "MainActivity";
+	private static final int REQUEST_SURVEY = 7;
+	
+	private static final String TAG = "MainActivity";	
 
 	private SyncTask mSyncTask;
 	private Account mAccount;
@@ -256,6 +258,27 @@ implements LocationListener {
 				checkNotNull(context);				
 				onContextSelected(context);
 			}
+		}else if (requestCode == REQUEST_SURVEY){
+			if (resultCode == RESULT_OK) {
+				String surveyText = data.getStringExtra(SurveyActivity.OUTPUT_SURVEY_TEXT);
+				
+				Feedback f = new Feedback();
+				f.setKind("Survey");
+				f.setAccount(mAccount);
+				f.setContent(surveyText);
+				f.setTarget(mAccount);
+				f.commit();				
+				
+				mSyncTask = new SyncTask();
+				mSyncTask.execute(mAccount);
+				
+				mAccount = null;
+				mContext = null;		
+				Session.signOut();
+				
+				Intent intent = new Intent(getBaseContext(), SelectAccountActivity.class);
+				startActivityForResult(intent, REQUEST_SELECT_ACCOUNT);
+			}
 		}
 
 
@@ -409,17 +432,21 @@ implements LocationListener {
 	}
 
 	private void doSignout() {
-		mAccount = null;
-		mContext = null;		
-		Session.signOut();
-		Intent intent = new Intent(getBaseContext(), SelectAccountActivity.class);
-		startActivityForResult(intent, REQUEST_SELECT_ACCOUNT);
+
+		
+		Intent intent = new Intent(getBaseContext(), SurveyActivity.class);
+//		intent.putExtra(ListNoteActivity.EXTRA_ACCOUNT_ID, mAccount.getId());
+//		intent.putExtra(ListNoteActivity.EXTRA_SITE_ID, mSite.getId());
+		startActivityForResult(intent, REQUEST_SURVEY);
+		
+//		Intent intent = new Intent(getBaseContext(), SelectAccountActivity.class);
+//		startActivityForResult(intent, REQUEST_SELECT_ACCOUNT);
 	}
 
 	private void doSync() {
-		((TextView) findViewById(R.id.label_notes)).setText("Your Notes (syncing...)");
+		((TextView) findViewById(R.id.label_notes)).setText("(syncing...)");
 		mSyncTask = new SyncTask();
-		mSyncTask.execute((Void) null);
+		mSyncTask.execute(mAccount);
 	}
 
 
@@ -427,13 +454,15 @@ implements LocationListener {
 	 * Represents an asynchronous login/registration task used to authenticate
 	 * the user.
 	 */
-	public class SyncTask extends AsyncTask<Void, Void, Boolean> {
+	public class SyncTask extends AsyncTask<Account, Void, Boolean> {
 		@Override
-		protected Boolean doInBackground(Void... params) {					
+		protected Boolean doInBackground(Account... accounts) {					
 			try {
-				checkNotNull(mAccount);
-				mAccount.pushNotes();
-				mAccount.pushFeedbacks();
+//				checkNotNull(mAccount);
+				for (Account account : accounts){
+					account.pushNotes();
+					account.pushFeedbacks();
+				}
 			}catch (RetrofitError e){
 				e.printStackTrace();
 			}
@@ -500,13 +529,13 @@ implements LocationListener {
 		@Override
 		protected void onPostExecute(final Boolean success) {
 			mSyncTask = null;
-			((TextView) findViewById(R.id.label_notes)).setText("Your Notes");
+			((TextView) findViewById(R.id.label_notes)).setText("Observations I've made");
 		}
 
 		@Override
 		protected void onCancelled() {
 			mSyncTask = null;
-			((TextView) findViewById(R.id.label_notes)).setText("Your Notes");
+			((TextView) findViewById(R.id.label_notes)).setText("Observations I've made");
 		}
 	}
 

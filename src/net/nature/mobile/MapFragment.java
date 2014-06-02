@@ -79,6 +79,7 @@ public class MapFragment extends Fragment {
 		mMapView.getLayers().setBaseLayer(mapLayer);
 		mMapView.getConstraints().setZoomRange(zoomRange);
 		mMapView.getConstraints().setRotatable(false);
+		mMapView.setZoom(19.0f);
 		
 		if (mBounds != null){
 			MapPos topLeft = mMapView.getLayers().getBaseProjection().fromWgs84(mBounds.left, mBounds.top);
