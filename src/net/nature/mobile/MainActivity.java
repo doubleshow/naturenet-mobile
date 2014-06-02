@@ -127,11 +127,15 @@ implements LocationListener {
 		mLastImage1st = (ImageView) findViewById(R.id.main_image_last_1st);
 		mLastImage2nd = (ImageView) findViewById(R.id.main_image_last_2nd);
 		mLastImage3rd = (ImageView) findViewById(R.id.main_image_last_3rd);
-
+		mMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+		mContextSpinner = (Spinner) findViewById(R.id.note_context);
+		mLandmarkSpinner = (Spinner) findViewById(R.id.note_landmark);
+		
+		
+		
 		//
 		// Context Spinner
-		//
-		mContextSpinner = (Spinner) findViewById(R.id.note_context);
+		//		
 		mContextSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -146,7 +150,6 @@ implements LocationListener {
 		});
 
 		// Landmark Spinner
-		mLandmarkSpinner = (Spinner) findViewById(R.id.note_landmark);
 		mLandmarkSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -210,12 +213,6 @@ implements LocationListener {
 		//				startActivityForResult(intent, REQUEST_SELECT_CONTEXT);
 		//			}        	
 		//		});
-
-
-
-
-		mMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
-
 
 
 		if (mContext == null){
@@ -305,6 +302,8 @@ implements LocationListener {
 		ab.setTitle(account.getUsername() + " @ " + site.getName().toUpperCase()); 
 
 //		mUsername.setText(account.getUsername());
+		
+		// depends on site
 
 		mContextAdapter = new SiteActivitiesAdapter(this, mSite);
 		mContextSpinner.setAdapter(mContextAdapter);
@@ -313,6 +312,13 @@ implements LocationListener {
 		mLandmarkAdapter = new SiteLandmarkAdapter(this, mSite);
 		mLandmarkSpinner.setAdapter(mLandmarkAdapter);
 		mLandmarkSpinner.setSelection(0);
+		
+		for (Context landmark : site.getLandmarks()){
+			Double longitude = (Double) landmark.getExtras().get("longitude");
+			Double latitude = (Double) landmark.getExtras().get("latitude");
+			if (longitude != null && latitude != null)
+				mMapFragment.addLandmarkMarker(latitude, longitude, landmark.getTitle());
+		}
 
 		loadRecentNotes(account);
 	}
@@ -510,6 +516,9 @@ implements LocationListener {
 		mMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
 		if (mMapFragment != null){
 			mMapFragment.setCurrentLocation(location);
+			
+//			mMapFragment
+			
 		}
 
 	}
