@@ -43,33 +43,54 @@ public class MapFragment extends Fragment {
 	private double mLatitude;
 	private Marker mMarker;
 	private Bounds mBounds;
+	
 
 
 	public void setSite(Site site){
 		if (site == null)
 			return;
 
+		RasterDataSource dataSource;
+		Range zoomRange;
 		if (site.getName().equalsIgnoreCase("aces")){
-			RasterDataSource dataSource = new PackagedRasterDataSource(new EPSG3857(), 19, 19, "aces_{zoom}_{x}_{y}", getActivity().getApplicationContext());
-			RasterLayer mapLayer = new RasterLayer(dataSource, 0);
-			mMapView.getLayers().setBaseLayer(mapLayer);
-
+			dataSource = new PackagedRasterDataSource(new EPSG3857(), 19, 19, "aces_{zoom}_{x}_{y}", getActivity().getApplicationContext());
 			mBounds = new Bounds(-106.8226, 39.197216, -106.820819, 39.194879);
+			zoomRange = new Range(19, 19);
+		}else if (site.getName().equalsIgnoreCase("umd")){			
+			dataSource = new HTTPRasterDataSource(new EPSG3857(), 0, 19, "http://otile1.mqcdn.com/tiles/1.0.0/osm/{zoom}/{x}/{y}.png");
+			mBounds = new Bounds(-76.956139, 38.998942, -76.933308, 38.977927);
+			zoomRange = new Range(16, 19);
+		}else if (site.getName().equalsIgnoreCase("cu")){			
+			dataSource = new HTTPRasterDataSource(new EPSG3857(), 0, 19, "http://otile1.mqcdn.com/tiles/1.0.0/osm/{zoom}/{x}/{y}.png");
+			mBounds = new Bounds(-105.277197, 40.015044, -105.259237, 40.000515);
+			zoomRange = new Range(16, 19);		
+		}else if (site.getName().equalsIgnoreCase("uncc")){			
+			dataSource = new HTTPRasterDataSource(new EPSG3857(), 0, 19, "http://otile1.mqcdn.com/tiles/1.0.0/osm/{zoom}/{x}/{y}.png");
+			mBounds = new Bounds(-80.743911, 35.315615, -80.723097, 35.29926);
+			zoomRange = new Range(16, 19);
+		}else {
+
+			dataSource = new HTTPRasterDataSource(new EPSG3857(), 0, 19, "http://otile1.mqcdn.com/tiles/1.0.0/osm/{zoom}/{x}/{y}.png");
+			mBounds = null;
+			zoomRange = new Range(16, 19);			
+		}
+		
+		RasterLayer mapLayer = new RasterLayer(dataSource, 0);
+		mMapView.getLayers().setBaseLayer(mapLayer);
+		mMapView.getConstraints().setZoomRange(zoomRange);
+		mMapView.getConstraints().setRotatable(false);
+		
+		if (mBounds != null){
 			MapPos topLeft = mMapView.getLayers().getBaseProjection().fromWgs84(mBounds.left, mBounds.top);
 			MapPos bottomRight = mMapView.getLayers().getBaseProjection().fromWgs84(mBounds.right, mBounds.bottom);
 			mMapView.getConstraints().setMapBounds(new Bounds(topLeft.x, topLeft.y,bottomRight.x, bottomRight.y));
 
 			double centerLong = (mBounds.left + mBounds.right) / 2;
 			double centerLat = (mBounds.top + mBounds.bottom) / 2;
-			mMapView.setFocusPoint(mMapView.getLayers().getBaseLayer().getProjection().fromWgs84(centerLong, centerLat));
-
+			mMapView.setFocusPoint(mMapView.getLayers().getBaseLayer().getProjection().fromWgs84(centerLong, centerLat));			
 		}else{
-			RasterDataSource dataSource = new HTTPRasterDataSource(new EPSG3857(), 0, 19, "http://otile1.mqcdn.com/tiles/1.0.0/osm/{zoom}/{x}/{y}.png");
-			RasterLayer mapLayer = new RasterLayer(dataSource, 0);
-			mMapView.getLayers().setBaseLayer(mapLayer);			
+			
 			mMapView.getConstraints().setMapBounds(null);
-
-			mBounds = null;
 		}
 	}
 
