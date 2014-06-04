@@ -203,8 +203,15 @@ public class SigninActivity extends Activity {
 				errorMessage = "Unable to find " + mUsername;	
 				return false;
 			}else{
-				mAccount.pullNotes();
-				return true;
+				
+				if (mAccount.getPassword().equalsIgnoreCase(mPassword)){					
+					mAccount.pullNotes();
+					return true;
+				}else{
+					errorMessage = "Username and PIN are incorrect";
+					return false;
+				}
+				
 			}
 		}
 
