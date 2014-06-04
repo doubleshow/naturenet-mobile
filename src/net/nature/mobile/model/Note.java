@@ -55,7 +55,11 @@ public class Note extends NNModel {
 	@Expose
 	@Column(name="latitude")
 	private Double latitude;
-		
+	
+	@Expose
+	@Column(name="Kind")
+	private String kind;
+
 	protected void resolveDependencies(){
 		account = NNModel.resolveByUID(Account.class, account.getUId());
 		context = NNModel.resolveByUID(Context.class, context.getUId());				
@@ -230,5 +234,13 @@ public class Note extends NNModel {
 	
 	public Feedback getLandmarkFeedback(){
 		return (new Select()).from(Feedback.class).where("kind = ? and target_model = ? and target_id = ?", "Landmark", "Note", this.getId()).executeSingle();		
+	}
+
+	public String getKind() {
+		return kind;
+	}
+
+	public void setKind(String kind) {
+		this.kind = kind;
 	}
 }

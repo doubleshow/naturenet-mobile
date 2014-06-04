@@ -89,15 +89,28 @@ public class Account extends NNModel {
 
 
 	public List<Note> getRecentNotes(int n) {
-		return new Select().from(Note.class).where("account_id = ?", getId()).orderBy("tid DESC").limit(n).execute();		
+		return new Select().from(Note.class).where("account_id = ? and kind = ?", getId(), "FieldNote").orderBy("tid DESC").limit(n).execute();		
 	}
 
 	public List<Note> getNotesOrderedByRecency() {
 		return new Select().from(Note.class).where("account_id = ?", getId()).orderBy("tid DESC").execute();		
 	}
+	
+//	public List<Note> getNotesOrderedByRecencyAtSite(Site site, int n) {
+//		List<Note> allNotes = new Select().from(Note.class).where("account_id = ? and kind = ?", getId(), "FieldNote").orderBy("tid DESC").
+//limit(n).execute();
+//		List<Note> filteredNotes = Lists.newArrayList();
+//		// Filter Notes by Site
+//		for (Note note : allNotes){
+//			if (note.getContext().getSite().getId() == site.getId()){
+//				filteredNotes.add(note);
+//			}
+//		}		
+//		return filteredNotes;
+//	}	
 
 	public List<Note> getNotesOrderedByRecencyAtSite(Site site) {
-		List<Note> allNotes = new Select().from(Note.class).where("account_id = ?", getId()).orderBy("tid DESC").execute();
+		List<Note> allNotes = new Select().from(Note.class).where("account_id = ? and kind = ?", getId(), "FieldNote").orderBy("tid DESC").execute();
 		List<Note> filteredNotes = Lists.newArrayList();
 		// Filter Notes by Site
 		for (Note note : allNotes){

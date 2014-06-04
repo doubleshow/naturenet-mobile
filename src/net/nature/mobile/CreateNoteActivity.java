@@ -138,6 +138,7 @@ public class CreateNoteActivity extends Activity {
 				note.setContext(mContext);
 				note.setLongitude(mLongitude);
 				note.setLatitude(mLatitude);
+				note.setKind("FieldNote");
 				note.commit();				
 				
 				note.setLandmarkFeedback(mLandmark);

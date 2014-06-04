@@ -92,7 +92,7 @@ your understanding and willingness to participate in our study by checking off t
     <string name="title_activity_consent">Consent</string>
 
     <string name="survey_instruction">Thank you for using NatureNet! \n\n Which statement(s) below
-        do you agree?</string>
+        do you agree with?</string>
     <string name="survey_q1">I liked using NatureNet.</string>
     <string name="survey_q2">I would use NatureNet again.</string>
     <string name="survey_q3">I would recommend NatureNet to someone else.</string>

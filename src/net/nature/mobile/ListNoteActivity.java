@@ -7,6 +7,7 @@ import net.nature.mobile.model.Account;
 import net.nature.mobile.model.Media;
 import net.nature.mobile.model.Note;
 import net.nature.mobile.model.Site;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -71,6 +72,11 @@ public class ListNoteActivity extends Activity {
 				startActivity(intent);
 			}
 		});
+		
+		// set title text
+		ActionBar ab = getActionBar();
+		ab.setTitle(mAccount.getUsername() + "'s Observations"); 
+		
 	}
 
 	static public class UserArrayAdapter extends ArrayAdapter<Note> {
