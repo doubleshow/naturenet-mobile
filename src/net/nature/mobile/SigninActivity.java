@@ -3,10 +3,7 @@ package net.nature.mobile;
 import static com.google.common.base.Preconditions.checkNotNull;
 import net.nature.mobile.model.Account;
 import net.nature.mobile.model.NNModel;
-import net.nature.mobile.rest.NatureNetAPI;
-import net.nature.mobile.rest.NatureNetAPI.Result;
-import net.nature.mobile.rest.NatureNetRestAdapter;
-import retrofit.RetrofitError;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
@@ -197,7 +194,6 @@ public class SigninActivity extends Activity {
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			mAccount = NNModel.resolveByName(Account.class,  mUsername);
-			System.out.println("logging"+mAccount);
 			// if the account does not exist
 			if (mAccount == null){
 				errorMessage = "Unable to find " + mUsername;	

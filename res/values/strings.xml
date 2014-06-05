@@ -130,5 +130,6 @@ your understanding and willingness to participate in our study by checking off t
     <string name="test_interrupted">Continuous testing interrupted by user.</string>
     <string name="no_service">The test service is not running</string>
     <string name="stop_service">Sent request to stop testing</string>
-    <string name="title_activity_survey_activity">Survey</string>    
+    <string name="title_activity_survey_activity">Survey</string>
+    <string name="title_activity_initilization">NatureNet</string>    
 </resources>

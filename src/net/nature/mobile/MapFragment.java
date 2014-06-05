@@ -190,12 +190,12 @@ public class MapFragment extends Fragment {
 		Bitmap pointMarker = UnscaledBitmapLoader.decodeResource(getResources(), R.drawable.ic_marker);
 
 
-		MarkerStyle markerStyle = MarkerStyle.builder().setBitmap(pointMarker).setSize(0.5f).setColor(Color.WHITE).build();
+		MarkerStyle markerStyle = MarkerStyle.builder().setBitmap(pointMarker).setSize(0.25f).setColor(Color.WHITE).build();
 		// define label what is shown when you click on marker
 		Label markerLabel = new DefaultLabel("", label,
 				LabelStyle.builder()
 				.setDescriptionAlign(Align.LEFT)
-				.setDescriptionFont(Typeface.create("Arial", Typeface.NORMAL), 48)
+				.setDescriptionFont(Typeface.create("Arial", Typeface.NORMAL), 32)
 				.build());
 		Marker marker = new Marker(markerLocation, markerLabel, markerStyle, mMarkerLayer);
 		mMarkerLayer.add(marker);

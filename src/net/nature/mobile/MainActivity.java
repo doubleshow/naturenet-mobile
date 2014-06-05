@@ -3,12 +3,6 @@ package net.nature.mobile;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
 
 import net.nature.mobile.EditNoteActivity.SiteActivitiesAdapter;
@@ -26,6 +20,8 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,14 +30,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.AdapterView.OnItemSelectedListener;
 
 import com.activeandroid.Model;
+import com.activeandroid.query.Select;
 import com.google.android.gms.location.LocationListener;
 import com.squareup.picasso.Picasso;
 
@@ -53,14 +48,13 @@ implements LocationListener {
 	private static final int REQUEST_SELECT_CONTEXT = 5;
 	private static final int REQUEST_SELECT_ACCOUNT = 6;
 	private static final int REQUEST_SURVEY = 7;
-	
-	private static final String TAG = "MainActivity";	
+
+	private static final String TAG = "MainActivity";
 
 	private SyncTask mSyncTask;
 	private Account mAccount;
 	private Context mContext;
 
-	private TextView mUsername;
 	private View mButtonGallery;
 	private ImageView mLastImage1st;
 	private ImageView mLastImage2nd;
@@ -68,7 +62,6 @@ implements LocationListener {
 	private Button mButtonCreateNote;
 	private MapFragment mMapFragment;
 	private Location mCurrentLocation;
-	private MyTask download;
 	private Site mSite;
 	private Spinner mContextSpinner;
 	private SiteActivitiesAdapter mContextAdapter;
@@ -76,156 +69,33 @@ implements LocationListener {
 	protected Context mLandmark;
 	private SiteLandmarkAdapter mLandmarkAdapter;
 
-
-	private class MyTask extends AsyncTask<Void, Integer, Boolean> {
-
-		@Override
-		protected Boolean doInBackground(Void... params) {	    
-			if (NNModel.countLocal(Site.class) == 0){
-				NNModel.resolveByName(Site.class,  "aces");
-				NNModel.resolveByName(Site.class,  "cu");
-				NNModel.resolveByName(Site.class,  "umd");
-				NNModel.resolveByName(Site.class,  "uncc");
-			}						
-			return NNModel.countLocal(Site.class) == 4;
+	public boolean isOnline() {
+		ConnectivityManager cm =
+				(ConnectivityManager) getSystemService(android.content.Context.CONNECTIVITY_SERVICE);
+		NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		if (netInfo != null && netInfo.isConnected()) {
+			return true;
 		}
+		return false;
+	}
 
-		@Override
-		protected void onPostExecute(Boolean result) {
-			if (result){
-				doCreate();
-			}else{
-				setContentView(R.layout.activity_retry);
-				findViewById(R.id.buttonRetry).setOnClickListener(new OnClickListener(){
-					@Override
-					public void onClick(View v) {
-						setContentView(R.layout.activity_loading);
-						download = new MyTask();
-						download.execute((Void) null);
-					}					
-				});
-			}
-		}
+	boolean isInitialized(){
+		return NNModel.countLocal(Site.class) == 4;
 	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);	
-		setContentView(R.layout.activity_loading);
-
-		// Probably initialize members with default values for a new instance
-		download = new MyTask();
-		download.execute((Void) null);
-
-	}
-
-	private void doCreate(){
-		setContentView(R.layout.activity_main);
-
-		mButtonCreateNote = (Button) findViewById(R.id.main_button_create_note);
-
-		mUsername = (TextView) findViewById(R.id.main_username);
-		mButtonGallery = (View) findViewById(R.id.main_image_right_arrow);
-		mLastImage1st = (ImageView) findViewById(R.id.main_image_last_1st);
-		mLastImage2nd = (ImageView) findViewById(R.id.main_image_last_2nd);
-		mLastImage3rd = (ImageView) findViewById(R.id.main_image_last_3rd);
-		mMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
-		mContextSpinner = (Spinner) findViewById(R.id.note_context);
-		mLandmarkSpinner = (Spinner) findViewById(R.id.note_landmark);
-
-
-
-		//
-		// Context Spinner
-		//		
-		mContextSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-				Context context = (Context) parentView.getItemAtPosition(position);		    	
-				checkNotNull(context);
-				mContext = context;
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> parentView) {
-			}
-		});
-
-		// Landmark Spinner
-		mLandmarkSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-				Context context = (Context) parentView.getItemAtPosition(position);		    	
-				checkNotNull(context);
-				mLandmark = context;
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> parentView) {
-			}
-		});
-
-
 		mAccount = Session.getAccount();
 		mSite = Session.getSite();
-
-		Log.d("main", ""+mAccount);
+		doSetupActivityMainLayout();
 		if (mAccount == null || mSite == null){
 			Intent intent = new Intent(getBaseContext(), SelectAccountActivity.class);
 			startActivityForResult(intent, REQUEST_SELECT_ACCOUNT);
 		}else{        	
 			onSignedIn(mAccount, mSite);
 		}
-
-
-
-		mButtonGallery.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent(getBaseContext(), ListNoteActivity.class);
-				intent.putExtra(ListNoteActivity.EXTRA_ACCOUNT_ID, mAccount.getId());
-				intent.putExtra(ListNoteActivity.EXTRA_SITE_ID, mSite.getId());
-				startActivity(intent);
-			}
-		});
-
-		mButtonCreateNote.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				checkNotNull(mAccount); checkNotNull(mContext);
-
-				Intent intent = new Intent(getBaseContext(), CreateNoteActivity.class);
-				intent.putExtra(CreateNoteActivity.Extras.INPUT_ACCOUNT_ID, mAccount.getId());
-				intent.putExtra(CreateNoteActivity.Extras.INPUT_CONTEXT_ID, mContext.getId());
-				intent.putExtra(CreateNoteActivity.Extras.INPUT_LANDMARK_ID, mLandmark.getId());
-				if (mCurrentLocation != null){
-					intent.putExtra(CreateNoteActivity.Extras.INPUT_LONGITUDE,  mCurrentLocation.getLongitude());
-					intent.putExtra(CreateNoteActivity.Extras.INPUT_LATITUDE,  mCurrentLocation.getLatitude());
-				}
-				startActivityForResult(intent, REQUEST_CREATE_NOTE);
-			}        	
-		});
-
-		//		mButtonSelectContext.setOnClickListener(new OnClickListener(){
-		//			@Override
-		//			public void onClick(View v) {
-		//				checkNotNull(mContext);
-		//				Intent intent = new Intent(getBaseContext(), SelectContextActivity.class);				
-		//				intent.putExtra(SelectContextActivity.EXTRA_INPUT_CONTEXT_ID, mContext.getId());
-		//				startActivityForResult(intent, REQUEST_SELECT_CONTEXT);
-		//			}        	
-		//		});
-
-
-		if (mContext == null){
-
-		}else{
-			onContextSelected(mContext);
-		}
-
-
 	}
-
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -261,21 +131,21 @@ implements LocationListener {
 		}else if (requestCode == REQUEST_SURVEY){
 			if (resultCode == RESULT_OK) {
 				String surveyText = data.getStringExtra(SurveyActivity.OUTPUT_SURVEY_TEXT);
-				
+
 				Feedback f = new Feedback();
 				f.setKind("Survey");
 				f.setAccount(mAccount);
 				f.setContent(surveyText);
 				f.setTarget(mAccount);
 				f.commit();				
-				
-				mSyncTask = new SyncTask();
-				mSyncTask.execute(mAccount);
-				
+
+				//				mSyncTask = new SyncTask();
+				//				mSyncTask.execute(mAccount);
+
 				mAccount = null;
 				mContext = null;		
 				Session.signOut();
-				
+
 				Intent intent = new Intent(getBaseContext(), SelectAccountActivity.class);
 				startActivityForResult(intent, REQUEST_SELECT_ACCOUNT);
 			}
@@ -310,6 +180,87 @@ implements LocationListener {
 		}
 	}
 
+	private void doSetupActivityMainLayout(){
+		setContentView(R.layout.activity_main);
+		mButtonCreateNote = (Button) findViewById(R.id.main_button_create_note);
+		mButtonGallery = (View) findViewById(R.id.main_image_right_arrow);
+		mLastImage1st = (ImageView) findViewById(R.id.main_image_last_1st);
+		mLastImage2nd = (ImageView) findViewById(R.id.main_image_last_2nd);
+		mLastImage3rd = (ImageView) findViewById(R.id.main_image_last_3rd);
+		mMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+		mContextSpinner = (Spinner) findViewById(R.id.note_context);
+		mLandmarkSpinner = (Spinner) findViewById(R.id.note_landmark);
+
+
+		//
+		// Context Spinner
+		//		
+		mContextSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+				Context context = (Context) parentView.getItemAtPosition(position);		    	
+				checkNotNull(context);
+				mContext = context;
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parentView) {
+			}
+		});
+
+		// Landmark Spinner
+		mLandmarkSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+				Context context = (Context) parentView.getItemAtPosition(position);		    	
+				checkNotNull(context);
+				mLandmark = context;
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parentView) {
+			}
+		});
+
+
+
+
+
+
+		mButtonGallery.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(getBaseContext(), ListNoteActivity.class);
+				intent.putExtra(ListNoteActivity.EXTRA_ACCOUNT_ID, mAccount.getId());
+				intent.putExtra(ListNoteActivity.EXTRA_SITE_ID, mSite.getId());
+				startActivity(intent);
+			}
+		});
+
+		mButtonCreateNote.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				checkNotNull(mAccount); checkNotNull(mContext);
+
+				Intent intent = new Intent(getBaseContext(), CreateNoteActivity.class);
+				intent.putExtra(CreateNoteActivity.Extras.INPUT_ACCOUNT_ID, mAccount.getId());
+				intent.putExtra(CreateNoteActivity.Extras.INPUT_CONTEXT_ID, mContext.getId());
+				intent.putExtra(CreateNoteActivity.Extras.INPUT_LANDMARK_ID, mLandmark.getId());
+				if (mCurrentLocation != null){
+					intent.putExtra(CreateNoteActivity.Extras.INPUT_LONGITUDE,  mCurrentLocation.getLongitude());
+					intent.putExtra(CreateNoteActivity.Extras.INPUT_LATITUDE,  mCurrentLocation.getLatitude());
+				}
+				startActivityForResult(intent, REQUEST_CREATE_NOTE);
+			}        	
+		});
+
+		if (mContext == null){
+
+		}else{
+			onContextSelected(mContext);
+		}
+	}
+
 
 
 	private void onSignedIn(Account account, Site site){
@@ -318,16 +269,13 @@ implements LocationListener {
 
 		Session.signIn(account,site);
 		mAccount = account;
-		mSite = site;
+		mSite = site;		
 
 		// set title text
 		ActionBar ab = getActionBar();
-		ab.setTitle(account.getUsername() + " @ " + site.getName().toUpperCase()); 
-
-		//		mUsername.setText(account.getUsername());
+		ab.setTitle(account.getUsername() + "@" + site.getName().toUpperCase()); 
 
 		// depends on site
-
 		mContextAdapter = new SiteActivitiesAdapter(this, mSite);
 		mContextSpinner.setAdapter(mContextAdapter);
 		mContextSpinner.setSelection(0);
@@ -337,15 +285,13 @@ implements LocationListener {
 		mLandmarkSpinner.setSelection(0);
 
 		mMapFragment.setSite(mSite);
-		
+
 		for (Context landmark : site.getLandmarks()){
 			Double longitude = (Double) landmark.getExtras().get("longitude");
 			Double latitude = (Double) landmark.getExtras().get("latitude");
 			if (longitude != null && latitude != null)
 				mMapFragment.addLandmarkMarker(latitude, longitude, landmark.getTitle());
 		}
-		
-		
 
 		loadRecentNotes(account);
 	}
@@ -383,7 +329,6 @@ implements LocationListener {
 
 	private void showPlaceHolderImageHelper(ImageView view){
 		view.setVisibility(View.INVISIBLE);
-		//		view.setImageResource(R.drawable.ic_place_holder);
 		view.setOnClickListener(null);
 	}
 
@@ -415,8 +360,8 @@ implements LocationListener {
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
 			return true;
-		}else if (id == R.id.action_sync){        	
-			doSync();
+			//		}else if (id == R.id.action_sync){        	
+			//			doSync();
 		}else if (id == R.id.action_signout){        	
 			doSignout();
 		}
@@ -427,115 +372,63 @@ implements LocationListener {
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		MenuItem item = menu.findItem(R.id.action_signout);
 		item.setEnabled(mAccount != null);
-		menu.findItem(R.id.action_sync).setEnabled(mSyncTask == null);
+		//		menu.findItem(R.id.action_sync).setEnabled(mSyncTask == null);
 		return super.onPrepareOptionsMenu(menu);
 	}
 
 	private void doSignout() {
-
-		
 		Intent intent = new Intent(getBaseContext(), SurveyActivity.class);
-//		intent.putExtra(ListNoteActivity.EXTRA_ACCOUNT_ID, mAccount.getId());
-//		intent.putExtra(ListNoteActivity.EXTRA_SITE_ID, mSite.getId());
 		startActivityForResult(intent, REQUEST_SURVEY);
-		
-//		Intent intent = new Intent(getBaseContext(), SelectAccountActivity.class);
-//		startActivityForResult(intent, REQUEST_SELECT_ACCOUNT);
 	}
 
-	private void doSync() {
-		((TextView) findViewById(R.id.label_notes)).setText("(syncing...)");
+	@Override
+	public void onStop() {
+		if (mSyncTask != null)
+			mSyncTask.cancel(true);
+		super.onStop();
+	}
+
+
+	@Override
+	public void onStart() {
+		super.onStart();
 		mSyncTask = new SyncTask();
-		mSyncTask.execute(mAccount);
+		mSyncTask.execute();
 	}
 
-
+	private static final int SYNC_INTERVAL = 60000;
 	/**
 	 * Represents an asynchronous login/registration task used to authenticate
 	 * the user.
 	 */
-	public class SyncTask extends AsyncTask<Account, Void, Boolean> {
+	public class SyncTask extends AsyncTask<Void, Void, Boolean> {
 		@Override
-		protected Boolean doInBackground(Account... accounts) {					
-			try {
-//				checkNotNull(mAccount);
-				for (Account account : accounts){
-					account.pushNotes();
-					account.pushFeedbacks();
+		protected Boolean doInBackground(Void... params) {
+			try {				
+				while (!isCancelled()){
+					List<Account> accounts = new Select().from(Account.class).execute();
+					for (Account account : accounts){
+						try {
+							account.pushNotes();
+							account.pushFeedbacks();
+						}
+						catch (RetrofitError e){
+							e.printStackTrace();
+						}
+					}
+					Thread.sleep(SYNC_INTERVAL);
 				}
-			}catch (RetrofitError e){
-				e.printStackTrace();
+			}catch (InterruptedException e) {
 			}
-
-			//			InputStream input = null;
-			//			OutputStream output = null;
-			//			HttpURLConnection connection = null;
-			//			try {
-			//				URL url = new URL("https://dl.dropboxusercontent.com/u/5104407/home.mbtiles");
-			//				connection = (HttpURLConnection) url.openConnection();
-			//				connection.connect();
-			//
-			//				// expect HTTP 200 OK, so we don't mistakenly save error report
-			//				// instead of the file
-			//				if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-			//					return false;//"Server returned HTTP " + connection.getResponseCode()
-			////							+ " " + connection.getResponseMessage();
-			//				}
-			//
-			//				// this will be useful to display download percentage
-			//				// might be -1: server did not report the length
-			//				int fileLength = connection.getContentLength();
-			//
-			//				// download the file
-			//				input = connection.getInputStream();
-			//				output = new FileOutputStream("/sdcard/home.mbtiles");
-			//
-			//				byte data[] = new byte[4096];
-			//				long total = 0;
-			//				int count;
-			//				while ((count = input.read(data)) != -1) {
-			//					// allow canceling with back button
-			//					if (isCancelled()) {
-			//						input.close();
-			//						return null;
-			//					}
-			//					total += count;
-			//					// publishing the progress....
-			//					//		                if (fileLength > 0) // only if total length is known
-			//					//		                    publishProgress((int) (total * 100 / fileLength));
-			//					output.write(data, 0, count);
-			//					Log.d(TAG,"downloaded " + total + " bytes");
-			//				}
-			//			} catch (Exception e) {
-			//				return true;//e.toString();
-			//			} finally {
-			//				try {
-			//					if (output != null)
-			//						output.close();
-			//					if (input != null)
-			//						input.close();
-			//				} catch (IOException ignored) {
-			//				}
-			//
-			//				if (connection != null)
-			//					connection.disconnect();
-			//			}
-			////			return null;
-
-
-			return true;
+			return false;
 		}
 
 		@Override
 		protected void onPostExecute(final Boolean success) {
-			mSyncTask = null;
-			((TextView) findViewById(R.id.label_notes)).setText("Observations I've made");
 		}
 
 		@Override
 		protected void onCancelled() {
-			mSyncTask = null;
-			((TextView) findViewById(R.id.label_notes)).setText("Observations I've made");
 		}
 	}
 
@@ -565,7 +458,7 @@ implements LocationListener {
 		mCurrentLocation = location;
 		mMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
 		if (mMapFragment != null){
-//			mMapFragment.setCurrentLocation(testLocation);
+			//			mMapFragment.setCurrentLocation(testLocation);
 			mMapFragment.setCurrentLocation(location);
 		}
 
