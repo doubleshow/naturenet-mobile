@@ -27,6 +27,7 @@ import android.graphics.Paint.Align;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,7 @@ import android.widget.Toast;
 
 public class MapFragment extends Fragment {
 
+	private static final String TAG = MapFragment.class.getSimpleName();
 	private MapView mMapView;
 	private MarkerLayer mMarkerLayer;
 	private View mButtonCurrentPosition;	
@@ -231,12 +233,13 @@ public class MapFragment extends Fragment {
 	}
 
 	void doFocusMap(double latitude, double longitude){
-		boolean inBounds = mBounds == null || longitude >= mBounds.left && longitude <= mBounds.right && latitude >= mBounds.bottom && latitude <= mBounds.top;				
+		boolean inBounds = mBounds == null || longitude >= mBounds.left && longitude <= mBounds.right && latitude >= mBounds.bottom && latitude <= mBounds.top;
+		Log.d(TAG,"bounds:" + mBounds);
 		if (inBounds)
 			mMapView.setFocusPoint(mMapView.getLayers().getBaseLayer().getProjection().fromWgs84(longitude, latitude));
 		else{
-			Toast.makeText(getActivity(), (String) "You are current ouside of the area.", 
-					Toast.LENGTH_LONG).show();
+//			Toast.makeText(getActivity(), (String) "You are current ouside of the area.", 
+//					Toast.LENGTH_LONG).show();
 		}
 
 	}

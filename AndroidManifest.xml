@@ -106,6 +106,7 @@
         <activity
             android:name="net.nature.mobile.EditNoteActivity"
             android:label="@string/title_activity_edit_note"
+            android:screenOrientation="portrait" 
             android:parentActivityName="net.nature.mobile.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -113,6 +114,7 @@
         </activity>
         <activity
             android:name="net.nature.mobile.CreateNoteActivity"
+            android:screenOrientation="portrait" 
             android:label="@string/title_activity_create_note" >
         </activity>
     </application>
